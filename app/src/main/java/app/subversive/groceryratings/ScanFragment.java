@@ -176,11 +176,11 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
 
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
         Log.i(TAG, rawResult.getText());
-        setStatusText("Fetching Product.", true);
-        if (mVibrator != null && mVibrator.hasVibrator()) {
-            mVibrator.vibrate(50);
-        }
         if (!lastScanned.equals(rawResult.getText())) {
+            setStatusText("Fetching Product.", true);
+            if (mVibrator != null && mVibrator.hasVibrator()) {
+                mVibrator.vibrate(50);
+            }
             MainWindow.service.getProduct(rawResult.getText(), onProductLoaded);
             lastScanned = rawResult.getText();
         }
@@ -212,8 +212,8 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
                 foundUnknownProduct();
             } else {
                 showProductData(product);
-                restartScanner();
             }
+            restartScanner();
         }
 
         @Override
