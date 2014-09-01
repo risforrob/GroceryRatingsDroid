@@ -14,6 +14,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.google.zxing.client.android.CaptureActivityHandler;
@@ -24,6 +25,8 @@ import java.io.IOException;
 import com.google.zxing.Result;
 
 import app.subversive.groceryratings.Core.Product;
+import app.subversive.groceryratings.UI.ProductRatingBar;
+import app.subversive.groceryratings.UI.RatingsLayout;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -183,6 +186,8 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
             }
             MainWindow.service.getProduct(rawResult.getText(), onProductLoaded);
             lastScanned = rawResult.getText();
+        } else {
+            restartScanner();
         }
     }
 
@@ -194,16 +199,16 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
     }
 
     public void showProductData(Product product) {
-        setStatusText(product.getProductName(), false);
+        ProductRatingBar pbar = new ProductRatingBar(product);
+        ((RatingsLayout) getView().findViewById(R.id.RatingHolder))
+                .addView(pbar.getView(getView().getContext()), 0);
     }
 
     public void serviceError() {
         setStatusText("Error access webservice", false);
     }
 
-    private void foundUnknownProduct() {
-
-    }
+    private void foundUnknownProduct() { }
 
     Callback<Product> onProductLoaded = new Callback<Product>() {
         @Override
@@ -218,7 +223,8 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
 
         @Override
         public void failure(RetrofitError error) {
-
+            serviceError();
+            restartScanner();
         }
     };
 }

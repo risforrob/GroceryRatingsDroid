@@ -10,7 +10,9 @@ public class Product {
     boolean published;
     String[] keywords;
 
-    public String getProductName() {
+    public String getName() {
         return productName;
     }
+    public int getNumStars() { return stars; }
+    public int getRatingCount() { return ratingCount; }
 }
