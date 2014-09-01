@@ -1,0 +1,44 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="app.subversive.groceryratings.ScanFragment">
+
+    <SurfaceView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/svScan"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#c0000000"
+        android:layout_gravity="bottom"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:focusable="false"
+        android:gravity="center">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/progressBar"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:clickable="true"
+            android:layout_marginRight="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show me a barcode to scan."
+            android:id="@+id/statusText"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:textColor="#ffffffff" />
+    </LinearLayout>
+</FrameLayout>
