@@ -1,5 +1,6 @@
 package app.subversive.groceryratings;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.zxing.client.android.CaptureActivityHandler;
@@ -40,6 +42,8 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
     private FlipListener mFlipListener;
     private Vibrator mVibrator;
     private String lastScanned;
+
+    private final ViewGroup.LayoutParams defaultLP = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
     public static ScanFragment newInstance() {
         ScanFragment fragment = new ScanFragment();
@@ -75,14 +79,18 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
 
         SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        if (hasSurface) {
-            // The activity was paused but not stopped, so the surface still exists. Therefore
-            // surfaceCreated() won't be called, so init the camera here.
-            initCamera(surfaceHolder);
-        } else {
-            // Install the callback and wait for surfaceCreated() to init the camera.
-            surfaceHolder.addCallback(this);
-        }
+//        if (hasSurface) {
+//            The activity was paused but not stopped, so the surface still exists. Therefore
+//            surfaceCreated() won't be called, so init the camera here.
+//            initCamera(surfaceHolder);
+//        } else {
+//            Install the callback and wait for surfaceCreated() to init the camera.
+//            surfaceHolder.addCallback(this);
+//        }
+        Product p = new Product("test Product", 4, 20);
+        ProductRatingBar prb = new ProductRatingBar(p);
+        ((RatingsLayout) v.findViewById(R.id.RatingHolder))
+                .addView(prb.getView(v.getContext()), 0, defaultLP);
         return v;
     }
 
@@ -201,7 +209,7 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
     public void showProductData(Product product) {
         ProductRatingBar pbar = new ProductRatingBar(product);
         ((RatingsLayout) getView().findViewById(R.id.RatingHolder))
-                .addView(pbar.getView(getView().getContext()), 0);
+                .addView(pbar.getView(getView().getContext()), 0, defaultLP);
     }
 
     public void serviceError() {

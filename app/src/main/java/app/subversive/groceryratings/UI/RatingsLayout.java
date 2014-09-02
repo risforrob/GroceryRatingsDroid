@@ -40,6 +40,12 @@ public class RatingsLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        for (int i = 0; i < getChildCount() ; i++) {
+            final View child = getChildAt(i);
+            LayoutParams lp = child.getLayoutParams();
+            Log.v("","");
+        }
+
         measureChildren(widthMeasureSpec, heightMeasureSpec);
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }

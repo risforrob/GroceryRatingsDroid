@@ -10,6 +10,12 @@ public class Product {
     boolean published;
     String[] keywords;
 
+    public Product(String name, int stars, int ratings) {
+        productName = name;
+        this.stars = stars;
+        ratingCount = ratings;
+    }
+
     public String getName() {
         return productName;
     }
