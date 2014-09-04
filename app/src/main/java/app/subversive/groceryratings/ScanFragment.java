@@ -7,7 +7,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Vibrator;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
+import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -34,7 +37,9 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 
-public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
+public class ScanFragment
+        extends Fragment
+        implements SurfaceHolder.Callback, GestureDetector.OnGestureListener {
     CameraManager cameraManager;
     boolean hasSurface;
     private final String TAG = "ScanFrangment";
@@ -42,6 +47,7 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
     private FlipListener mFlipListener;
     private Vibrator mVibrator;
     private String lastScanned;
+    private GestureDetectorCompat mDetector;
 
     private final ViewGroup.LayoutParams defaultLP = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -58,7 +64,7 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFlipListener = new FlipListener(this.getActivity(), new FlipListener.OnFlipListener() {
+        mFlipListener = new FlipListener(getActivity(), new FlipListener.OnFlipListener() {
             @Override
             public void onFlip() {
                 if (cameraManager != null) {
@@ -68,6 +74,7 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
         });
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
         lastScanned = "";
+        mDetector = new GestureDetectorCompat(getActivity(), this);
     }
 
     @Override
@@ -87,10 +94,20 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
 //            Install the callback and wait for surfaceCreated() to init the camera.
 //            surfaceHolder.addCallback(this);
 //        }
+
+        // ToDo remove this!
         Product p = new Product("test Product", 4, 20);
         ProductRatingBar prb = new ProductRatingBar(p);
         ((RatingsLayout) v.findViewById(R.id.RatingHolder))
                 .addView(prb.getView(v.getContext()), 0, defaultLP);
+        v.findViewById(R.id.gestureGrabber).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return mDetector.onTouchEvent(event);
+            }
+        });
+        //todo end remove
+
         return v;
     }
 
@@ -235,4 +252,38 @@ public class ScanFragment extends Fragment implements SurfaceHolder.Callback{
             restartScanner();
         }
     };
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        Log.i("Event", "Down");
+            return true;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        Log.i("Event", "SingleTap");
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        Log.i("Event", "Scroll");
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        Log.i("Event", "Fling");
+        return false;
+    }
 }
