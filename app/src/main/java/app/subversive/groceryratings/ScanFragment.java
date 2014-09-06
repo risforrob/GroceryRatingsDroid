@@ -20,16 +20,19 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.zxing.client.android.CaptureActivityHandler;
 import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
+import java.util.Observable;
 
 import com.google.zxing.Result;
 
 import app.subversive.groceryratings.Core.Product;
+import app.subversive.groceryratings.UI.ObservableScrollView;
 import app.subversive.groceryratings.UI.ProductRatingBar;
 import app.subversive.groceryratings.UI.RatingsLayout;
 import retrofit.Callback;
@@ -39,7 +42,9 @@ import retrofit.client.Response;
 
 public class ScanFragment
         extends Fragment
-        implements SurfaceHolder.Callback, GestureDetector.OnGestureListener {
+        implements SurfaceHolder.Callback, ObservableScrollView.Callbacks {
+
+
     CameraManager cameraManager;
     boolean hasSurface;
     private final String TAG = "ScanFrangment";
@@ -47,9 +52,10 @@ public class ScanFragment
     private FlipListener mFlipListener;
     private Vibrator mVibrator;
     private String lastScanned;
-    private GestureDetectorCompat mDetector;
 
     private final ViewGroup.LayoutParams defaultLP = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    ObservableScrollView mScrollView;
+    SurfaceView mSurfaceView;
 
     public static ScanFragment newInstance() {
         ScanFragment fragment = new ScanFragment();
@@ -73,39 +79,65 @@ public class ScanFragment
             }
         });
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        cameraManager = new CameraManager(getActivity());
         lastScanned = "";
-        mDetector = new GestureDetectorCompat(getActivity(), this);
+    }
+
+    private void capturePhoto() {
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_scan, container, false);
-        cameraManager = new CameraManager(getActivity());
+        final View v = inflater.inflate(R.layout.fragment_scan, container, false);
+        mScrollView = ((ObservableScrollView) v.findViewById(R.id.scrollView));
+        mSurfaceView = ((SurfaceView) v.findViewById(R.id.svScan));
+        mScrollView.addCallbacks(this);
+
+        v.findViewById(R.id.tvNoScanBarcode).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                v.findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
+            }
+        });
+
+        v.findViewById(R.id.tvYesScanBarcode).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                capturePhoto();
+            }
+        });
 
         SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
-//        if (hasSurface) {
+        if (hasSurface) {
 //            The activity was paused but not stopped, so the surface still exists. Therefore
 //            surfaceCreated() won't be called, so init the camera here.
-//            initCamera(surfaceHolder);
-//        } else {
+            initCamera(surfaceHolder);
+        } else {
 //            Install the callback and wait for surfaceCreated() to init the camera.
-//            surfaceHolder.addCallback(this);
-//        }
+            surfaceHolder.addCallback(this);
+        }
+
+
+
 
         // ToDo remove this!
         Product p = new Product("test Product", 4, 20);
         ProductRatingBar prb = new ProductRatingBar(p);
-        ((RatingsLayout) v.findViewById(R.id.RatingHolder))
-                .addView(prb.getView(v.getContext()), 0, defaultLP);
-        v.findViewById(R.id.gestureGrabber).setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return mDetector.onTouchEvent(event);
-            }
-        });
+        RatingsLayout holder = ((RatingsLayout) v.findViewById(R.id.RatingHolder));
+
+        holder.addView(prb.getView(v.getContext()), defaultLP);
+
+        holder.addView(prb.getView(v.getContext()), defaultLP);
+        holder.addView(prb.getView(v.getContext()), defaultLP);
+        holder.addView(prb.getView(v.getContext()), defaultLP);
+        holder.addView(prb.getView(v.getContext()), defaultLP);
+        holder.addView(prb.getView(v.getContext()), defaultLP);
+        holder.addView(prb.getView(v.getContext()), defaultLP);
+
         //todo end remove
 
         return v;
@@ -205,6 +237,7 @@ public class ScanFragment
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
         Log.i(TAG, rawResult.getText());
         if (!lastScanned.equals(rawResult.getText())) {
+            getView().findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
             setStatusText("Fetching Product.", true);
             if (mVibrator != null && mVibrator.hasVibrator()) {
                 mVibrator.vibrate(50);
@@ -233,7 +266,9 @@ public class ScanFragment
         setStatusText("Error access webservice", false);
     }
 
-    private void foundUnknownProduct() { }
+    private void foundUnknownProduct() {
+        getView().findViewById(R.id.unknownBarcode).setVisibility(View.VISIBLE);
+    }
 
     Callback<Product> onProductLoaded = new Callback<Product>() {
         @Override
@@ -253,37 +288,15 @@ public class ScanFragment
         }
     };
 
-    @Override
-    public boolean onDown(MotionEvent e) {
-        Log.i("Event", "Down");
-            return true;
-    }
+
 
     @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        Log.i("Event", "SingleTap");
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        Log.i("Event", "Scroll");
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        Log.i("Event", "Fling");
-        return false;
+    public void onScrollChanged(int deltaX, int deltaY) {
+        getView().findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
+        if (mScrollView.getScrollY() == 0) {
+//            cameraManager.startPreview();
+        } else {
+//            cameraManager.stopPreview();
+        }
     }
 }

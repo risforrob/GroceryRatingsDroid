@@ -12,7 +12,8 @@ import android.widget.RemoteViews;
  */
 @RemoteViews.RemoteView
 public class RatingsLayout extends ViewGroup {
-    final int rowSpacing = 8;
+    final int rowSpacing = 1;
+    final int maxChildren = 7;
 
     public RatingsLayout(Context context) {
         super(context);
@@ -30,7 +31,6 @@ public class RatingsLayout extends ViewGroup {
     }
 
     private void init(Context context) {
-
     }
 
     @Override
@@ -40,14 +40,10 @@ public class RatingsLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        for (int i = 0; i < getChildCount() ; i++) {
-            final View child = getChildAt(i);
-            LayoutParams lp = child.getLayoutParams();
-            Log.v("","");
-        }
-
         measureChildren(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
+
+        int height = resolveSizeAndState(getRootView().getHeight() + 400, heightMeasureSpec, 0);
+        setMeasuredDimension(widthMeasureSpec, height);
     }
 
 
@@ -56,18 +52,21 @@ public class RatingsLayout extends ViewGroup {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         final int count = getChildCount();
 
-        int lastChildTop = bottom;
+        final int mHeight = getRootView().getHeight();
 
-        for (int i = 0; i < count ; i++) {
+        int lastChildTop = (int) Math.round(mHeight * .65);
+
+        for (int i = 0; i < Math.min(count, maxChildren) ; i++) {
             final View child = getChildAt(i);
 
             final int childHeight = child.getMeasuredHeight();
-            final int childBottom = lastChildTop - rowSpacing;
-            final int childTop = childBottom - childHeight;
 
-            lastChildTop = childBottom - childHeight;
+            child.layout(left, lastChildTop, right, lastChildTop + childHeight + rowSpacing);
+            lastChildTop += childHeight + rowSpacing + 1;
+        }
 
-            child.layout(left, childTop, right, childBottom);
+        for (int i = maxChildren ; i < count; i++) {
+            removeViewInLayout(getChildAt(i));
         }
     }
 }

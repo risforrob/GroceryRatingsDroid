@@ -10,16 +10,29 @@
         android:id="@+id/svScan"
         android:layout_gravity="center" />
 
+    <app.subversive.groceryratings.UI.ObservableScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView" >
+
+        <app.subversive.groceryratings.UI.RatingsLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/RatingHolder">
+        </app.subversive.groceryratings.UI.RatingsLayout>
+
+    </app.subversive.groceryratings.UI.ObservableScrollView>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="#c0000000"
-        android:layout_gravity="bottom"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:focusable="false"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_gravity="top">
 
         <ProgressBar
             style="?android:attr/progressBarStyleSmall"
@@ -42,20 +55,16 @@
             android:textColor="#ffffffff" />
     </LinearLayout>
 
-    <app.subversive.groceryratings.UI.RatingsLayout
-        android:layout_width="fill_parent"
-        android:layout_height="200dp"
-        android:layout_gravity="center_vertical|top"
-        android:id="@+id/RatingHolder"
-        tools:background="#33ff0000">
-
-
-    </app.subversive.groceryratings.UI.RatingsLayout>
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/gestureGrabber"
+    <include
+        layout="@layout/unknown_barcode"
+        android:id="@+id/unknownBarcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible"
         />
+
+
 
 </FrameLayout>
