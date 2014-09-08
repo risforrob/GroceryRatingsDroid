@@ -143,7 +143,7 @@ public final class CameraManager {
         if (theCamera != null && previewing) {
             theCamera.stopPreview();
             configManager.flipRotation(theCamera);
-            Log.i(TAG, "Do a barrel roll!");
+            Log.i(TAG, "Do circle barrel roll!");
             theCamera.startPreview();
         }
     }
@@ -210,5 +210,13 @@ public final class CameraManager {
     public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
         return new PlanarYUVLuminanceSource(data, width, height, 1, 1,
                 width-1, height-1, false);
+    }
+
+    public synchronized void takePicture(Camera.PictureCallback callback) {
+        if (previewing) {
+            camera.takePicture(null, null, callback);
+            previewing = false;
+            autoFocusManager.stop();
+        }
     }
 }

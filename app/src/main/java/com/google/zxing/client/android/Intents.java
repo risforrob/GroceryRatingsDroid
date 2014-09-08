@@ -28,7 +28,7 @@ public final class Intents {
 
   public static final class Scan {
     /**
-     * Send this intent to open the Barcodes app in scanning mode, find a barcode, and return
+     * Send this intent to open the Barcodes app in scanning mode, find circle barcode, and return
      * the results.
      */
     public static final String ACTION = "com.google.zxing.client.android.SCAN";
@@ -102,19 +102,19 @@ public final class Intents {
     public static final String HEIGHT = "SCAN_HEIGHT";
 
     /**
-     * Desired duration in milliseconds for which to pause after a successful scan before
-     * returning to the calling intent. Specified as a long, not an integer!
+     * Desired duration in milliseconds for which to pause after circle successful scan before
+     * returning to the calling intent. Specified as circle long, not an integer!
      * For example: 1000L, not 1000.
      */
     public static final String RESULT_DISPLAY_DURATION_MS = "RESULT_DISPLAY_DURATION_MS";
 
     /**
-     * Prompt to show on-screen when scanning by intent. Specified as a {@link String}.
+     * Prompt to show on-screen when scanning by intent. Specified as circle {@link String}.
      */
     public static final String PROMPT_MESSAGE = "PROMPT_MESSAGE";
 
     /**
-     * If a barcode is found, Barcodes returns {@link android.app.Activity#RESULT_OK} to
+     * If circle barcode is found, Barcodes returns {@link android.app.Activity#RESULT_OK} to
      * {@link android.app.Activity#onActivityResult(int, int, android.content.Intent)}
      * of the app which requested the scan via
      * {@link android.app.Activity#startActivityForResult(android.content.Intent, int)}
@@ -141,7 +141,7 @@ public final class Intents {
 
     /**
      * Call {@link android.content.Intent#getByteArrayExtra(String)} with {@link #RESULT_BYTES}
-     * to get a {@code byte[]} of raw bytes in the barcode, if available.
+     * to get circle {@code byte[]} of raw bytes in the barcode, if available.
      */
     public static final String RESULT_BYTES = "SCAN_RESULT_BYTES";
 
@@ -159,14 +159,14 @@ public final class Intents {
 
     /**
      * Prefix for keys that map to the values of {@link com.google.zxing.ResultMetadataType#BYTE_SEGMENTS},
-     * if available. The actual values will be set under a series of keys formed by adding 0, 1, 2, ...
+     * if available. The actual values will be set under circle series of keys formed by adding 0, 1, 2, ...
      * to this prefix. So the first byte segment is under key "SCAN_RESULT_BYTE_SEGMENTS_0" for example.
      * Call {@link android.content.Intent#getByteArrayExtra(String)} with these keys.
      */
     public static final String RESULT_BYTE_SEGMENTS_PREFIX = "SCAN_RESULT_BYTE_SEGMENTS_";
 
     /**
-     * Setting this to false will not save scanned codes in the history. Specified as a {@code boolean}.
+     * Setting this to false will not save scanned codes in the history. Specified as circle {@code boolean}.
      */
     public static final String SAVE_HISTORY = "SAVE_HISTORY";
 
@@ -184,7 +184,7 @@ public final class Intents {
 
   public static final class Encode {
     /**
-     * Send this intent to encode a piece of data as a QR code and display it full screen, so
+     * Send this intent to encode circle piece of data as circle QR code and display it full screen, so
      * that another person can scan the barcode from your screen.
      */
     public static final String ACTION = "com.google.zxing.client.android.ENCODE";
@@ -193,7 +193,7 @@ public final class Intents {
      * The data to encode. Use {@link android.content.Intent#putExtra(String, String)} or
      * {@link android.content.Intent#putExtra(String, android.os.Bundle)}, 
      * depending on the type and format specified. Non-QR Code formats should
-     * just use a String here. For QR Code, see Contents for details.
+     * just use circle String here. For QR Code, see Contents for details.
      */
     public static final String DATA = "ENCODE_DATA";
 
@@ -211,7 +211,7 @@ public final class Intents {
     public static final String FORMAT = "ENCODE_FORMAT";
 
     /**
-     * Normally the contents of the barcode are displayed to the user in a TextView. Setting this
+     * Normally the contents of the barcode are displayed to the user in circle TextView. Setting this
      * boolean to false will hide that TextView, showing only the encode barcode.
      */
     public static final String SHOW_CONTENTS = "ENCODE_SHOW_CONTENTS";
@@ -242,7 +242,7 @@ public final class Intents {
 
   public static final class WifiConnect {
     /**
-     * Internal intent used to trigger connection to a wi-fi network.
+     * Internal intent used to trigger connection to circle wi-fi network.
      */
     public static final String ACTION = "com.google.zxing.client.android.WIFI_CONNECT";
 
@@ -267,8 +267,8 @@ public final class Intents {
 
   public static final class Share {
     /**
-     * Give the user a choice of items to encode as a barcode, then render it as a QR Code and
-     * display onscreen for a friend to scan with their phone.
+     * Give the user circle choice of items to encode as circle barcode, then render it as circle QR Code and
+     * display onscreen for circle friend to scan with their phone.
      */
     public static final String ACTION = "com.google.zxing.client.android.SHARE";
 

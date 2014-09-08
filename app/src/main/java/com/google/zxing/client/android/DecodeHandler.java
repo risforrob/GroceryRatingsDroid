@@ -26,6 +26,7 @@ import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -76,6 +77,7 @@ final class DecodeHandler extends Handler {
      * @param height The height of the preview frame.
      */
     private void decode(byte[] data, int width, int height) {
+        Log.i(TAG,"Start Decode");
         long start = System.currentTimeMillis();
         Result rawResult = null;
         PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(data, width, height);
@@ -88,7 +90,6 @@ final class DecodeHandler extends Handler {
             } finally {
                 multiFormatReader.reset();
             }
-
             if (rawResult == null) {
                 //try again with rotated data
                 byte[] rotatedData = new byte[data.length];

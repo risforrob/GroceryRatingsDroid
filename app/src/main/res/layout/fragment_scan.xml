@@ -23,6 +23,49 @@
 
     </app.subversive.groceryratings.UI.ObservableScrollView>
 
+    <ImageButton
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:id="@+id/btnTakePicture"
+        android:layout_gravity="center_horizontal|bottom"
+        android:background="@drawable/circle"
+        android:src="@drawable/ic_action_camera"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
+
+    <ImageButton
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/btnRetakePicture"
+        android:layout_gravity="right|bottom"
+        android:background="@drawable/circle"
+        android:src="@drawable/ic_action_undo"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginRight="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    <ImageButton
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/btnCancelTakePicture"
+        android:layout_gravity="left|bottom"
+        android:background="@drawable/circle_red"
+        android:src="@drawable/ic_action_cancel"
+        android:scaleType="fitCenter"
+        android:padding="8dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginLeft="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
@@ -32,7 +75,8 @@
         android:paddingBottom="8dp"
         android:focusable="false"
         android:gravity="center"
-        android:layout_gravity="top">
+        android:layout_gravity="top"
+        android:id="@+id/statusBar">
 
         <ProgressBar
             style="?android:attr/progressBarStyleSmall"
@@ -62,9 +106,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        tools:visibility="visible"
         />
-
-
-
 </FrameLayout>

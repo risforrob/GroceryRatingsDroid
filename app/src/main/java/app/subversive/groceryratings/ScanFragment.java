@@ -1,33 +1,27 @@
 package app.subversive.groceryratings;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Vibrator;
-import android.support.v4.view.GestureDetectorCompat;
 import android.util.Log;
-import android.view.DragEvent;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.zxing.client.android.CaptureActivityHandler;
 import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
-import java.util.Observable;
 
 import com.google.zxing.Result;
 
@@ -39,10 +33,14 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
+import android.view.View.OnClickListener;
+
 
 public class ScanFragment
         extends Fragment
-        implements SurfaceHolder.Callback, ObservableScrollView.Callbacks {
+        implements SurfaceHolder.Callback,
+                   ObservableScrollView.Callbacks,
+                   Camera.PictureCallback {
 
 
     CameraManager cameraManager;
@@ -53,9 +51,9 @@ public class ScanFragment
     private Vibrator mVibrator;
     private String lastScanned;
 
-    private final ViewGroup.LayoutParams defaultLP = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    private final ViewGroup.LayoutParams defaultLP =
+            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     ObservableScrollView mScrollView;
-    SurfaceView mSurfaceView;
 
     public static ScanFragment newInstance() {
         ScanFragment fragment = new ScanFragment();
@@ -83,9 +81,60 @@ public class ScanFragment
         lastScanned = "";
     }
 
-    private void capturePhoto() {
+    private void setCaptureLayout() {
+        mScrollView.setVisibility(View.GONE);
+        getView().findViewById(R.id.statusBar).setVisibility(View.GONE);
+        getView().findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
 
+        getView().findViewById(R.id.btnCancelTakePicture).setVisibility(View.VISIBLE);
+        getView().findViewById(R.id.btnTakePicture).setVisibility(View.VISIBLE);
     }
+
+    private void setScanLayout() {
+        mScrollView.setVisibility(View.VISIBLE);
+        getView().findViewById(R.id.statusBar).setVisibility(View.VISIBLE);
+
+        getView().findViewById(R.id.btnCancelTakePicture).setVisibility(View.GONE);
+        getView().findViewById(R.id.btnTakePicture).setVisibility(View.GONE);
+        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.GONE);
+    }
+
+    private void takePicture() {
+        cameraManager.takePicture(this);
+    }
+
+    private void restartPhotoPreview() {
+        cameraManager.startPreview();
+        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.GONE);
+    }
+
+    private void setCapturePhotoMode() {
+        handler.handleMessage(Message.obtain(handler, R.id.pause_scan));
+        setCaptureLayout();
+    }
+
+    private void setScanMode() {
+        setScanLayout();
+        cameraManager.startPreview();
+        restartScanner();
+        setCameraIconTakePicture();
+    }
+
+    final OnClickListener onTakePicture = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            takePicture();
+        }
+    };
+
+    final OnClickListener onConfirmPicture = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            setScanMode();
+        }
+    };
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,20 +142,36 @@ public class ScanFragment
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_scan, container, false);
         mScrollView = ((ObservableScrollView) v.findViewById(R.id.scrollView));
-        mSurfaceView = ((SurfaceView) v.findViewById(R.id.svScan));
         mScrollView.addCallbacks(this);
 
-        v.findViewById(R.id.tvNoScanBarcode).setOnClickListener(new View.OnClickListener() {
+        v.findViewById(R.id.tvNoScanBarcode).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 v.findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
             }
         });
 
-        v.findViewById(R.id.tvYesScanBarcode).setOnClickListener(new View.OnClickListener() {
+        v.findViewById(R.id.tvYesScanBarcode).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                capturePhoto();
+                setCapturePhotoMode();
+            }
+        });
+
+        v.findViewById(R.id.btnCancelTakePicture).setOnClickListener(new OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 setScanMode();
+             }
+         });
+
+        v.findViewById(R.id.btnTakePicture).setOnClickListener(onTakePicture);
+
+        v.findViewById(R.id.btnRetakePicture).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setCameraIconTakePicture();
+                restartPhotoPreview();
             }
         });
 
@@ -120,26 +185,6 @@ public class ScanFragment
 //            Install the callback and wait for surfaceCreated() to init the camera.
             surfaceHolder.addCallback(this);
         }
-
-
-
-
-        // ToDo remove this!
-        Product p = new Product("test Product", 4, 20);
-        ProductRatingBar prb = new ProductRatingBar(p);
-        RatingsLayout holder = ((RatingsLayout) v.findViewById(R.id.RatingHolder));
-
-        holder.addView(prb.getView(v.getContext()), defaultLP);
-
-        holder.addView(prb.getView(v.getContext()), defaultLP);
-        holder.addView(prb.getView(v.getContext()), defaultLP);
-        holder.addView(prb.getView(v.getContext()), defaultLP);
-        holder.addView(prb.getView(v.getContext()), defaultLP);
-        holder.addView(prb.getView(v.getContext()), defaultLP);
-        holder.addView(prb.getView(v.getContext()), defaultLP);
-
-        //todo end remove
-
         return v;
     }
 
@@ -178,7 +223,7 @@ public class ScanFragment
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (holder == null) {
-            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us a null surface!");
+            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us circle null surface!");
         }
         if (!hasSurface) {
             hasSurface = true;
@@ -187,7 +232,6 @@ public class ScanFragment
     }
 
     public void setStatusText(String text, boolean showSpinner) {
-//        ((StatusBar) getView().findViewById(R.id.statusBar)).setText(text, showSpinner);
         ((TextView) getView().findViewById(R.id.statusText)).setText(text);
         getView().findViewById(R.id.progressBar).setVisibility(showSpinner ? View.VISIBLE : View.GONE);
     }
@@ -212,7 +256,7 @@ public class ScanFragment
         }
         try {
             cameraManager.openDriver(surfaceHolder);
-            // Creating the handler starts the preview, which can also throw a RuntimeException.
+            // Creating the handler starts the preview, which can also throw circle RuntimeException.
             if (handler == null) {
                 handler = new CaptureActivityHandler(this, null, null, null, cameraManager);
             }
@@ -242,6 +286,7 @@ public class ScanFragment
             if (mVibrator != null && mVibrator.hasVibrator()) {
                 mVibrator.vibrate(50);
             }
+            mScrollView.scrollTo(0,0);
             MainWindow.service.getProduct(rawResult.getText(), onProductLoaded);
             lastScanned = rawResult.getText();
         } else {
@@ -251,9 +296,7 @@ public class ScanFragment
 
     private void restartScanner() {
         setStatusText("Show me a barcode to scan.", false);
-        Message m = new Message();
-        m.what = R.id.restart_preview;
-        getHandler().handleMessage(m);
+        getHandler().handleMessage(Message.obtain(getHandler(), R.id.restart_preview));
     }
 
     public void showProductData(Product product) {
@@ -298,5 +341,28 @@ public class ScanFragment
         } else {
 //            cameraManager.stopPreview();
         }
+    }
+
+    @Override
+    public void onPictureTaken(byte[] data, Camera camera) {
+        Log.i(TAG, "Picture!");
+        //final Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
+//        Log.i(TAG,String.format("%d x %d", image.getWidth(), image.getHeight()));
+        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.VISIBLE);
+        setCameraIconConfirm();
+    }
+
+    private void setCameraIconConfirm() {
+        ImageButton camButton = (ImageButton) getView().findViewById(R.id.btnTakePicture);
+        camButton.setBackgroundResource(R.drawable.circle_green);
+        camButton.setImageResource(R.drawable.ic_action_accept);
+        camButton.setOnClickListener(onConfirmPicture);
+    }
+
+    private void setCameraIconTakePicture() {
+        ImageButton camButton = (ImageButton) getView().findViewById(R.id.btnTakePicture);
+        camButton.setBackgroundResource(R.drawable.circle);
+        camButton.setImageResource(R.drawable.ic_action_camera);
+        camButton.setOnClickListener(onTakePicture);
     }
 }

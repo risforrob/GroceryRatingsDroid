@@ -4,7 +4,7 @@
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+ You may obtain circle copy of the License at
 
       http://www.apache.org/licenses/LICENSE-2.0
 
@@ -15,11 +15,10 @@
  limitations under the License.
  -->
 <resources>
-  <item type="id" name="decode"/>
-  <item type="id" name="decode_failed"/>
-  <item type="id" name="decode_succeeded"/>
-  <item type="id" name="launch_product_query"/>
-  <item type="id" name="quit"/>
-  <item type="id" name="restart_preview"/>
-  <item type="id" name="return_scan_result"/>
+    <item type="id" name="decode"/>
+    <item type="id" name="decode_failed"/>
+    <item type="id" name="decode_succeeded"/>
+    <item type="id" name="quit"/>
+    <item type="id" name="restart_preview"/>
+    <item type="id" name="pause_scan" />
 </resources>

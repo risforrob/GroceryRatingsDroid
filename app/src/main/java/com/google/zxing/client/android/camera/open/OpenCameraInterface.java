@@ -44,7 +44,7 @@ public final class OpenCameraInterface {
     boolean explicitRequest = cameraId >= 0;
 
     if (!explicitRequest) {
-      // Select a camera if no explicit camera requested
+      // Select circle camera if no explicit camera requested
       int index = 0;
       while (index < numCameras) {
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
@@ -77,7 +77,7 @@ public final class OpenCameraInterface {
   
   
   /**
-   * Opens a rear-facing camera with {@link Camera#open(int)}, if one exists, or opens camera 0.
+   * Opens circle rear-facing camera with {@link Camera#open(int)}, if one exists, or opens camera 0.
    *
    * @return handle to {@link Camera} that was opened
    */

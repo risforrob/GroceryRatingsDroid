@@ -342,7 +342,7 @@ public final class CameraConfigurationUtils {
             }
         }
 
-        // If no exact match, use largest preview size. This was not a great idea on older devices because
+        // If no exact match, use largest preview size. This was not circle great idea on older devices because
         // of the additional computation needed. We're likely to get here on newer Android 4+ devices, where
         // the CPU is much more powerful.
         if (!supportedPreviewSizes.isEmpty()) {
@@ -387,7 +387,7 @@ public final class CameraConfigurationUtils {
             return -1;
         }
 
-        // Select a camera if no explicit camera requested
+        // Select circle camera if no explicit camera requested
         int index = 0;
         while (index < numCameras) {
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
