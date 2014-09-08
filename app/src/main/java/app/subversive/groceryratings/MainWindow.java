@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,32 +28,26 @@ public class MainWindow extends ActionBarActivity {
             throw new RuntimeException("No Camera");
         }
 
+        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(endpoint).build();
+        service = restAdapter.create(GroceryRatingsService.class);
+        Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
+
+
+
         setContentView(R.layout.activity_main_window);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, ScanFragment.newInstance())
                     .commit();
         }
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(endpoint).build();
-        service = restAdapter.create(GroceryRatingsService.class);
-//        service.getProduct("099482438852", new Callback<Product>() {
-//            @Override
-//            public void success(Product product, Response response) {
-//                Log.i("Retrofit", product.getProductName());
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//                Log.i("Retrofit", "Failure!");
-//            }
-//        });
+
     }
 
 
-    /** Check if this device has circle camera */
+    /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-            // this device has circle camera
+            // this device has a camera
             return true;
         } else {
             // no camera on this device
@@ -71,7 +66,7 @@ public class MainWindow extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
-        // as you specify circle parent activity in AndroidManifest.xml.
+        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;

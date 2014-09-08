@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
@@ -41,5 +40,4 @@
             android:textColor="#ffffffff"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
-
-</LinearLayout>
+</merge>

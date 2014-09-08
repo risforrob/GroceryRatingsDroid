@@ -67,7 +67,6 @@ public final class CaptureActivityHandler extends Handler {
         // Start ourselves capturing previews and decoding.
         this.cameraManager = cameraManager;
         cameraManager.startPreview();
-        activity.setStatusText("Show me circle barcode to scan.", false);
         restartPreviewAndDecode();
     }
 
@@ -116,7 +115,7 @@ public final class CaptureActivityHandler extends Handler {
         Message quit = Message.obtain(decodeThread.getHandler(), R.id.quit);
         quit.sendToTarget();
         try {
-            // Wait at most half circle second; should be enough time, and onPause() will timeout quickly
+            // Wait at most half a second; should be enough time, and onPause() will timeout quickly
             decodeThread.join(500L);
         } catch (InterruptedException e) {
             // continue

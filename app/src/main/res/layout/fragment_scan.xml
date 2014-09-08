@@ -70,7 +70,7 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#c0000000"
+        android:background="#a6000000"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:focusable="false"

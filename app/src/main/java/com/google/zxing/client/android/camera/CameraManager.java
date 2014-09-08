@@ -143,7 +143,7 @@ public final class CameraManager {
         if (theCamera != null && previewing) {
             theCamera.stopPreview();
             configManager.flipRotation(theCamera);
-            Log.i(TAG, "Do circle barrel roll!");
+            Log.i(TAG, "Do a barrel roll!");
             theCamera.startPreview();
         }
     }

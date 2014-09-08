@@ -126,7 +126,6 @@ public class ScanFragment
             takePicture();
         }
     };
-
     final OnClickListener onConfirmPicture = new OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -185,6 +184,7 @@ public class ScanFragment
 //            Install the callback and wait for surfaceCreated() to init the camera.
             surfaceHolder.addCallback(this);
         }
+
         return v;
     }
 
@@ -223,7 +223,7 @@ public class ScanFragment
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (holder == null) {
-            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us circle null surface!");
+            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us null surface!");
         }
         if (!hasSurface) {
             hasSurface = true;
@@ -256,7 +256,7 @@ public class ScanFragment
         }
         try {
             cameraManager.openDriver(surfaceHolder);
-            // Creating the handler starts the preview, which can also throw circle RuntimeException.
+            // Creating the handler starts the preview, which can also throw a RuntimeException.
             if (handler == null) {
                 handler = new CaptureActivityHandler(this, null, null, null, cameraManager);
             }
@@ -286,7 +286,7 @@ public class ScanFragment
             if (mVibrator != null && mVibrator.hasVibrator()) {
                 mVibrator.vibrate(50);
             }
-            mScrollView.scrollTo(0,0);
+            mScrollView.smoothScrollTo(0,0);
             MainWindow.service.getProduct(rawResult.getText(), onProductLoaded);
             lastScanned = rawResult.getText();
         } else {
@@ -300,9 +300,9 @@ public class ScanFragment
     }
 
     public void showProductData(Product product) {
-        ProductRatingBar pbar = new ProductRatingBar(product);
-        ((RatingsLayout) getView().findViewById(R.id.RatingHolder))
-                .addView(pbar.getView(getView().getContext()), 0, defaultLP);
+        ProductRatingBar pbar = new ProductRatingBar(getActivity());
+        pbar.setProduct(product);
+        ((RatingsLayout) getView().findViewById(R.id.RatingHolder)).addView(pbar, 0, defaultLP);
     }
 
     public void serviceError() {

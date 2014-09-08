@@ -1,34 +1,59 @@
 package app.subversive.groceryratings.UI;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.util.AttributeSet;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.R;
+import app.subversive.groceryratings.Utils;
 
 /**
  * Created by rob on 9/1/14.
  */
-public class ProductRatingBar {
+public class ProductRatingBar extends LinearLayout {
     private Product product;
-    private View view;
 
-    public ProductRatingBar(Product product) {
-        this.product = product;
+    TextView productName, productNumReviews;
+    RatingBar productStars;
+
+
+    public ProductRatingBar(Context context) {
+        super(context);
+        init(context);
     }
 
-    public View getView(Context context) {
-        View v = LayoutInflater.from(context).inflate(R.layout.rating_bar_contents, null);
-        ((TextView) v.findViewById(R.id.productName)).setText(product.getName());
-        ((RatingBar) v.findViewById(R.id.productStars)).setRating(product.getNumStars());
+    public ProductRatingBar(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    public ProductRatingBar(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context);
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+
+        productName.setText(product.getName());
+        productStars.setRating(product.getNumStars());
 
         int nReviews = product.getRatingCount();
         String reviews = String.format((nReviews == 1) ? "%d Review" : "%d Reviews", nReviews);
-        ((TextView) v.findViewById(R.id.productNumReviews)).setText(reviews);
+        productNumReviews.setText(reviews);
 
-        return v;
+    }
+
+    private void init(Context context) {
+        setOrientation(HORIZONTAL);
+        setBackgroundResource(R.color.blackOverlay);
+        Utils.setPaddingDP(this, 8, 4, 8, 4);
+        inflate(context, R.layout.rating_bar_contents, this);
+        productName = ((TextView) findViewById(R.id.productName));
+        productStars = ((RatingBar) findViewById(R.id.productStars));
+        productNumReviews = ((TextView) findViewById(R.id.productNumReviews));
     }
 }
