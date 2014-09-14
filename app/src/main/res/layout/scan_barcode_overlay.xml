@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <app.subversive.groceryratings.UI.ObservableScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/scrollView">
+
+        <app.subversive.groceryratings.UI.RatingsLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/RatingHolder">
+        </app.subversive.groceryratings.UI.RatingsLayout>
+
+    </app.subversive.groceryratings.UI.ObservableScrollView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#a6000000"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:layout_gravity="top"
+        android:id="@+id/statusBar">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/progressBar"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:clickable="true"
+            android:layout_marginRight="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Show me a barcode to scan."
+            android:id="@+id/statusText"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="#ffffffff" />
+    </LinearLayout>
+
+    <include
+        layout="@layout/unknown_barcode"
+        android:id="@+id/unknownBarcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
+</merge>
