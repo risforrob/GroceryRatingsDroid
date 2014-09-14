@@ -10,6 +10,12 @@
         android:layout_height="fill_parent"
         android:id="@+id/svScan"
         android:layout_gravity="center"
-        android:background="#009999"/>
+        />
+
+    <!--This empty View exists because bugs in the Surface View will cause us to-->
+    <!--not render certain children views in certain circumstances.-->
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
 
 </FrameLayout>

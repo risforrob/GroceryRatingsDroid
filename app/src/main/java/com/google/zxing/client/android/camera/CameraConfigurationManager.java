@@ -111,6 +111,7 @@ final class CameraConfigurationManager {
         }
 
         parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
+        parameters.setRotation(rotation);
 
         Log.i(TAG, "Final camera parameters: " + parameters.flatten());
 
@@ -131,6 +132,9 @@ final class CameraConfigurationManager {
     public void flipRotation(Camera camera) {
         rotation = (rotation + 180) % 360;
         camera.setDisplayOrientation(rotation);
+        Camera.Parameters params = camera.getParameters();
+        params.setRotation(rotation);
+        camera.setParameters(params);
     }
 
     Point getCameraResolution() {

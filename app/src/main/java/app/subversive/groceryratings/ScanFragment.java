@@ -3,7 +3,6 @@ package app.subversive.groceryratings;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Message;
@@ -19,8 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.google.zxing.client.android.CaptureActivityHandler;
 import com.google.zxing.client.android.camera.CameraManager;
@@ -31,16 +28,12 @@ import com.google.zxing.Result;
 
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
-import app.subversive.groceryratings.UI.ObservableScrollView;
 import app.subversive.groceryratings.UI.Overlay;
-import app.subversive.groceryratings.UI.ProductRatingBar;
-import app.subversive.groceryratings.UI.RatingsLayout;
 import app.subversive.groceryratings.UI.ScanControlsOverlay;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-import android.view.View.OnClickListener;
 
 
 public class ScanFragment
@@ -62,6 +55,8 @@ public class ScanFragment
     private Overlay currOverlay;
     private CameraControlsOverlay cameraControls;
     private ScanControlsOverlay scanControls;
+
+    private byte[] imageData;
 
     public static ScanFragment newInstance() {
         ScanFragment fragment = new ScanFragment();
@@ -140,7 +135,7 @@ public class ScanFragment
     }
 
     private void setCapturePhotoMode() {
-//        handler.handleMessage(Message.obtain(handler, R.id.pause_scan));
+        handler.handleMessage(Message.obtain(handler, R.id.pause_scan));
         scanControls.hideOverlay(true);
     }
 
@@ -157,16 +152,17 @@ public class ScanFragment
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_scan, container, false);
         Log.i("v", v.toString());
-//        SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
-//        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-//        if (hasSurface) {
-//            //The activity was paused but not stopped, so the surface still exists. Therefore
-//            //surfaceCreated() won't be called, so init the camera here.
-//            initCamera(surfaceHolder);
-//        } else {
-//            //Install the callback and wait for surfaceCreated() to init the camera.
-//            surfaceHolder.addCallback(this);
-//        }
+        SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
+//        surfaceView.setZOrderMediaOverlay(true);
+        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        if (hasSurface) {
+            //The activity was paused but not stopped, so the surface still exists. Therefore
+            //surfaceCreated() won't be called, so init the camera here.
+            initCamera(surfaceHolder);
+        } else {
+            //Install the callback and wait for surfaceCreated() to init the camera.
+            surfaceHolder.addCallback(this);
+        }
 
         cameraControls.attachOverlayToParent((FrameLayout) v);
         scanControls.attachOverlayToParent((FrameLayout) v);
@@ -183,7 +179,6 @@ public class ScanFragment
         super.onResume();
         mFlipListener.enable();
         scanControls.showOverlay(true);
-//        cameraControls.hideOverlay(false);
     }
 
     @Override
@@ -195,9 +190,9 @@ public class ScanFragment
         }
         cameraManager.closeDriver();
         if (!hasSurface) {
-//            SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
-//            SurfaceHolder surfaceHolder = surfaceView.getHolder();
-//            surfaceHolder.removeCallback(this);
+            SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
+            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+            surfaceHolder.removeCallback(this);
         }
         mFlipListener.disable();
     }
@@ -249,12 +244,9 @@ public class ScanFragment
             if (handler == null) {
                 handler = new CaptureActivityHandler(this, null, null, null, cameraManager);
             }
-//            decodeOrStoreSavedBitmap(null, null);
         } catch (IOException ioe) {
             Log.w(TAG, ioe);
         } catch (RuntimeException e) {
-            // Barcode Scanner has seen crashes in the wild of this variety:
-            // java.?lang.?RuntimeException: Fail to connect to camera service
             Log.w(TAG, "Unexpected error initializing camera", e);
         }
     }
@@ -285,7 +277,7 @@ public class ScanFragment
 
     private void restartScanner() {
         scanControls.setStatusText("Show me a barcode to scan.", false);
-//        getHandler().handleMessage(Message.obtain(getHandler(), R.id.restart_preview));
+        getHandler().handleMessage(Message.obtain(getHandler(), R.id.restart_preview));
     }
 
     public void showProductData(Product product) {
@@ -322,11 +314,7 @@ public class ScanFragment
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
         Log.i(TAG, "Picture!");
-        //final Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
-//        Log.i(TAG,String.format("%d x %d", image.getWidth(), image.getHeight()));
-
-//        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.VISIBLE);
-//        setCameraIconConfirm();
+        imageData = data;
         cameraControls.setConfirmState(true);
     }
 
@@ -338,6 +326,13 @@ public class ScanFragment
 
     @Override
     public void onConfirmPicture() {
+        Utils.formatImage(imageData, 0, new Utils.OnFormattedImage() {
+            @Override
+            public void Callback(Bitmap image) {
+                Log.i("Callback", "I got my image back");
+            }
+        });
+        imageData = null;
         setScanMode();
     }
 
@@ -348,7 +343,6 @@ public class ScanFragment
 
     @Override
     public void onCancelPicture() {
-
         setScanMode();
     }
 

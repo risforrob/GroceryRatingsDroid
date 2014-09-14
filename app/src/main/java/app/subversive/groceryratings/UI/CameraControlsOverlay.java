@@ -28,7 +28,7 @@ public class CameraControlsOverlay implements Overlay {
         public void onCameraControlsFinishedHide();
     }
 
-    private final long animDuration = 100;
+    private final long animDuration =200;
     private final long animDelay = 50;
 
     private final long[][] DELAYS = {{0, 1, 2},{1,0,1}};
@@ -267,8 +267,6 @@ public class CameraControlsOverlay implements Overlay {
     private void onTakePicture() {
         buttonClickIndex = 1;
         handler.onTakePicture();
-        //todo delete
-        setConfirmState(true);
     }
 
     private void onRetryPicture() {
