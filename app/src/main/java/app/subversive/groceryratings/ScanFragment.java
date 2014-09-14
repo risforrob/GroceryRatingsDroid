@@ -10,11 +10,15 @@ import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -26,9 +30,12 @@ import java.io.IOException;
 import com.google.zxing.Result;
 
 import app.subversive.groceryratings.Core.Product;
+import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.ObservableScrollView;
+import app.subversive.groceryratings.UI.Overlay;
 import app.subversive.groceryratings.UI.ProductRatingBar;
 import app.subversive.groceryratings.UI.RatingsLayout;
+import app.subversive.groceryratings.UI.ScanControlsOverlay;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -39,8 +46,9 @@ import android.view.View.OnClickListener;
 public class ScanFragment
         extends Fragment
         implements SurfaceHolder.Callback,
-                   ObservableScrollView.Callbacks,
-                   Camera.PictureCallback {
+                   Camera.PictureCallback,
+                   CameraControlsOverlay.Callbacks,
+                   ScanControlsOverlay.Callbacks {
 
 
     CameraManager cameraManager;
@@ -51,9 +59,9 @@ public class ScanFragment
     private Vibrator mVibrator;
     private String lastScanned;
 
-    private final ViewGroup.LayoutParams defaultLP =
-            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    ObservableScrollView mScrollView;
+    private Overlay currOverlay;
+    private CameraControlsOverlay cameraControls;
+    private ScanControlsOverlay scanControls;
 
     public static ScanFragment newInstance() {
         ScanFragment fragment = new ScanFragment();
@@ -79,25 +87,49 @@ public class ScanFragment
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
         cameraManager = new CameraManager(getActivity());
         lastScanned = "";
+        cameraControls = new CameraControlsOverlay(this);
+        scanControls = new ScanControlsOverlay(this);
+
+        setHasOptionsMenu(true);
     }
 
-    private void setCaptureLayout() {
-        mScrollView.setVisibility(View.GONE);
-        getView().findViewById(R.id.statusBar).setVisibility(View.GONE);
-        getView().findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        super.onOptionsItemSelected(item);
 
-        getView().findViewById(R.id.btnCancelTakePicture).setVisibility(View.VISIBLE);
-        getView().findViewById(R.id.btnTakePicture).setVisibility(View.VISIBLE);
+        boolean handled = false;
+        switch(item.getItemId()) {
+            case 1:
+                // swap overlay
+                if (currOverlay == cameraControls) {
+                    setScanMode();
+                } else {
+                    setCapturePhotoMode();
+                }
+                handled = true;
+                break;
+
+            case 2:
+                scanControls.addNewRating(new Product("Test Product", (int) (Math.random() * 5), (int) (Math.random() * 20)));
+                handled = true;
+                break;
+
+            case 3:
+                scanControls.showUnknownBarcode(true);
+                handled = true;
+                break;
+        }
+        return handled;
     }
 
-    private void setScanLayout() {
-        mScrollView.setVisibility(View.VISIBLE);
-        getView().findViewById(R.id.statusBar).setVisibility(View.VISIBLE);
-
-        getView().findViewById(R.id.btnCancelTakePicture).setVisibility(View.GONE);
-        getView().findViewById(R.id.btnTakePicture).setVisibility(View.GONE);
-        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.GONE);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.add(1, 1, 1, "Swap Overlay");
+        menu.add(2, 2, 2, "Add Product");
+        menu.add(3, 3, 3, "Show Unknown");
     }
+
 
     private void takePicture() {
         cameraManager.takePicture(this);
@@ -105,93 +137,53 @@ public class ScanFragment
 
     private void restartPhotoPreview() {
         cameraManager.startPreview();
-        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.GONE);
     }
 
     private void setCapturePhotoMode() {
-        handler.handleMessage(Message.obtain(handler, R.id.pause_scan));
-        setCaptureLayout();
+//        handler.handleMessage(Message.obtain(handler, R.id.pause_scan));
+        scanControls.hideOverlay(true);
     }
 
     private void setScanMode() {
-        setScanLayout();
         cameraManager.startPreview();
         restartScanner();
-        setCameraIconTakePicture();
+        currOverlay = scanControls;
+        cameraControls.hideOverlay(true);
     }
-
-    final OnClickListener onTakePicture = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            takePicture();
-        }
-    };
-    final OnClickListener onConfirmPicture = new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            setScanMode();
-        }
-    };
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_scan, container, false);
-        mScrollView = ((ObservableScrollView) v.findViewById(R.id.scrollView));
-        mScrollView.addCallbacks(this);
+        Log.i("v", v.toString());
+//        SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
+//        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+//        if (hasSurface) {
+//            //The activity was paused but not stopped, so the surface still exists. Therefore
+//            //surfaceCreated() won't be called, so init the camera here.
+//            initCamera(surfaceHolder);
+//        } else {
+//            //Install the callback and wait for surfaceCreated() to init the camera.
+//            surfaceHolder.addCallback(this);
+//        }
 
-        v.findViewById(R.id.tvNoScanBarcode).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                v.findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
-            }
-        });
-
-        v.findViewById(R.id.tvYesScanBarcode).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setCapturePhotoMode();
-            }
-        });
-
-        v.findViewById(R.id.btnCancelTakePicture).setOnClickListener(new OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 setScanMode();
-             }
-         });
-
-        v.findViewById(R.id.btnTakePicture).setOnClickListener(onTakePicture);
-
-        v.findViewById(R.id.btnRetakePicture).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setCameraIconTakePicture();
-                restartPhotoPreview();
-            }
-        });
-
-        SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        if (hasSurface) {
-//            The activity was paused but not stopped, so the surface still exists. Therefore
-//            surfaceCreated() won't be called, so init the camera here.
-            initCamera(surfaceHolder);
-        } else {
-//            Install the callback and wait for surfaceCreated() to init the camera.
-            surfaceHolder.addCallback(this);
-        }
-
+        cameraControls.attachOverlayToParent((FrameLayout) v);
+        scanControls.attachOverlayToParent((FrameLayout) v);
         return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mFlipListener.enable();
+        scanControls.showOverlay(true);
+//        cameraControls.hideOverlay(false);
     }
 
     @Override
@@ -203,9 +195,9 @@ public class ScanFragment
         }
         cameraManager.closeDriver();
         if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
-            SurfaceHolder surfaceHolder = surfaceView.getHolder();
-            surfaceHolder.removeCallback(this);
+//            SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
+//            SurfaceHolder surfaceHolder = surfaceView.getHolder();
+//            surfaceHolder.removeCallback(this);
         }
         mFlipListener.disable();
     }
@@ -231,10 +223,7 @@ public class ScanFragment
         }
     }
 
-    public void setStatusText(String text, boolean showSpinner) {
-        ((TextView) getView().findViewById(R.id.statusText)).setText(text);
-        getView().findViewById(R.id.progressBar).setVisibility(showSpinner ? View.VISIBLE : View.GONE);
-    }
+
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -281,12 +270,12 @@ public class ScanFragment
     public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
         Log.i(TAG, rawResult.getText());
         if (!lastScanned.equals(rawResult.getText())) {
-            getView().findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
-            setStatusText("Fetching Product.", true);
+            scanControls.setStatusText("Fetching Product.", true);
+            scanControls.hideUnknownBarcode(true);
             if (mVibrator != null && mVibrator.hasVibrator()) {
                 mVibrator.vibrate(50);
             }
-            mScrollView.smoothScrollTo(0,0);
+            scanControls.scrollHistoryToBeginning();
             MainWindow.service.getProduct(rawResult.getText(), onProductLoaded);
             lastScanned = rawResult.getText();
         } else {
@@ -295,22 +284,20 @@ public class ScanFragment
     }
 
     private void restartScanner() {
-        setStatusText("Show me a barcode to scan.", false);
-        getHandler().handleMessage(Message.obtain(getHandler(), R.id.restart_preview));
+        scanControls.setStatusText("Show me a barcode to scan.", false);
+//        getHandler().handleMessage(Message.obtain(getHandler(), R.id.restart_preview));
     }
 
     public void showProductData(Product product) {
-        ProductRatingBar pbar = new ProductRatingBar(getActivity());
-        pbar.setProduct(product);
-        ((RatingsLayout) getView().findViewById(R.id.RatingHolder)).addView(pbar, 0, defaultLP);
+        scanControls.addNewRating(product);
     }
 
     public void serviceError() {
-        setStatusText("Error access webservice", false);
+        scanControls.setStatusText("Error access webservice", false);
     }
 
     private void foundUnknownProduct() {
-        getView().findViewById(R.id.unknownBarcode).setVisibility(View.VISIBLE);
+        scanControls.showUnknownBarcode(true);
     }
 
     Callback<Product> onProductLoaded = new Callback<Product>() {
@@ -332,37 +319,63 @@ public class ScanFragment
     };
 
 
-
-    @Override
-    public void onScrollChanged(int deltaX, int deltaY) {
-        getView().findViewById(R.id.unknownBarcode).setVisibility(View.GONE);
-        if (mScrollView.getScrollY() == 0) {
-//            cameraManager.startPreview();
-        } else {
-//            cameraManager.stopPreview();
-        }
-    }
-
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {
         Log.i(TAG, "Picture!");
         //final Bitmap image = BitmapFactory.decodeByteArray(data, 0, data.length);
 //        Log.i(TAG,String.format("%d x %d", image.getWidth(), image.getHeight()));
-        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.VISIBLE);
-        setCameraIconConfirm();
+
+//        getView().findViewById(R.id.btnRetakePicture).setVisibility(View.VISIBLE);
+//        setCameraIconConfirm();
+        cameraControls.setConfirmState(true);
     }
 
-    private void setCameraIconConfirm() {
-        ImageButton camButton = (ImageButton) getView().findViewById(R.id.btnTakePicture);
-        camButton.setBackgroundResource(R.drawable.circle_green);
-        camButton.setImageResource(R.drawable.ic_action_accept);
-        camButton.setOnClickListener(onConfirmPicture);
+
+    @Override
+    public void onTakePicture() {
+        takePicture();
     }
 
-    private void setCameraIconTakePicture() {
-        ImageButton camButton = (ImageButton) getView().findViewById(R.id.btnTakePicture);
-        camButton.setBackgroundResource(R.drawable.circle);
-        camButton.setImageResource(R.drawable.ic_action_camera);
-        camButton.setOnClickListener(onTakePicture);
+    @Override
+    public void onConfirmPicture() {
+        setScanMode();
+    }
+
+    @Override
+    public void onRetryPicture() {
+        restartPhotoPreview();
+    }
+
+    @Override
+    public void onCancelPicture() {
+
+        setScanMode();
+    }
+
+    @Override
+    public void onCameraControlsFinishedShow() {
+
+    }
+
+    @Override
+    public void onCameraControlsFinishedHide() {
+        scanControls.showOverlay(true);
+        currOverlay = scanControls;
+    }
+
+    @Override
+    public void onCaptureNewProductPhoto() {
+        setCapturePhotoMode();
+    }
+
+    @Override
+    public void onScanControlsFinishedHide() {
+        cameraControls.showOverlay(true);
+        currOverlay = cameraControls;
+    }
+
+    @Override
+    public void onScanControlsFinishedShow() {
+
     }
 }
