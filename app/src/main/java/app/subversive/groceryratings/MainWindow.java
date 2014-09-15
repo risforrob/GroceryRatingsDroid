@@ -17,8 +17,10 @@ import retrofit.client.Response;
 
 public class MainWindow extends ActionBarActivity {
 
-    static final String endpoint = "https://1-dot-groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1/variantdao";
+    static final String endpoint = "https://1-dot-groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
+    static final String imageEndpoint = "https://groceryratings.appspot.com";
     static GroceryRatingsService service;
+    static ImageService imageService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +30,20 @@ public class MainWindow extends ActionBarActivity {
             throw new RuntimeException("No Camera");
         }
 
-        RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(endpoint).build();
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(endpoint)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
         service = restAdapter.create(GroceryRatingsService.class);
+
+        RestAdapter imageAdapter = new RestAdapter.Builder()
+                .setEndpoint(imageEndpoint)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
+
+        imageService = imageAdapter.create(ImageService.class);
+
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
-
-
 
         setContentView(R.layout.activity_main_window);
         if (savedInstanceState == null) {

@@ -3,6 +3,7 @@ package app.subversive.groceryratings;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Message;
@@ -23,9 +24,11 @@ import com.google.zxing.client.android.CaptureActivityHandler;
 import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import com.google.zxing.Result;
 
+import app.subversive.groceryratings.Core.ImageKey;
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
@@ -33,7 +36,7 @@ import app.subversive.groceryratings.UI.ScanControlsOverlay;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-
+import retrofit.mime.TypedByteArray;
 
 
 public class ScanFragment
@@ -326,14 +329,31 @@ public class ScanFragment
 
     @Override
     public void onConfirmPicture() {
-        Utils.formatImage(imageData, 0, new Utils.OnFormattedImage() {
+        Utils.formatImage(imageData, new Utils.OnFormattedImage() {
             @Override
-            public void Callback(Bitmap image) {
+            public void Callback(byte[] imageData) {
                 Log.i("Callback", "I got my image back");
+                uploadImage(imageData);
             }
         });
         imageData = null;
         setScanMode();
+    }
+
+    private void uploadImage(byte[] imageData) {
+        TypedByteArray data =
+                new Utils.TypedFileByteArray("image/jpeg", "foo.jpg", imageData);
+        MainWindow.imageService.uploadImage(data, new Callback<ImageKey>() {
+            @Override
+            public void success(ImageKey imageKey, Response response) {
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 
     @Override
