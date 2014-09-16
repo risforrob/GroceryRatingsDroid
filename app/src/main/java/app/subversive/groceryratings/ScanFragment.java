@@ -303,8 +303,10 @@ public class ScanFragment
         public void success(Product product, Response response) {
             if (product == null) {
                 foundUnknownProduct();
-            } else {
+            } else if (product.published) {
                 showProductData(product);
+            } else {
+                foundUnpublishedProduct(product);
             }
             restartScanner();
         }
@@ -315,6 +317,11 @@ public class ScanFragment
             restartScanner();
         }
     };
+
+    private void foundUnpublishedProduct(Product product) {
+        //todo
+        // what to do when there is a product but it is unpublished
+    }
 
 
     @Override
