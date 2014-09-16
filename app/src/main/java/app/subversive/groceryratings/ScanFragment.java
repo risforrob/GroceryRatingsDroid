@@ -25,6 +25,9 @@ import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 import com.google.zxing.Result;
 
@@ -333,7 +336,7 @@ public class ScanFragment
             @Override
             public void Callback(byte[] imageData) {
                 Log.i("Callback", "I got my image back");
-                uploadImage(imageData);
+//                uploadImage(imageData);
             }
         });
         imageData = null;
@@ -343,10 +346,37 @@ public class ScanFragment
     private void uploadImage(byte[] imageData) {
         TypedByteArray data =
                 new Utils.TypedFileByteArray("image/jpeg", "foo.jpg", imageData);
-        MainWindow.imageService.uploadImage(data, new Callback<ImageKey>() {
+        MainWindow.imageService.uploadImage(data, new Callback<Response>() {
             @Override
-            public void success(ImageKey imageKey, Response response) {
+            public void success(Response data, Response response) {
+                String id;
+                byte[] bytes = new byte[(int)data.getBody().length()];
+                try {
+                    data.getBody().in().read(bytes, 0, (int) data.getBody().length());
+                    id = new String(bytes);
+                } catch (IOException e) {
+                    Log.i(TAG, "Error reading image ID");
+                    return;
+                }
 
+                Product p = new Product();
+                p.productCode = new String(lastScanned);
+                if (p.images == null) {
+                    p.images = new LinkedList<String>();
+                }
+                p.images.add(id);
+
+                MainWindow.service.updateProduct(p, new Callback<Response>() {
+                    @Override
+                    public void success(Response response, Response response2) {
+
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+
+                    }
+                });
             }
 
             @Override

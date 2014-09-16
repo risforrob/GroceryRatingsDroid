@@ -15,5 +15,5 @@ import retrofit.mime.TypedByteArray;
 public interface ImageService {
     @Multipart
     @POST("/web_upload")
-    public void uploadImage(@Part("data") TypedByteArray data, Callback<ImageKey> cb);
+    public void uploadImage(@Part("data") TypedByteArray data, Callback<Response> cb);
 }

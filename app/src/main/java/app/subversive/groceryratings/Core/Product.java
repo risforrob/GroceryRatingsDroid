@@ -1,14 +1,23 @@
 package app.subversive.groceryratings.Core;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+
 /**
  * Created by rob on 8/24/14.
  */
 public class Product {
-    String parent, brandName, productName, manName, productCode, description;
-    int  ratingCount, ratingSum, stars;
-    float ratingScore;
-    boolean published;
-    String[] keywords;
+    public String parent, brandName, productName, manName, productCode, description;
+    public int  ratingCount, ratingSum, stars;
+    public float ratingScore;
+    public boolean published;
+    public LinkedList<String> keywords, images;
+
+    public Product() {
+        productName = "";
+        description = "";
+    }
 
     public Product(String name, int stars, int ratings) {
         productName = name;

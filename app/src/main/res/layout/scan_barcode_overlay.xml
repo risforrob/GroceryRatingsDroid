@@ -14,7 +14,8 @@
         <app.subversive.groceryratings.UI.RatingsLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/RatingHolder">
+            android:id="@+id/RatingHolder"
+            android:animateLayoutChanges="true">
         </app.subversive.groceryratings.UI.RatingsLayout>
 
     </app.subversive.groceryratings.UI.ObservableScrollView>

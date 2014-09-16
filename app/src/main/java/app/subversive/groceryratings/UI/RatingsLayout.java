@@ -64,9 +64,5 @@ public class RatingsLayout extends ViewGroup {
             child.layout(left, lastChildTop, right, lastChildTop + childHeight + rowSpacing);
             lastChildTop += childHeight + rowSpacing + 1;
         }
-
-        for (int i = maxChildren ; i < count; i++) {
-            removeViewInLayout(getChildAt(i));
-        }
     }
 }
