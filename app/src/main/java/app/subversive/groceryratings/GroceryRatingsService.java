@@ -5,6 +5,7 @@ import retrofit.Callback;
 import retrofit.client.Response;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.POST;
 import retrofit.http.PUT;
 import retrofit.http.Path;
 
@@ -15,6 +16,6 @@ public interface GroceryRatingsService {
     @GET("/variantdao/{productID}")
     void getProduct(@Path("productID") String productID, Callback<Product> cb);
 
-    @PUT("/variantdao")
-    void updateProduct(@Body Product product, Callback<Response> cb);
+    @POST("/variantdao")
+    void updateProduct(@Body Product product, Callback<Product> cb);
 }

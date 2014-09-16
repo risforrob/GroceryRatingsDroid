@@ -336,7 +336,7 @@ public class ScanFragment
             @Override
             public void Callback(byte[] imageData) {
                 Log.i("Callback", "I got my image back");
-//                uploadImage(imageData);
+                uploadImage(imageData);
             }
         });
         imageData = null;
@@ -359,16 +359,13 @@ public class ScanFragment
                     return;
                 }
 
-                Product p = new Product();
+                Product p = new Product(true);
                 p.productCode = new String(lastScanned);
-                if (p.images == null) {
-                    p.images = new LinkedList<String>();
-                }
                 p.images.add(id);
 
-                MainWindow.service.updateProduct(p, new Callback<Response>() {
+                MainWindow.service.updateProduct(p, new Callback<Product>() {
                     @Override
-                    public void success(Response response, Response response2) {
+                    public void success(Product product, Response response) {
 
                     }
 

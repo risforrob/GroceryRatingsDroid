@@ -9,7 +9,8 @@
     <app.subversive.groceryratings.UI.ObservableScrollView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/scrollView">
+        android:id="@+id/scrollView"
+        android:scrollbars="none">
 
         <app.subversive.groceryratings.UI.RatingsLayout
             android:layout_width="fill_parent"

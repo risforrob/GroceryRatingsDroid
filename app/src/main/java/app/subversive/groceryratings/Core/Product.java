@@ -14,9 +14,17 @@ public class Product {
     public boolean published;
     public LinkedList<String> keywords, images;
 
-    public Product() {
-        productName = "";
-        description = "";
+    public Product() {}
+
+    public Product(boolean defaults) {
+        if (defaults) {
+            productName = "";
+            description = "";
+            manName = "";
+            brandName = "";
+            keywords = new LinkedList<String>();
+            images = new LinkedList<String>();
+        }
     }
 
     public Product(String name, int stars, int ratings) {
