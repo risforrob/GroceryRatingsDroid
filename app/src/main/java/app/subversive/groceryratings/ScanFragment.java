@@ -3,7 +3,6 @@ package app.subversive.groceryratings;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Message;
@@ -24,14 +23,9 @@ import com.google.zxing.client.android.CaptureActivityHandler;
 import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
 
 import com.google.zxing.Result;
 
-import app.subversive.groceryratings.Core.ImageKey;
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
@@ -86,7 +80,7 @@ public class ScanFragment
             }
         });
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        cameraManager = new CameraManager(getActivity());
+        cameraManager = new CameraManager();
         lastScanned = "";
         cameraControls = new CameraControlsOverlay(this);
         scanControls = new ScanControlsOverlay(this);
@@ -157,9 +151,8 @@ public class ScanFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_scan, container, false);
-        Log.i("v", v.toString());
+
         SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
-//        surfaceView.setZOrderMediaOverlay(true);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
             //The activity was paused but not stopped, so the surface still exists. Therefore
@@ -245,10 +238,10 @@ public class ScanFragment
             return;
         }
         try {
-            cameraManager.openDriver(surfaceHolder);
+            cameraManager.openDriver(surfaceHolder, getActivity());
             // Creating the handler starts the preview, which can also throw a RuntimeException.
             if (handler == null) {
-                handler = new CaptureActivityHandler(this, null, null, null, cameraManager);
+                handler = new CaptureActivityHandler(this, cameraManager);
             }
         } catch (IOException ioe) {
             Log.w(TAG, ioe);

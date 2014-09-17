@@ -43,23 +43,18 @@ public final class CameraConfigurationUtils {
 
     private static final String TAG = "CameraConfiguration";
 
-    private static final Pattern SEMICOLON = Pattern.compile(";");
-
     private static final int MIN_PREVIEW_PIXELS = 480 * 320; // normal screen
     private static final float MAX_EXPOSURE_COMPENSATION = 1.5f;
     private static final float MIN_EXPOSURE_COMPENSATION = 0.0f;
     private static final double MAX_ASPECT_DISTORTION = 0.15;
-    private static final int MIN_FPS = 10;
-    private static final int MAX_FPS = 20;
     private static final int AREA_PER_1000 = 400;
 
-    private CameraConfigurationUtils() {
-    }
 
     public static void setFocus(Camera.Parameters parameters,
                                 boolean autoFocus,
                                 boolean disableContinuous,
                                 boolean safeMode) {
+
         List<String> supportedFocusModes = parameters.getSupportedFocusModes();
         String focusMode = null;
         if (autoFocus) {
@@ -91,29 +86,6 @@ public final class CameraConfigurationUtils {
         }
     }
 
-    public static void setTorch(Camera.Parameters parameters, boolean on) {
-        List<String> supportedFlashModes = parameters.getSupportedFlashModes();
-        String flashMode;
-        if (on) {
-            flashMode = findSettableValue("flash mode",
-                    supportedFlashModes,
-                    Camera.Parameters.FLASH_MODE_TORCH,
-                    Camera.Parameters.FLASH_MODE_ON);
-        } else {
-            flashMode = findSettableValue("flash mode",
-                    supportedFlashModes,
-                    Camera.Parameters.FLASH_MODE_OFF);
-        }
-        if (flashMode != null) {
-            if (flashMode.equals(parameters.getFlashMode())) {
-                Log.i(TAG, "Flash mode already set to " + flashMode);
-            } else {
-                Log.i(TAG, "Setting flash mode to " + flashMode);
-                parameters.setFlashMode(flashMode);
-            }
-        }
-    }
-
     public static void setBestExposure(Camera.Parameters parameters, boolean lightOn) {
         int minExposure = parameters.getMinExposureCompensation();
         int maxExposure = parameters.getMaxExposureCompensation();
@@ -133,39 +105,6 @@ public final class CameraConfigurationUtils {
             }
         } else {
             Log.i(TAG, "Camera does not support exposure compensation");
-        }
-    }
-
-    public static void setBestPreviewFPS(Camera.Parameters parameters) {
-        setBestPreviewFPS(parameters, MIN_FPS, MAX_FPS);
-    }
-
-    public static void setBestPreviewFPS(Camera.Parameters parameters, int minFPS, int maxFPS) {
-        List<int[]> supportedPreviewFpsRanges = parameters.getSupportedPreviewFpsRange();
-        Log.i(TAG, "Supported FPS ranges: " + toString(supportedPreviewFpsRanges));
-        if (supportedPreviewFpsRanges != null && !supportedPreviewFpsRanges.isEmpty()) {
-            int[] suitableFPSRange = null;
-            for (int[] fpsRange : supportedPreviewFpsRanges) {
-                int thisMin = fpsRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX];
-                int thisMax = fpsRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX];
-                if (thisMin >= minFPS * 1000 && thisMax <= maxFPS * 1000) {
-                    suitableFPSRange = fpsRange;
-                    break;
-                }
-            }
-            if (suitableFPSRange == null) {
-                Log.i(TAG, "No suitable FPS range?");
-            } else {
-                int[] currentFpsRange = new int[2];
-                parameters.getPreviewFpsRange(currentFpsRange);
-                if (Arrays.equals(currentFpsRange, suitableFPSRange)) {
-                    Log.i(TAG, "FPS range already set to " + Arrays.toString(suitableFPSRange));
-                } else {
-                    Log.i(TAG, "Setting FPS range to " + Arrays.toString(suitableFPSRange));
-                    parameters.setPreviewFpsRange(suitableFPSRange[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
-                            suitableFPSRange[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
-                }
-            }
         }
     }
 
@@ -219,58 +158,6 @@ public final class CameraConfigurationUtils {
                 Camera.Parameters.SCENE_MODE_BARCODE);
         if (sceneMode != null) {
             parameters.setSceneMode(sceneMode);
-        }
-    }
-
-    public static void setZoom(Camera.Parameters parameters, double targetZoomRatio) {
-        if (parameters.isZoomSupported()) {
-            Integer zoom = indexOfClosestZoom(parameters, targetZoomRatio);
-            if (zoom == null) {
-                return;
-            }
-            if (parameters.getZoom() == zoom) {
-                Log.i(TAG, "Zoom is already set to " + zoom);
-            } else {
-                Log.i(TAG, "Setting zoom to " + zoom);
-                parameters.setZoom(zoom);
-            }
-        } else {
-            Log.i(TAG, "Zoom is not supported");
-        }
-    }
-
-    private static Integer indexOfClosestZoom(Camera.Parameters parameters, double targetZoomRatio) {
-        List<Integer> ratios = parameters.getZoomRatios();
-        Log.i(TAG, "Zoom ratios: " + ratios);
-        int maxZoom = parameters.getMaxZoom();
-        if (ratios == null || ratios.isEmpty() || ratios.size() != maxZoom + 1) {
-            Log.w(TAG, "Invalid zoom ratios!");
-            return null;
-        }
-        double target100 = 100.0 * targetZoomRatio;
-        double smallestDiff = Double.POSITIVE_INFINITY;
-        int closestIndex = 0;
-        for (int i = 0; i < ratios.size(); i++) {
-            double diff = Math.abs(ratios.get(i) - target100);
-            if (diff < smallestDiff) {
-                smallestDiff = diff;
-                closestIndex = i;
-            }
-        }
-        Log.i(TAG, "Chose zoom ratio of " + (ratios.get(closestIndex) / 100.0));
-        return closestIndex;
-    }
-
-    public static void setInvertColor(Camera.Parameters parameters) {
-        if (Camera.Parameters.EFFECT_NEGATIVE.equals(parameters.getColorEffect())) {
-            Log.i(TAG, "Negative effect already set");
-            return;
-        }
-        String colorMode = findSettableValue("color effect",
-                parameters.getSupportedColorEffects(),
-                Camera.Parameters.EFFECT_NEGATIVE);
-        if (colorMode != null) {
-            parameters.setColorEffect(colorMode);
         }
     }
 
@@ -362,9 +249,7 @@ public final class CameraConfigurationUtils {
         return defaultSize;
     }
 
-    public static int findDisplayOrientation(Point screenResolution,
-                                             Point cameraResolution,
-                                             int screenOrientation,
+    public static int findDisplayOrientation(int screenOrientation,
                                              int cameraOrientation) {
 
 
@@ -451,43 +336,4 @@ public final class CameraConfigurationUtils {
         }
         return result.toString();
     }
-
-    public static String collectStats(Camera.Parameters parameters) {
-        return collectStats(parameters.flatten());
-    }
-
-    public static String collectStats(CharSequence flattenedParams) {
-        StringBuilder result = new StringBuilder(1000);
-
-        result.append("BOARD=").append(Build.BOARD).append('\n');
-        result.append("BRAND=").append(Build.BRAND).append('\n');
-        result.append("CPU_ABI=").append(Build.CPU_ABI).append('\n');
-        result.append("DEVICE=").append(Build.DEVICE).append('\n');
-        result.append("DISPLAY=").append(Build.DISPLAY).append('\n');
-        result.append("FINGERPRINT=").append(Build.FINGERPRINT).append('\n');
-        result.append("HOST=").append(Build.HOST).append('\n');
-        result.append("ID=").append(Build.ID).append('\n');
-        result.append("MANUFACTURER=").append(Build.MANUFACTURER).append('\n');
-        result.append("MODEL=").append(Build.MODEL).append('\n');
-        result.append("PRODUCT=").append(Build.PRODUCT).append('\n');
-        result.append("TAGS=").append(Build.TAGS).append('\n');
-        result.append("TIME=").append(Build.TIME).append('\n');
-        result.append("TYPE=").append(Build.TYPE).append('\n');
-        result.append("USER=").append(Build.USER).append('\n');
-        result.append("VERSION.CODENAME=").append(Build.VERSION.CODENAME).append('\n');
-        result.append("VERSION.INCREMENTAL=").append(Build.VERSION.INCREMENTAL).append('\n');
-        result.append("VERSION.RELEASE=").append(Build.VERSION.RELEASE).append('\n');
-        result.append("VERSION.SDK_INT=").append(Build.VERSION.SDK_INT).append('\n');
-
-        if (flattenedParams != null) {
-            String[] params = SEMICOLON.split(flattenedParams);
-            Arrays.sort(params);
-            for (String param : params) {
-                result.append(param).append('\n');
-            }
-        }
-
-        return result.toString();
-    }
-
 }

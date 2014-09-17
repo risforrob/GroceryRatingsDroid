@@ -55,12 +55,9 @@ public final class CaptureActivityHandler extends Handler {
     }
 
     public CaptureActivityHandler(ScanFragment activity,
-                                  Collection<BarcodeFormat> decodeFormats,
-                                  Map<DecodeHintType,?> baseHints,
-                                  String characterSet,
                                   CameraManager cameraManager) {
         this.activity = activity;
-        decodeThread = new DecodeThread(activity, decodeFormats, baseHints, characterSet, null);
+        decodeThread = new DecodeThread(activity);
         decodeThread.start();
         state = State.SUCCESS;
 
@@ -95,9 +92,6 @@ public final class CaptureActivityHandler extends Handler {
                     scaleFactor = bundle.getFloat(DecodeThread.BARCODE_SCALED_FACTOR);
                 }
                 activity.handleDecode((Result) message.obj, barcode, scaleFactor);
-
-                //restartPreviewAndDecode();
-
                 break;
             case R.id.decode_failed:
                 if (state != State.PAUSED) {

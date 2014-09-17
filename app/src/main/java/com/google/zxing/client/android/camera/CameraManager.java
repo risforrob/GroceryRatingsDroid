@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import com.google.zxing.PlanarYUVLuminanceSource;
-import com.google.zxing.client.android.camera.open.OpenCameraInterface;
 
 import java.io.IOException;
 
@@ -37,27 +36,22 @@ public final class CameraManager {
 
     private static final String TAG = CameraManager.class.getSimpleName();
 
-    private final Context context;
     private final CameraConfigurationManager configManager;
     private Camera camera;
     private AutoFocusManager autoFocusManager;
     private boolean initialized;
     private boolean previewing;
-    private int mCameraId = -1;
+    private int cameraId = -1;
     /**
      * Preview frames are delivered here, which we pass on to the registered handler. Make sure to
      * clear the handler so it will only receive one message.
      */
     private final PreviewCallback previewCallback;
 
-    public CameraManager(Context context) {
-        this.context = context;
-        this.configManager = new CameraConfigurationManager(context);
+    public CameraManager() {
+        configManager = new CameraConfigurationManager();
         previewCallback = new PreviewCallback(configManager);
     }
-
-    public int getmCameraId() { return mCameraId; }
-
 
     /**
      * Opens the camera driver and initializes the hardware parameters.
@@ -65,31 +59,27 @@ public final class CameraManager {
      * @param holder The surface object which the camera will draw preview frames into.
      * @throws IOException Indicates the camera driver failed to open.
      */
-    public synchronized void openDriver(SurfaceHolder holder) throws IOException {
+    public synchronized void openDriver(SurfaceHolder holder, Context context) throws IOException {
         Camera theCamera = camera;
         if (theCamera == null) {
 
-            mCameraId = CameraConfigurationUtils.findCameraId();
-            if (mCameraId < 0) {
+            cameraId = CameraConfigurationUtils.findCameraId();
+            if (cameraId < 0) {
                 throw new RuntimeException("No valid camera");
             }
 
-            theCamera = Camera.open(mCameraId);
-
-            if (theCamera == null) {
-                throw new IOException();
-            }
+            theCamera = Camera.open(cameraId);
             camera = theCamera;
         }
         theCamera.setPreviewDisplay(holder);
 
         if (!initialized) {
             initialized = true;
-            configManager.initFromCameraParameters(theCamera, mCameraId);
+            configManager.initFromCameraParameters(context, theCamera, cameraId);
         }
 
         Camera.Parameters parameters = theCamera.getParameters();
-        String parametersFlattened = parameters == null ? null : parameters.flatten(); // Save these, temporarily
+        String parametersFlattened = parameters.flatten(); // Save these, temporarily
         try {
             configManager.setDesiredCameraParameters(theCamera, false);
         } catch (RuntimeException re) {
@@ -97,19 +87,16 @@ public final class CameraManager {
             Log.w(TAG, "Camera rejected parameters. Setting only minimal safe-mode parameters");
             Log.i(TAG, "Resetting to saved camera params: " + parametersFlattened);
             // Reset:
-            if (parametersFlattened != null) {
-                parameters = theCamera.getParameters();
-                parameters.unflatten(parametersFlattened);
-                try {
-                    theCamera.setParameters(parameters);
-                    configManager.setDesiredCameraParameters(theCamera, true);
-                } catch (RuntimeException re2) {
-                    // Well, darn. Give up
-                    Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration");
-                }
+            parameters = theCamera.getParameters();
+            parameters.unflatten(parametersFlattened);
+            try {
+                theCamera.setParameters(parameters);
+                configManager.setDesiredCameraParameters(theCamera, true);
+            } catch (RuntimeException re2) {
+                // Well, darn. Give up
+                Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration");
             }
         }
-
     }
 
     public synchronized boolean isOpen() {
@@ -134,7 +121,7 @@ public final class CameraManager {
         if (theCamera != null && !previewing) {
             theCamera.startPreview();
             previewing = true;
-            autoFocusManager = new AutoFocusManager(context, camera);
+            autoFocusManager = new AutoFocusManager(camera);
         }
     }
 
@@ -160,25 +147,6 @@ public final class CameraManager {
             camera.stopPreview();
             previewCallback.setHandler(null, 0);
             previewing = false;
-        }
-    }
-
-    /**
-     * Convenience method for {@link app.subversive.groceryratings.ScanFragment}
-     *
-     * @param newSetting if {@code true}, light should be turned on if currently off. And vice versa.
-     */
-    public synchronized void setTorch(boolean newSetting) {
-        if (newSetting != configManager.getTorchState(camera)) {
-            if (camera != null) {
-                if (autoFocusManager != null) {
-                    autoFocusManager.stop();
-                }
-                configManager.setTorch(camera, newSetting);
-                if (autoFocusManager != null) {
-                    autoFocusManager.start();
-                }
-            }
         }
     }
 

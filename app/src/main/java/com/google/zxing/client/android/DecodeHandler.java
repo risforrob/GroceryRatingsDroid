@@ -26,7 +26,6 @@ import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
 
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
