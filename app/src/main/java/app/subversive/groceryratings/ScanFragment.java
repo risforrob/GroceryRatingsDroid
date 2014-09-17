@@ -258,7 +258,7 @@ public class ScanFragment
         return handler;
     }
 
-    public void handleDecode(Result rawResult, Bitmap barcode, float scaleFactor) {
+    public void handleDecode(Result rawResult) { //, Bitmap barcode, float scaleFactor) {
         Log.i(TAG, rawResult.getText());
         if (!lastScanned.equals(rawResult.getText())) {
             scanControls.setStatusText("Fetching Product.", true);

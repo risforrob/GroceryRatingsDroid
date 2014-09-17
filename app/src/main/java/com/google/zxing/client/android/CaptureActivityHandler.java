@@ -57,7 +57,7 @@ public final class CaptureActivityHandler extends Handler {
     public CaptureActivityHandler(ScanFragment activity,
                                   CameraManager cameraManager) {
         this.activity = activity;
-        decodeThread = new DecodeThread(activity);
+        decodeThread = new DecodeThread(this);
         decodeThread.start();
         state = State.SUCCESS;
 
@@ -80,18 +80,7 @@ public final class CaptureActivityHandler extends Handler {
                 break;
             case R.id.decode_succeeded:
                 state = State.SUCCESS;
-                Bundle bundle = message.getData();
-                Bitmap barcode = null;
-                float scaleFactor = 1.0f;
-                if (bundle != null) {
-                    byte[] compressedBitmap = bundle.getByteArray(DecodeThread.BARCODE_BITMAP);
-                    if (compressedBitmap != null) {
-                        barcode = BitmapFactory.decodeByteArray(compressedBitmap, 0, compressedBitmap.length, null);
-                        barcode = barcode.copy(Bitmap.Config.ARGB_8888, true);
-                    }
-                    scaleFactor = bundle.getFloat(DecodeThread.BARCODE_SCALED_FACTOR);
-                }
-                activity.handleDecode((Result) message.obj, barcode, scaleFactor);
+                activity.handleDecode((Result) message.obj); //, barcode, scaleFactor);
                 break;
             case R.id.decode_failed:
                 if (state != State.PAUSED) {

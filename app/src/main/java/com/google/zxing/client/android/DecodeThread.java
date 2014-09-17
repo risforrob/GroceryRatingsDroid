@@ -40,15 +40,18 @@ final class DecodeThread extends Thread {
 
     public static final String BARCODE_BITMAP = "barcode_bitmap";
     public static final String BARCODE_SCALED_FACTOR = "barcode_scaled_factor";
-
-    private final ScanFragment activity;
+//
+//    private final ScanFragment activity;
     private final Map<DecodeHintType,Object> hints;
     private Handler handler;
+    private final Handler resultHandler;
     private final CountDownLatch handlerInitLatch;
 
-    DecodeThread(ScanFragment activity) {
+    DecodeThread(Handler resultHandler) {
 
-        this.activity = activity;
+//        this.activity = activity;
+
+        this.resultHandler = resultHandler;
         handlerInitLatch = new CountDownLatch(1);
 
         // The prefs can't change while the thread is running, so pick them up once here.
@@ -78,7 +81,7 @@ final class DecodeThread extends Thread {
     @Override
     public void run() {
         Looper.prepare();
-        handler = new DecodeHandler(activity, hints);
+        handler = new DecodeHandler(resultHandler, hints);
         handlerInitLatch.countDown();
         Looper.loop();
     }

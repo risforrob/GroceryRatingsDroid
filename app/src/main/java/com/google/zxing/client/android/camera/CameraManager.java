@@ -175,7 +175,7 @@ public final class CameraManager {
      * @param height The height of the image.
      * @return A PlanarYUVLuminanceSource instance.
      */
-    public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
+    public static PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
         return new PlanarYUVLuminanceSource(data, width, height, 1, 1,
                 width-1, height-1, false);
     }

@@ -23,6 +23,7 @@ import com.google.zxing.MultiFormatReader;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
+import com.google.zxing.client.android.camera.CameraManager;
 import com.google.zxing.common.HybridBinarizer;
 
 import android.os.Bundle;
@@ -41,14 +42,16 @@ final class DecodeHandler extends Handler {
 
     private static final String TAG = DecodeHandler.class.getSimpleName();
 
-    private final ScanFragment activity;
+//    private final ScanFragment activity;
     private final MultiFormatReader multiFormatReader;
     private boolean running = true;
+    private final Handler resultHandler;
 
-    DecodeHandler(ScanFragment activity, Map<DecodeHintType,Object> hints) {
+    DecodeHandler(Handler resultHandler, Map<DecodeHintType,Object> hints) {
         multiFormatReader = new MultiFormatReader();
         multiFormatReader.setHints(hints);
-        this.activity = activity;
+        this.resultHandler = resultHandler;
+//        this.activity = activity;
     }
 
     @Override
@@ -79,7 +82,7 @@ final class DecodeHandler extends Handler {
         Log.i(TAG,"Start Decode");
         long start = System.currentTimeMillis();
         Result rawResult = null;
-        PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(data, width, height);
+        PlanarYUVLuminanceSource source = CameraManager.buildLuminanceSource(data, width, height);
         if (source != null) {
             BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
             try {
@@ -100,7 +103,7 @@ final class DecodeHandler extends Handler {
                 width = height;
                 height = tmp;
 
-                source = activity.getCameraManager().buildLuminanceSource(rotatedData, width, height);
+                source = CameraManager.buildLuminanceSource(rotatedData, width, height);
                 if (source != null) {
                     bitmap = new BinaryBitmap(new HybridBinarizer(source));
                     try {
@@ -114,35 +117,18 @@ final class DecodeHandler extends Handler {
             }
         }
 
-        Handler handler = activity.getHandler();
-        if (rawResult != null) {
-            // Don't log the barcode contents for security.
-            long end = System.currentTimeMillis();
-            Log.i(TAG, "Found barcode in " + (end - start) + " ms");
-            if (handler != null) {
+        Handler handler = resultHandler;
+        if (handler != null) {
+            if (rawResult != null) {
+                // Don't log the barcode contents for security.
+                long end = System.currentTimeMillis();
+                Log.i(TAG, "Found barcode in " + (end - start) + " ms");
                 Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult);
-                Bundle bundle = new Bundle();
-                bundleThumbnail(source, bundle);
-                message.setData(bundle);
                 message.sendToTarget();
-            }
-        } else {
-            if (handler != null) {
+            } else {
                 Message message = Message.obtain(handler, R.id.decode_failed);
                 message.sendToTarget();
             }
         }
     }
-
-    private static void bundleThumbnail(PlanarYUVLuminanceSource source, Bundle bundle) {
-        int[] pixels = source.renderThumbnail();
-        int width = source.getThumbnailWidth();
-        int height = source.getThumbnailHeight();
-        Bitmap bitmap = Bitmap.createBitmap(pixels, 0, width, width, height, Bitmap.Config.ARGB_8888);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, out);
-        bundle.putByteArray(DecodeThread.BARCODE_BITMAP, out.toByteArray());
-        bundle.putFloat(DecodeThread.BARCODE_SCALED_FACTOR, (float) width / source.getWidth());
-    }
-
 }
