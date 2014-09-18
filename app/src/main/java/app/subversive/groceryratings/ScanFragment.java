@@ -2,7 +2,6 @@ package app.subversive.groceryratings;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Message;
@@ -47,7 +46,9 @@ public class ScanFragment
     CameraManager cameraManager;
     boolean hasSurface;
     private final String TAG = "ScanFrangment";
+
     CaptureActivityHandler handler;
+
     private FlipListener mFlipListener;
     private Vibrator mVibrator;
     private String lastScanned;
@@ -238,8 +239,8 @@ public class ScanFragment
             return;
         }
         try {
-            cameraManager.openDriver(surfaceHolder, getActivity());
-            // Creating the handler starts the preview, which can also throw a RuntimeException.
+            cameraManager.openDriver(surfaceHolder, getActivity().getWindowManager().getDefaultDisplay());
+//            Creating the handler starts the preview, which can also throw a RuntimeException.
             if (handler == null) {
                 handler = new CaptureActivityHandler(this, cameraManager);
             }

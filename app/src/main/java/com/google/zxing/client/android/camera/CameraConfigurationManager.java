@@ -38,11 +38,8 @@ final class CameraConfigurationManager {
     /**
      * Reads, one time, values from the camera that are needed by the app.
      */
-    void initFromCameraParameters(Context context, Camera camera, int cameraId) {
+    void initFromCameraParameters(Display display, Camera camera, int cameraId) {
         Camera.Parameters parameters = camera.getParameters();
-        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Display display = manager.getDefaultDisplay();
-
 
         Point theScreenResolution = new Point();
         display.getSize(theScreenResolution);

@@ -20,6 +20,7 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceHolder;
 import com.google.zxing.PlanarYUVLuminanceSource;
 
@@ -59,7 +60,7 @@ public final class CameraManager {
      * @param holder The surface object which the camera will draw preview frames into.
      * @throws IOException Indicates the camera driver failed to open.
      */
-    public synchronized void openDriver(SurfaceHolder holder, Context context) throws IOException {
+    public synchronized void openDriver(SurfaceHolder holder, Display display) throws IOException {
         Camera theCamera = camera;
         if (theCamera == null) {
 
@@ -75,7 +76,7 @@ public final class CameraManager {
 
         if (!initialized) {
             initialized = true;
-            configManager.initFromCameraParameters(context, theCamera, cameraId);
+            configManager.initFromCameraParameters(display, theCamera, cameraId);
         }
 
         Camera.Parameters parameters = theCamera.getParameters();
@@ -158,9 +159,16 @@ public final class CameraManager {
      * @param handler The handler to send the message to.
      * @param message The what field of the message to be sent.
      */
+
+
+    long lastRequest = System.currentTimeMillis();
+
     public synchronized void requestPreviewFrame(Handler handler, int message) {
         Camera theCamera = camera;
         if (theCamera != null && previewing) {
+            Long curr = System.currentTimeMillis();
+            Log.i("FPS", String.valueOf(curr - lastRequest));
+            lastRequest = curr;
             previewCallback.setHandler(handler, message);
             theCamera.setOneShotPreviewCallback(previewCallback);
         }

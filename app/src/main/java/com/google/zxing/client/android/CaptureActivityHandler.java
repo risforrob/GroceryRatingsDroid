@@ -16,19 +16,11 @@
 
 package com.google.zxing.client.android;
 
-import android.graphics.BitmapFactory;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.DecodeHintType;
 import com.google.zxing.Result;
 import com.google.zxing.client.android.camera.CameraManager;
 
-import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
-import java.util.Collection;
-import java.util.Map;
 
 import app.subversive.groceryratings.R;
 import app.subversive.groceryratings.ScanFragment;

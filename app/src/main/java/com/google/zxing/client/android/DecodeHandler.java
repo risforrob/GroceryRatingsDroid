@@ -79,7 +79,6 @@ final class DecodeHandler extends Handler {
      * @param height The height of the preview frame.
      */
     private void decode(byte[] data, int width, int height) {
-        Log.i(TAG,"Start Decode");
         long start = System.currentTimeMillis();
         Result rawResult = null;
         PlanarYUVLuminanceSource source = CameraManager.buildLuminanceSource(data, width, height);
