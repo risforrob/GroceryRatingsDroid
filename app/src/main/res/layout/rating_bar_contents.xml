@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    android:background="#a6000000">
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    tools:background="#a6000000"
+    android:id="@+id/RatingBarLayout">
 
     <TextView
         android:layout_width="0dp"
@@ -40,4 +43,4 @@
             android:textColor="#ffffffff"
             android:layout_gravity="center_horizontal" />
     </LinearLayout>
-</merge>
+</LinearLayout>

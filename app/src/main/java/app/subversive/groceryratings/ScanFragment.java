@@ -22,6 +22,7 @@ import com.google.zxing.client.android.CaptureActivityHandler;
 import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import com.google.zxing.Result;
 
@@ -49,7 +50,6 @@ public class ScanFragment
 
     CaptureActivityHandler handler;
 
-    private FlipListener mFlipListener;
     private Vibrator mVibrator;
     private String lastScanned;
 
@@ -58,6 +58,8 @@ public class ScanFragment
     private ScanControlsOverlay scanControls;
 
     private byte[] imageData;
+
+    final ArrayList<MenuItem> debugMenuItems = new ArrayList<MenuItem>();
 
     public static ScanFragment newInstance() {
         ScanFragment fragment = new ScanFragment();
@@ -72,14 +74,7 @@ public class ScanFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFlipListener = new FlipListener(getActivity(), new FlipListener.OnFlipListener() {
-            @Override
-            public void onFlip() {
-                if (cameraManager != null) {
-                    cameraManager.flipPreview();
-                }
-            }
-        });
+
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
         cameraManager = new CameraManager();
         lastScanned = "";
@@ -91,7 +86,7 @@ public class ScanFragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        super.onOptionsItemSelected(item);
+        boolean parentHandled = super.onOptionsItemSelected(item);
 
         boolean handled = false;
         switch(item.getItemId()) {
@@ -106,7 +101,7 @@ public class ScanFragment
                 break;
 
             case 2:
-                scanControls.addNewRating(new Product("Test Product", (int) (Math.random() * 5), (int) (Math.random() * 20)));
+                loadProduct("nocode");
                 handled = true;
                 break;
 
@@ -114,16 +109,26 @@ public class ScanFragment
                 scanControls.showUnknownBarcode(true);
                 handled = true;
                 break;
+
+            case 4:
+                for (MenuItem m : debugMenuItems) {
+                    m.setEnabled(item.isChecked());
+                }
+                handled = true;
         }
-        return handled;
+        return handled || parentHandled;
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.add(1, 1, 1, "Swap Overlay");
-        menu.add(2, 2, 2, "Add Product");
-        menu.add(3, 3, 3, "Show Unknown");
+        debugMenuItems.add(menu.add(1, 1, 10, "Swap Overlay"));
+        debugMenuItems.add(menu.add(1, 2, 20, "Add Product"));
+        debugMenuItems.add(menu.add(1, 3, 30, "Show Unknown"));
+
+        for (MenuItem m : debugMenuItems) {
+            m.setEnabled(false);
+        }
     }
 
 
@@ -177,7 +182,6 @@ public class ScanFragment
     @Override
     public void onResume() {
         super.onResume();
-        mFlipListener.enable();
         scanControls.showOverlay(true);
     }
 
@@ -194,7 +198,6 @@ public class ScanFragment
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
-        mFlipListener.disable();
     }
 
     @Override
@@ -268,11 +271,15 @@ public class ScanFragment
                 mVibrator.vibrate(50);
             }
             scanControls.scrollHistoryToBeginning();
-            MainWindow.service.getProduct(rawResult.getText(), onProductLoaded);
+            loadProduct(rawResult.getText());
             lastScanned = rawResult.getText();
         } else {
             restartScanner();
         }
+    }
+
+    private void loadProduct(String barcode) {
+        scanControls.addNewRating(barcode);
     }
 
     private void restartScanner() {

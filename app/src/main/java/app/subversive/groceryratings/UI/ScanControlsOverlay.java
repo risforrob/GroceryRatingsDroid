@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.os.AsyncTask;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -239,13 +241,30 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         animUnknownCodeHide.start();
     }
 
+    public void debugAddNewRating() {
+        ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
+        pbar.debugLoadBarcode();
+        addRatingView(pbar);
+    }
+
+    public void addNewRating(String barcode) {
+        ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
+        pbar.loadBarcode(barcode);
+        addRatingView(pbar);
+    }
+
     public void addNewRating(Product product) {
         ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
         pbar.setProduct(product);
+        addRatingView(pbar);
+    }
+
+
+    private void addRatingView(View view) {
         if (ratingHistory.getChildCount() == 7) {
             ratingHistory.removeView(ratingHistory.getChildAt(6));
         }
-        ratingHistory.addView(pbar, 0, defaultLP);
+        ratingHistory.addView(view, 0, defaultLP);
     }
 
     public void setStatusText(String text, boolean showProgress) {

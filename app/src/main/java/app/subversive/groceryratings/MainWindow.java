@@ -4,23 +4,23 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import app.subversive.groceryratings.Core.Product;
-import retrofit.Callback;
+import app.subversive.groceryratings.test.DebugGroceryService;
+import app.subversive.groceryratings.test.DebugImageService;
 import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
 
 public class MainWindow extends ActionBarActivity {
 
     static final String endpoint = "https://1-dot-groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
     static final String imageEndpoint = "https://groceryratings.appspot.com";
-    static GroceryRatingsService service;
-    static ImageService imageService;
+    public static GroceryRatingsService service, mainService, debugGroceryService;
+    public static ImageService imageService, mainImageService, debugImageService;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +34,17 @@ public class MainWindow extends ActionBarActivity {
                 .setEndpoint(endpoint)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
-        service = restAdapter.create(GroceryRatingsService.class);
+        service = mainService = restAdapter.create(GroceryRatingsService.class);
+
+        debugGroceryService = new DebugGroceryService();
 
         RestAdapter imageAdapter = new RestAdapter.Builder()
                 .setEndpoint(imageEndpoint)
                 .setLogLevel(RestAdapter.LogLevel.FULL)
                 .build();
 
-        imageService = imageAdapter.create(ImageService.class);
+        imageService = mainImageService = imageAdapter.create(ImageService.class);
+        debugImageService = new DebugImageService();
 
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
 
@@ -50,9 +53,12 @@ public class MainWindow extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, ScanFragment.newInstance())
                     .commit();
+
         }
 
     }
+
+
 
 
     /** Check if this device has a camera */
@@ -70,6 +76,9 @@ public class MainWindow extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_window, menu);
+        MenuItem m = menu.add(2,4,0,"Debug Service");
+        m.setCheckable(true);
+
         return true;
     }
 
@@ -81,6 +90,17 @@ public class MainWindow extends ActionBarActivity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == 4) {
+            Log.i("MainWindow", "debug mode!");
+            item.setChecked(!item.isChecked());
+            if (item.isChecked()) {
+                service = debugGroceryService;
+                imageService = debugImageService;
+            } else {
+                service = mainService;
+                imageService = mainImageService;
+            }
+            return false;
         }
         return super.onOptionsItemSelected(item);
     }

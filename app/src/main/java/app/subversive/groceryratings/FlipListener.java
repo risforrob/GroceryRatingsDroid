@@ -10,8 +10,19 @@ import java.lang.annotation.Target;
 
 /**
  * Created by rob on 8/24/14.
+ *
+ * Example Init
+ *         mFlipListener = new FlipListener(getActivity(), new FlipListener.OnFlipListener() {
+ *             @Override
+ *             public void onFlip() {
+ *                 if (cameraManager != null) {
+ *                     cameraManager.flipPreview();
+ *                 }
+ *             }
+ *         });
  */
 public class FlipListener extends OrientationEventListener {
+
     public static interface OnFlipListener { public void onFlip(); }
 
     private OnFlipListener mListener;
