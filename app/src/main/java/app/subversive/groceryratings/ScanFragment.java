@@ -23,12 +23,15 @@ import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.google.zxing.Result;
 
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
+import app.subversive.groceryratings.UI.ProductRatingBar;
 import app.subversive.groceryratings.UI.ScanControlsOverlay;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -41,7 +44,8 @@ public class ScanFragment
         implements SurfaceHolder.Callback,
                    Camera.PictureCallback,
                    CameraControlsOverlay.Callbacks,
-                   ScanControlsOverlay.Callbacks {
+                   ScanControlsOverlay.Callbacks,
+                   ProductRatingBar.BarcodeCallbacks{
 
 
     CameraManager cameraManager;
@@ -102,6 +106,7 @@ public class ScanFragment
 
             case 2:
                 loadProduct(null);
+                lastScanned = "";
                 handled = true;
                 break;
 
@@ -264,6 +269,10 @@ public class ScanFragment
 
     public void handleDecode(Result rawResult) {
         Log.i(TAG, rawResult.getText());
+        //todo restructure this code and load product
+        //todo so that it is a single method that plays nice
+        //todo with debug mode.
+        scanControls.resetPromptTimer();
         if (!lastScanned.equals(rawResult.getText())) {
             scanControls.hideUnknownBarcode(true);
             if (mVibrator != null && mVibrator.hasVibrator()) {
@@ -272,13 +281,12 @@ public class ScanFragment
             scanControls.scrollHistoryToBeginning();
             loadProduct(rawResult.getText());
             lastScanned = rawResult.getText();
-        } else {
-            restartScanner();
         }
+        restartScanner();
     }
 
     private void loadProduct(String barcode) {
-        scanControls.addNewRating(barcode);
+        scanControls.addNewRating(barcode, this);
     }
 
     private void restartScanner() {
@@ -386,5 +394,10 @@ public class ScanFragment
     @Override
     public void onScanControlsFinishedShow() {
 
+    }
+
+    @Override
+    public void onUnknownBarcode(String barcode) {
+        scanControls.showUnknownBarcode(true);
     }
 }

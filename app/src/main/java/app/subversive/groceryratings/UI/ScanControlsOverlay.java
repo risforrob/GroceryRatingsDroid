@@ -4,8 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,10 +11,11 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import app.subversive.groceryratings.Core.Product;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import app.subversive.groceryratings.R;
 
 /**
@@ -31,6 +30,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     private long animDuration = 200;
     private long delayAmount = 30;
+    private long delayUntilPrompt = 5000;
 
     FrameLayout parent;
     boolean attached, inflated;
@@ -52,6 +52,17 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     View[] hiddenRatings;
 
+    private final Timer displayTimer = new Timer(true);
+
+    private TimerTask getTimerTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                Log.i("Timer", "Show Status");
+            }
+        };
+    }
+
     public ScanControlsOverlay(Callbacks handler) { this.handler = handler; }
 
     @Override
@@ -67,6 +78,13 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             parent.addView(statusBar);
             parent.addView(unknownBarcode);
         }
+
+//        displayTimer.schedule(getTimerTask(), delayUntilPrompt);
+    }
+
+    public void resetPromptTimer() {
+//        displayTimer.purge();
+//        displayTimer.schedule(getTimerTask(), delayUntilPrompt);
     }
 
     private void inflateOverlay() {
@@ -104,6 +122,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         historyScrollView.setVisibility(View.VISIBLE);
         statusBar.setVisibility(View.VISIBLE);
 
+
         if (animStatusShow != null) {
             AnimatorSet anim = new AnimatorSet();
             AnimatorSet.Builder builder = anim.play(animStatusShow);
@@ -124,7 +143,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
                     child.getY(),
                     child.getTop());
             animator.setDuration(animDuration);
-            animator.setStartDelay(i*delayAmount);
+            animator.setStartDelay(i * delayAmount);
             builder.with(animator);
         }
         hiddenRatings = null;
@@ -228,8 +247,14 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     };
 
     public void showUnknownBarcode(boolean withAnimation) {
-        unknownBarcode.setVisibility(View.VISIBLE);
-        animUnknownCodeShow.start();
+        if (animUnknownCodeShow.isRunning()) {
+            return;
+        } else if (animUnknownCodeHide.isRunning()) {
+            return;
+        } else {
+            unknownBarcode.setVisibility(View.VISIBLE);
+            animUnknownCodeShow.start();
+        }
     }
 
 
@@ -238,17 +263,19 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         animUnknownCodeHide.start();
     }
 
-    public void addNewRating(String barcode) {
+    public void addNewRating(String barcode, ProductRatingBar.BarcodeCallbacks callback) {
         ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
+        pbar.setBarcodeCallback(callback);
         pbar.loadBarcode(barcode);
-        addRatingView(pbar);
-    }
-
-    private void addRatingView(View view) {
-        if (ratingHistory.getChildCount() == 7) {
-            ratingHistory.removeView(ratingHistory.getChildAt(6));
+        int numChildren = ratingHistory.getChildCount();
+        for (int i = 0; i < numChildren && i < 7 ; i++) {
+            ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(i);
         }
-        ratingHistory.addView(view, 0, defaultLP);
+        for (int i = 7 ; i < numChildren ; i++ ) {
+            ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(-1);
+            ratingHistory.removeView(ratingHistory.getChildAt(i));
+        }
+        ratingHistory.addView(pbar, 0, defaultLP);
     }
 
     @Override

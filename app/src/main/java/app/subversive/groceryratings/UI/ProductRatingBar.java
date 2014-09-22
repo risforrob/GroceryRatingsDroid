@@ -33,6 +33,10 @@ public class ProductRatingBar extends FrameLayout {
         }
     }
 
+    public interface BarcodeCallbacks {
+        void onUnknownBarcode(String barcode);
+    }
+
     final long duration = 200;
     private Product product;
 
@@ -43,10 +47,14 @@ public class ProductRatingBar extends FrameLayout {
 
     View rating, status, displayedView;
 
+    int indexInParent;
+
     final static LayoutParams defaultLayout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-    static {
-        defaultLayout.gravity = Gravity.CENTER;
-    }
+    static { defaultLayout.gravity = Gravity.CENTER; }
+
+    private BarcodeCallbacks barcodeCallbacks;
+
+    public void setIndex(int index) {indexInParent = index; }
 
     public ProductRatingBar(Context context) {
         super(context);
@@ -63,6 +71,8 @@ public class ProductRatingBar extends FrameLayout {
         init(context);
     }
 
+    public void setBarcodeCallback(BarcodeCallbacks callback) { barcodeCallbacks = callback; }
+
     public void setProduct(Product product) {
         this.product = product;
 
@@ -77,10 +87,12 @@ public class ProductRatingBar extends FrameLayout {
     public void displayStatus(String statusString, boolean showProgress, boolean animated) {
         statusText.setText(statusString);
         progress.setVisibility(showProgress ? VISIBLE : GONE);
-        showView(status, animated);
+        if (!status.isShown()) {
+            showView(status, animated);
+        }
     }
 
-    public void loadBarcode(String barcode) {
+    public void loadBarcode(final String barcode) {
         displayStatus("Loading Product", true, false);
         MainWindow.service.getProduct(barcode, new Callback<Product>() {
             @Override
@@ -90,6 +102,9 @@ public class ProductRatingBar extends FrameLayout {
                     showView(rating, true);
                 } else {
                     displayStatus("Unknown Product", false, true);
+                    if (indexInParent == 0 && barcodeCallbacks != null) {
+                        barcodeCallbacks.onUnknownBarcode(barcode);
+                    }
                 }
             }
 
