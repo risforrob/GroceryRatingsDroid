@@ -40,7 +40,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     LinearLayout statusBar, unknownBarcode;
 
     RatingsLayout ratingHistory;
-    ProgressBar progressBar;
     TextView statusText, btnPhotoNo, btnPhotoYes;
 
     private final ViewGroup.LayoutParams defaultLP =
@@ -76,7 +75,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         ratingHistory = (RatingsLayout) parent.findViewById(R.id.RatingHolder);
         statusBar = (LinearLayout) parent.findViewById(R.id.statusBar);
         unknownBarcode = (LinearLayout) parent.findViewById(R.id.unknownBarcode);
-        progressBar = (ProgressBar) parent.findViewById(R.id.progressBar);
         statusText = (TextView) parent.findViewById(R.id.statusText);
         btnPhotoNo = (TextView) parent.findViewById(R.id.tvNoScanBarcode);
         btnPhotoYes = (TextView) parent.findViewById(R.id.tvYesScanBarcode);
@@ -172,7 +170,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             delay += delayAmount;
             hiddenRatings[i] = child;
         }
-//        animator.addListener(new AnimUtils.HideOnEnd(historyScrollView));
     }
 
     @Override
@@ -241,35 +238,17 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         animUnknownCodeHide.start();
     }
 
-    public void debugAddNewRating() {
-        ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
-        pbar.debugLoadBarcode();
-        addRatingView(pbar);
-    }
-
     public void addNewRating(String barcode) {
         ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
         pbar.loadBarcode(barcode);
         addRatingView(pbar);
     }
 
-    public void addNewRating(Product product) {
-        ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
-        pbar.setProduct(product);
-        addRatingView(pbar);
-    }
-
-
     private void addRatingView(View view) {
         if (ratingHistory.getChildCount() == 7) {
             ratingHistory.removeView(ratingHistory.getChildAt(6));
         }
         ratingHistory.addView(view, 0, defaultLP);
-    }
-
-    public void setStatusText(String text, boolean showProgress) {
-        statusText.setText(text);
-        progressBar.setVisibility(showProgress ? View.VISIBLE : View.GONE);
     }
 
     @Override

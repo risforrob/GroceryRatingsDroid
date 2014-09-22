@@ -2,6 +2,7 @@ package app.subversive.groceryratings.test;
 
 import android.os.SystemClock;
 
+import java.util.HashMap;
 import java.util.Random;
 
 import app.subversive.groceryratings.Core.Product;
@@ -17,10 +18,17 @@ import retrofit.http.Path;
 public class DebugGroceryService extends DebugService implements GroceryRatingsService {
     int productCounter;
 
+    final static HashMap<String, Product> datastore = new HashMap<String, Product>();
+
     @Override
     public void getProduct(@Path("productID") String productID, Callback<Product> cb) {
-        Product p = new Product(String.format("Debug product %d", productCounter++), random.nextInt(5), random.nextInt(50));
-        p.published = true;
+        Product p;
+        if (productID == null || productID.isEmpty()) {
+            p = new Product(String.format("Debug product %d", productCounter++), random.nextInt(5), random.nextInt(50));
+            p.published = true;
+        } else {
+            p = datastore.get(productID);
+        }
         successfulRequest(p, cb);
     }
 

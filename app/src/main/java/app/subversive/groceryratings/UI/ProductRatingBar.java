@@ -3,14 +3,10 @@ package app.subversive.groceryratings.UI;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -38,15 +34,14 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     final long duration = 200;
-
-
     private Product product;
 
 
-    TextView productName, productNumReviews;
+    TextView productName, productNumReviews, statusText;
     RatingBar productStars;
+    ProgressBar progress;
 
-    View rating, loading;
+    View rating, status, displayedView;
 
     final static LayoutParams defaultLayout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     static {
@@ -77,80 +72,70 @@ public class ProductRatingBar extends FrameLayout {
         int nReviews = product.getRatingCount();
         String reviews = String.format((nReviews == 1) ? "%d Review" : "%d Reviews", nReviews);
         productNumReviews.setText(reviews);
-
     }
 
-    public void debugLoadBarcode() {
-        showLoading(false);
-        new AsyncTask<Void, Void, Product>() {
-            @Override
-            protected void onPostExecute(Product product) {
-                super.onPostExecute(product);
-                setProduct(product);
-                showRating(true);
-            }
-
-            @Override
-            protected Product doInBackground(Void... params) {
-                SystemClock.sleep(2000);
-                Product p = new Product("A Product named Bob", (int) Math.round(Math.random()*5), (int) Math.round(Math.random()*20));
-                return p;
-            }
-        }.execute();
+    public void displayStatus(String statusString, boolean showProgress, boolean animated) {
+        statusText.setText(statusString);
+        progress.setVisibility(showProgress ? VISIBLE : GONE);
+        showView(status, animated);
     }
 
     public void loadBarcode(String barcode) {
-        showLoading(false);
+        displayStatus("Loading Product", true, false);
         MainWindow.service.getProduct(barcode, new Callback<Product>() {
             @Override
             public void success(Product product, Response response) {
-                setProduct(product);
-                showRating(true);
+                if (product != null && product.published) {
+                    setProduct(product);
+                    showView(rating, true);
+                } else {
+                    displayStatus("Unknown Product", false, true);
+                }
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                displayStatus("Error Loading Product", false, true);
             }
         });
     }
 
-    private void crossfade(View vFrom, View vTo) {
-        vTo.setAlpha(0.f);
-        vTo.setVisibility(VISIBLE);
-        vFrom.animate().alpha(0f).setDuration(duration).setListener(new hideOnEnd(vFrom)).start();
-        vTo.animate().alpha(1f).setDuration(duration).start();
-    }
-
-    public void showRating(boolean animated) {
+    private void showView(View newView, boolean animated) {
         if (animated) {
-            crossfade (loading, rating);
+            if (displayedView != null) {
+                displayedView.animate().alpha(0f).setDuration(duration).setListener(new hideOnEnd(displayedView)).start();
+            }
+            newView.setAlpha(0f);
+            newView.setVisibility(VISIBLE);
+            newView.animate().alpha(1f).setDuration(duration).start();
         } else {
-            rating.setVisibility(VISIBLE);
-            loading.setVisibility(INVISIBLE);
+            if (displayedView != null) {
+                displayedView.setVisibility(INVISIBLE);
+            }
+            newView.setVisibility(VISIBLE);
         }
-    }
-
-    public void showLoading(boolean animated) {
-        rating.setVisibility(INVISIBLE);
-        loading.setVisibility(VISIBLE);
+        displayedView = newView;
     }
 
     private void init(Context context) {
         setBackgroundResource(R.color.blackOverlay);
         Utils.setPaddingDP(this, 8, 4, 8, 4);
 
-        rating = inflate(context, R.layout.rating_bar_contents, null);
-        loading = inflate(context, R.layout.loading, null);
-
-        rating.setVisibility(INVISIBLE);
-        loading.setVisibility(INVISIBLE);
-
-        addView(rating, defaultLayout);
-        addView(loading, defaultLayout);
+        rating = defaultInflate(context, R.layout.rating_bar_contents);
+        status = defaultInflate(context, R.layout.rating_bar_status);
 
         productName = ((TextView) rating.findViewById(R.id.productName));
         productStars = ((RatingBar) rating.findViewById(R.id.productStars));
         productNumReviews = ((TextView) rating.findViewById(R.id.productNumReviews));
+
+        statusText = ((TextView) status.findViewById(R.id.tvStatus));
+        progress = ((ProgressBar) status.findViewById(R.id.pbLoading));
+    }
+
+    private View defaultInflate(Context context, int resource) {
+        View view = inflate(context, resource, null);
+        view.setVisibility(INVISIBLE);
+        addView(view, defaultLayout);
+        return view;
     }
 }

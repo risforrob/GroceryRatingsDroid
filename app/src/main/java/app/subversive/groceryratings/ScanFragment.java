@@ -101,7 +101,7 @@ public class ScanFragment
                 break;
 
             case 2:
-                loadProduct("nocode");
+                loadProduct(null);
                 handled = true;
                 break;
 
@@ -265,7 +265,6 @@ public class ScanFragment
     public void handleDecode(Result rawResult) {
         Log.i(TAG, rawResult.getText());
         if (!lastScanned.equals(rawResult.getText())) {
-            scanControls.setStatusText("Fetching Product.", true);
             scanControls.hideUnknownBarcode(true);
             if (mVibrator != null && mVibrator.hasVibrator()) {
                 mVibrator.vibrate(50);
@@ -283,47 +282,8 @@ public class ScanFragment
     }
 
     private void restartScanner() {
-        scanControls.setStatusText("Show me a barcode to scan.", false);
         getHandler().handleMessage(Message.obtain(getHandler(), R.id.restart_preview));
     }
-
-    public void showProductData(Product product) {
-        scanControls.addNewRating(product);
-    }
-
-    public void serviceError() {
-        scanControls.setStatusText("Error access webservice", false);
-    }
-
-    private void foundUnknownProduct() {
-        scanControls.showUnknownBarcode(true);
-    }
-
-    Callback<Product> onProductLoaded = new Callback<Product>() {
-        @Override
-        public void success(Product product, Response response) {
-            if (product == null) {
-                foundUnknownProduct();
-            } else if (product.published) {
-                showProductData(product);
-            } else {
-                foundUnpublishedProduct(product);
-            }
-            restartScanner();
-        }
-
-        @Override
-        public void failure(RetrofitError error) {
-            serviceError();
-            restartScanner();
-        }
-    };
-
-    private void foundUnpublishedProduct(Product product) {
-        //todo
-        // what to do when there is a product but it is unpublished
-    }
-
 
     @Override
     public void onPictureTaken(byte[] data, Camera camera) {

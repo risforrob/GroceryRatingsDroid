@@ -33,17 +33,6 @@
         android:layout_gravity="top"
         android:id="@+id/statusBar">
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:id="@+id/progressBar"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            tools:visibility="visible"
-            android:clickable="true"
-            android:layout_marginRight="8dp" />
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
