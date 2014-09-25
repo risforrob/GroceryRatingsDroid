@@ -56,7 +56,7 @@ public class RatingsLayout extends ViewGroup {
 
         int lastChildTop = (int) Math.round(mHeight * .65);
 
-        for (int i = 0; i < Math.min(count, maxChildren) ; i++) {
+        for (int i = 0; i < count ; i++) {
             final View child = getChildAt(i);
 
             final int childHeight = child.getMeasuredHeight();

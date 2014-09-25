@@ -267,15 +267,21 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
         pbar.setBarcodeCallback(callback);
         pbar.loadBarcode(barcode);
+
         int numChildren = ratingHistory.getChildCount();
-        for (int i = 0; i < numChildren && i < 7 ; i++) {
-            ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(i);
-        }
-        for (int i = 7 ; i < numChildren ; i++ ) {
+        int maxChildren = ratingHistory.maxChildren;
+
+        for (int i = maxChildren-1 ; i < numChildren ; i++ ) {
             ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(-1);
             ratingHistory.removeView(ratingHistory.getChildAt(i));
         }
+
         ratingHistory.addView(pbar, 0, defaultLP);
+
+        for (int i = 1; i < numChildren && i < maxChildren  ; i++) {
+            ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(i);
+        }
+
     }
 
     @Override
