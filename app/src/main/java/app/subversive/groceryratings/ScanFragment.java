@@ -320,13 +320,15 @@ public class ScanFragment
     }
 
     private void uploadImage(byte[] imageData) {
+        final ProductRatingBar pbar = scanControls.getProductBar(0);
+        pbar.setState(ProductRatingBar.States.UPLOADING);
         TypedByteArray data =
                 new Utils.TypedFileByteArray("image/jpeg", "foo.jpg", imageData);
         MainWindow.imageService.uploadImage(data, new Callback<Response>() {
             @Override
             public void success(Response data, Response response) {
                 String id;
-                byte[] bytes = new byte[(int)data.getBody().length()];
+                byte[] bytes = new byte[(int) data.getBody().length()];
                 try {
                     data.getBody().in().read(bytes, 0, (int) data.getBody().length());
                     id = new String(bytes);
@@ -336,13 +338,13 @@ public class ScanFragment
                 }
 
                 Product p = new Product(true);
-                p.productCode = new String(lastScanned);
+                p.productCode = lastScanned;
                 p.images.add(id);
 
                 MainWindow.service.updateProduct(p, new Callback<Product>() {
                     @Override
                     public void success(Product product, Response response) {
-
+                        pbar.setState(ProductRatingBar.States.THANKS);
                     }
 
                     @Override
@@ -392,9 +394,7 @@ public class ScanFragment
     }
 
     @Override
-    public void onScanControlsFinishedShow() {
-
-    }
+    public void onScanControlsFinishedShow() { }
 
     @Override
     public void onUnknownBarcode(String barcode) {

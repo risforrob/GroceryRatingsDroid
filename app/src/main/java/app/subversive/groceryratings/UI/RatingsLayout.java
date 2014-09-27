@@ -46,8 +46,6 @@ public class RatingsLayout extends ViewGroup {
         setMeasuredDimension(widthMeasureSpec, height);
     }
 
-
-
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         final int count = getChildCount();

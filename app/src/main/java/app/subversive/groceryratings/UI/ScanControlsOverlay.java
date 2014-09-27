@@ -130,6 +130,13 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             addProductShowAnimation(builder);
 
             anim.setInterpolator(new AccelerateInterpolator());
+            anim.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    handler.onScanControlsFinishedShow();
+                }
+            });
             anim.start();
         }
     }
@@ -291,4 +298,11 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0,0); }
 
+    public final ProductRatingBar getProductBar(int index) {
+        if (index < ratingHistory.getChildCount()) {
+            return ((ProductRatingBar) ratingHistory.getChildAt(index));
+        }   else {
+            return null;
+        }
+    }
 }

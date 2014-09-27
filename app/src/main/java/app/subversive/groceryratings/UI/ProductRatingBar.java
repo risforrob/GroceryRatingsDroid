@@ -3,6 +3,7 @@ package app.subversive.groceryratings.UI;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.net.wifi.WifiConfiguration;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -30,12 +31,17 @@ public class ProductRatingBar extends FrameLayout {
         public void onAnimationEnd(Animator animation) {
             super.onAnimationEnd(animation);
             v.setVisibility(INVISIBLE);
+            v.setAlpha(1f);
         }
     }
 
     public interface BarcodeCallbacks {
         void onUnknownBarcode(String barcode);
     }
+
+
+    public enum States {FETCHING, UNKNOWN, SUCCESS, PHOTO, ERROR, THANKS, UPLOADING}
+    private States state;
 
     final long duration = 200;
     private Product product;
@@ -74,6 +80,7 @@ public class ProductRatingBar extends FrameLayout {
     public void setBarcodeCallback(BarcodeCallbacks callback) { barcodeCallbacks = callback; }
 
     public void setProduct(Product product) {
+        state = States.SUCCESS;
         this.product = product;
 
         productName.setText(product.getName());
@@ -82,6 +89,20 @@ public class ProductRatingBar extends FrameLayout {
         int nReviews = product.getRatingCount();
         String reviews = String.format((nReviews == 1) ? "%d Review" : "%d Reviews", nReviews);
         productNumReviews.setText(reviews);
+        state = null;
+    }
+
+    public void setState(States state) {
+        switch(state) {
+            case THANKS:
+                displayStatus("Thanks for your help!", false, true);
+                this.state = state;
+                break;
+            case UPLOADING:
+                displayStatus("Uploading Image.", true, false);
+                this.state = state;
+                break;
+        }
     }
 
     public void displayStatus(String statusString, boolean showProgress, boolean animated) {
@@ -93,6 +114,7 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     public void loadBarcode(final String barcode) {
+        state = States.FETCHING;
         displayStatus("Loading Product", true, false);
         MainWindow.service.getProduct(barcode, new Callback<Product>() {
             @Override
@@ -101,6 +123,7 @@ public class ProductRatingBar extends FrameLayout {
                     setProduct(product);
                     showView(rating, true);
                 } else {
+                    state = States.UNKNOWN;
                     displayStatus("Unknown Product", false, true);
                     if (indexInParent == 0 && barcodeCallbacks != null) {
                         barcodeCallbacks.onUnknownBarcode(barcode);
@@ -110,6 +133,7 @@ public class ProductRatingBar extends FrameLayout {
 
             @Override
             public void failure(RetrofitError error) {
+                state = States.ERROR;
                 displayStatus("Error Loading Product", false, true);
             }
         });
