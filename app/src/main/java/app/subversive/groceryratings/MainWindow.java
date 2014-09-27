@@ -3,6 +3,7 @@ package app.subversive.groceryratings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +20,7 @@ public class MainWindow extends ActionBarActivity {
     static final String imageEndpoint = "https://groceryratings.appspot.com";
     public static GroceryRatingsService service, mainService, debugGroceryService;
     public static ImageService imageService, mainImageService, debugImageService;
+    private BackFragment backFrag;
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
@@ -68,8 +70,9 @@ public class MainWindow extends ActionBarActivity {
 
         setContentView(R.layout.activity_main_window);
         if (savedInstanceState == null) {
+            backFrag = ScanFragment.newInstance();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, ScanFragment.newInstance())
+                    .add(R.id.container, (ScanFragment) backFrag)
                     .commit();
         }
     }
@@ -122,5 +125,12 @@ public class MainWindow extends ActionBarActivity {
             return false;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!backFrag.onBackPressed()) {
+            super.onBackPressed();
+        }
     }
 }

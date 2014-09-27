@@ -41,11 +41,13 @@ import retrofit.mime.TypedByteArray;
 
 public class ScanFragment
         extends Fragment
-        implements SurfaceHolder.Callback,
-                   Camera.PictureCallback,
-                   CameraControlsOverlay.Callbacks,
-                   ScanControlsOverlay.Callbacks,
-                   ProductRatingBar.BarcodeCallbacks{
+        implements
+            SurfaceHolder.Callback,
+            Camera.PictureCallback,
+            CameraControlsOverlay.Callbacks,
+            ScanControlsOverlay.Callbacks,
+            ProductRatingBar.BarcodeCallbacks,
+            BackFragment        {
 
 
     CameraManager cameraManager;
@@ -159,6 +161,7 @@ public class ScanFragment
     private void setCapturePhotoMode() {
         handler.handleMessage(Message.obtain(handler, R.id.pause_scan));
         scanControls.hideOverlay(true);
+
     }
 
     private void setScanMode() {
@@ -187,6 +190,8 @@ public class ScanFragment
 
         cameraControls.attachOverlayToParent((FrameLayout) v);
         scanControls.attachOverlayToParent((FrameLayout) v);
+
+        v.setKeepScreenOn(true);
         return v;
     }
 
@@ -406,6 +411,16 @@ public class ScanFragment
             setCapturePhotoMode();
         } else {
             scanControls.showUnknownBarcode(true);
+        }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        if (currOverlay != scanControls) {
+            setScanMode();
+            return true;
+        } else {
+            return false;
         }
     }
 }
