@@ -120,6 +120,13 @@ public class ScanFragment
                     m.setEnabled(item.isChecked());
                 }
                 handled = true;
+                break;
+
+            case 5:
+                item.setChecked(!item.isChecked());
+                MainWindow.Preferences.autoscan = item.isChecked();
+                handled = true;
+                break;
         }
         return handled || parentHandled;
     }
@@ -134,6 +141,10 @@ public class ScanFragment
         for (MenuItem m : debugMenuItems) {
             m.setEnabled(false);
         }
+
+        MenuItem m = menu.add(3,5,8, "Auto Photo");
+        m.setCheckable(true);
+        m.setChecked(MainWindow.Preferences.autoscan);
     }
 
 
@@ -259,28 +270,21 @@ public class ScanFragment
         }
     }
 
-    public CameraManager getCameraManager() {
-        return cameraManager;
-    }
-
     public CaptureActivityHandler getHandler() {
         return handler;
     }
 
-    public void handleDecode(Result rawResult) {
-        Log.i(TAG, rawResult.getText());
-        //todo restructure this code and load product
-        //todo so that it is a single method that plays nice
-        //todo with debug mode.
+    public void handleDecode(String barcode) {
+        Log.i(TAG, barcode);
         scanControls.resetPromptTimer();
-        if (!lastScanned.equals(rawResult.getText())) {
+        if (!lastScanned.equals(barcode)) {
             scanControls.hideUnknownBarcode(true);
             if (mVibrator != null && mVibrator.hasVibrator()) {
                 mVibrator.vibrate(50);
             }
             scanControls.scrollHistoryToBeginning();
-            loadProduct(rawResult.getText());
-            lastScanned = rawResult.getText();
+            loadProduct(barcode);
+            lastScanned = barcode;
         }
         restartScanner();
     }
@@ -398,6 +402,10 @@ public class ScanFragment
 
     @Override
     public void onUnknownBarcode(String barcode) {
-        scanControls.showUnknownBarcode(true);
+        if (MainWindow.Preferences.autoscan) {
+            setCapturePhotoMode();
+        } else {
+            scanControls.showUnknownBarcode(true);
+        }
     }
 }

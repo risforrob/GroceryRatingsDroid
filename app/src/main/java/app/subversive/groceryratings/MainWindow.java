@@ -1,6 +1,7 @@
 package app.subversive.groceryratings;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -18,6 +19,22 @@ public class MainWindow extends ActionBarActivity {
     static final String imageEndpoint = "https://groceryratings.appspot.com";
     public static GroceryRatingsService service, mainService, debugGroceryService;
     public static ImageService imageService, mainImageService, debugImageService;
+
+    public static class Preferences {
+        final private static String AUTOSCAN = "AUTOSCAN";
+
+        static boolean autoscan;
+
+        static void loadPrefs(SharedPreferences prefs) {
+            autoscan = prefs.getBoolean(AUTOSCAN, false);
+        }
+
+        static void writePrefs(SharedPreferences prefs) {
+            SharedPreferences.Editor edit = prefs.edit();
+            edit.putBoolean(AUTOSCAN, autoscan);
+            edit.commit();
+        }
+    }
 
 
 
@@ -47,19 +64,21 @@ public class MainWindow extends ActionBarActivity {
         debugImageService = new DebugImageService();
 
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
+        Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
 
         setContentView(R.layout.activity_main_window);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, ScanFragment.newInstance())
                     .commit();
-
         }
-
     }
 
-
-
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Preferences.writePrefs(getPreferences(MODE_PRIVATE));
+    }
 
     /** Check if this device has a camera */
     private boolean checkCameraHardware(Context context) {
@@ -76,7 +95,7 @@ public class MainWindow extends ActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main_window, menu);
-        MenuItem m = menu.add(2,4,0,"Debug Service");
+        MenuItem m = menu.add(2,4,9,"Debug Service");
         m.setCheckable(true);
 
         return true;

@@ -72,7 +72,7 @@ public final class CaptureActivityHandler extends Handler {
                 break;
             case R.id.decode_succeeded:
                 state = State.SUCCESS;
-                activity.handleDecode((Result) message.obj); //, barcode, scaleFactor);
+                activity.handleDecode((String) message.obj); //, barcode, scaleFactor);
                 break;
             case R.id.decode_failed:
                 if (state != State.PAUSED) {

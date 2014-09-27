@@ -122,7 +122,7 @@ final class DecodeHandler extends Handler {
                 // Don't log the barcode contents for security.
                 long end = System.currentTimeMillis();
                 Log.i(TAG, "Found barcode in " + (end - start) + " ms");
-                Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult);
+                Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult.getText());
                 message.sendToTarget();
             } else {
                 Message message = Message.obtain(handler, R.id.decode_failed);
