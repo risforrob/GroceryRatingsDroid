@@ -345,4 +345,10 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         }
         return products;
     }
+
+    public void flashTop() {
+        if (!unknownBarcode.isShown()) {
+            getProductBar(0).flash();
+        }
+    }
 }

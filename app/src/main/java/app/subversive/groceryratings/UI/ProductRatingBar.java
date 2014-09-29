@@ -2,12 +2,23 @@ package app.subversive.groceryratings.UI;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AnimationSet;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -59,6 +70,24 @@ public class ProductRatingBar extends FrameLayout {
 
     final static LayoutParams defaultLayout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     static { defaultLayout.gravity = Gravity.CENTER; }
+
+    private final AnimatorSet flashAnim;
+    {
+        ArgbEvaluator eval = new ArgbEvaluator();
+        ValueAnimator flash, fade;
+        flash = ObjectAnimator.ofInt(this, "backgroundColor", getResources().getColor(R.color.blackOverlay), getResources().getColor(R.color.blackOverlayFlash));
+        flash.setEvaluator(eval);
+        flash.setInterpolator(new AccelerateInterpolator());
+        flash.setDuration(100);
+
+        fade = ObjectAnimator.ofInt(this, "backgroundColor", getResources().getColor(R.color.blackOverlayFlash), getResources().getColor(R.color.blackOverlay));
+        fade.setEvaluator(eval);
+        fade.setInterpolator(new AccelerateDecelerateInterpolator());
+        fade.setDuration(300);
+
+        flashAnim = new AnimatorSet();
+        flashAnim.playSequentially(flash, fade);
+    }
 
     private BarcodeCallbacks barcodeCallbacks;
 
@@ -167,7 +196,7 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     private void init(Context context) {
-        setBackgroundResource(R.color.blackOverlay);
+        setBackgroundColor(getResources().getColor(R.color.blackOverlay));
         Utils.setPaddingDP(this, 8, 4, 8, 4);
 
         rating = defaultInflate(context, R.layout.rating_bar_contents);
@@ -195,5 +224,10 @@ public class ProductRatingBar extends FrameLayout {
     public String getBarcode() { return barcode; }
 
     public void flash() {
+        if (!flashAnim.isRunning() &&
+                !(state == States.FETCHING) &&
+                !(state == States.UPLOADING)) {
+            flashAnim.start();
+        }
     }
 }

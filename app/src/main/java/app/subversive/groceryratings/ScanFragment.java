@@ -139,6 +139,13 @@ public class ScanFragment
                 MainWindow.Preferences.autoscan = item.isChecked();
                 handled = true;
                 break;
+
+            case 6:
+                ProductRatingBar pbar = scanControls.getProductBar(0);
+                if (pbar != null) {
+                    pbar.flash();
+                }
+                handled = true;
         }
         return handled || parentHandled;
     }
@@ -157,6 +164,8 @@ public class ScanFragment
         MenuItem m = menu.add(3,5,8, "Auto Photo");
         m.setCheckable(true);
         m.setChecked(MainWindow.Preferences.autoscan);
+
+        menu.add(4,6,40, "Flash");
     }
 
 
@@ -298,6 +307,8 @@ public class ScanFragment
             scanControls.scrollHistoryToBeginning();
             loadProduct(barcode);
             lastScanned = barcode;
+        } else {
+            scanControls.flashTop();
         }
         restartScanner();
     }
