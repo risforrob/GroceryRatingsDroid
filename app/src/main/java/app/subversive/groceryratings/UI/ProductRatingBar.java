@@ -2,10 +2,12 @@ package app.subversive.groceryratings.UI;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewPropertyAnimator;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
@@ -191,4 +193,7 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     public String getBarcode() { return barcode; }
+
+    public void flash() {
+    }
 }
