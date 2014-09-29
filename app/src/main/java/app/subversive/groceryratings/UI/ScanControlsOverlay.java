@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,13 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.R;
 
 /**
@@ -51,6 +56,8 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
                    animStatusShow;
 
     View[] hiddenRatings;
+
+    private final HashMap<String, ProductRatingBar> cache = new HashMap<String, ProductRatingBar>();
 
     private final Timer displayTimer = new Timer(true);
 
@@ -264,32 +271,51 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         }
     }
 
-
-
     public void hideUnknownBarcode(boolean withAnimation) {
         animUnknownCodeHide.start();
     }
 
-    public void addNewRating(String barcode, ProductRatingBar.BarcodeCallbacks callback) {
-        ProductRatingBar pbar = new ProductRatingBar(parent.getContext());
-        pbar.setBarcodeCallback(callback);
-        pbar.loadBarcode(barcode);
+    private void moveProductBarToTop(ProductRatingBar pbar) {
+        ratingHistory.removeView(pbar);
+        ratingHistory.addView(pbar, 0);
+        updateIndicies();
+    }
+
+    public void addNewProductBar(String barcode, ProductRatingBar pbar) {
+        cache.put(barcode, pbar);
 
         int numChildren = ratingHistory.getChildCount();
         int maxChildren = ratingHistory.maxChildren;
 
         for (int i = maxChildren-1 ; i < numChildren ; i++ ) {
-            ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(-1);
-            ratingHistory.removeView(ratingHistory.getChildAt(i));
+            ProductRatingBar child = (ProductRatingBar) ratingHistory.getChildAt(i);
+            child.setIndex(-1);
+            ratingHistory.removeView(child);
+            cache.remove(child.getBarcode());
         }
 
         ratingHistory.addView(pbar, 0, defaultLP);
-        numChildren = ratingHistory.getChildCount();
+        updateIndicies();
+    }
 
-        for (int i = 0; i < numChildren && i < maxChildren  ; i++) {
+    private void updateIndicies() {
+        int numChildren = ratingHistory.getChildCount();
+
+        for (int i = 0; i < numChildren ; i++) {
             ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(i);
         }
+    }
 
+    public void addNewRating(String barcode, ProductRatingBar.BarcodeCallbacks callback) {
+        ProductRatingBar pbar = cache.get(barcode);
+        if (pbar != null) {
+            moveProductBarToTop(pbar);
+        } else {
+            pbar = new ProductRatingBar(parent.getContext());
+            pbar.setBarcodeCallback(callback);
+            pbar.loadBarcode(barcode);
+            addNewProductBar(barcode, pbar);
+        }
     }
 
     @Override
@@ -305,5 +331,18 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         }   else {
             return null;
         }
+    }
+
+    public final List<Product> getAllProducts() {
+        LinkedList<Product> products = new LinkedList<Product>();
+        int numChildren = ratingHistory.getChildCount();
+        Product p;
+        for (int i = 0 ; i < numChildren ; i++) {
+            p = ((ProductRatingBar) ratingHistory.getChildAt(i)).getProduct();
+            if (p != null) {
+                products.add(p);
+            }
+        }
+        return products;
     }
 }

@@ -13,7 +13,7 @@ import android.widget.RemoteViews;
 @RemoteViews.RemoteView
 public class RatingsLayout extends ViewGroup {
     final int rowSpacing = 1;
-    final int maxChildren = 7;
+    final int maxChildren = 3;
 
     public RatingsLayout(Context context) {
         super(context);

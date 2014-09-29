@@ -1,6 +1,5 @@
 package app.subversive.groceryratings;
 
-import android.app.Activity;
 import android.content.Context;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -18,21 +17,21 @@ import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 import android.widget.FrameLayout;
 
+import com.google.gson.Gson;
 import com.google.zxing.client.android.CaptureActivityHandler;
 import com.google.zxing.client.android.camera.CameraManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import com.google.zxing.Result;
+import java.util.HashMap;
+import java.util.List;
 
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
 import app.subversive.groceryratings.UI.ProductRatingBar;
 import app.subversive.groceryratings.UI.ScanControlsOverlay;
+import app.subversive.groceryratings.test.DebugGroceryService;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -50,6 +49,7 @@ public class ScanFragment
             BackFragment        {
 
 
+    private final static String ARG_RAW_HISTORY = "ARG_RAW_HISTORY";
     CameraManager cameraManager;
     boolean hasSurface;
     private final String TAG = "ScanFrangment";
@@ -67,9 +67,12 @@ public class ScanFragment
 
     final ArrayList<MenuItem> debugMenuItems = new ArrayList<MenuItem>();
 
-    public static ScanFragment newInstance() {
+    public static ScanFragment newInstance(String rawHistoryData) {
         ScanFragment fragment = new ScanFragment();
         Bundle args = new Bundle();
+        if (rawHistoryData != null && !rawHistoryData.isEmpty()) {
+            args.putString(ARG_RAW_HISTORY, rawHistoryData);
+        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -87,7 +90,15 @@ public class ScanFragment
         cameraControls = new CameraControlsOverlay(this);
         scanControls = new ScanControlsOverlay(this);
 
+
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+//        Log.i(TAG, "Parceling data");
+//        outState.putParcelableArray("products", scanControls.getAllProducts());
     }
 
     @Override
@@ -107,8 +118,7 @@ public class ScanFragment
                 break;
 
             case 2:
-                loadProduct(null);
-                lastScanned = "";
+                handleDecode(DebugGroceryService.addNewProduct());
                 handled = true;
                 break;
 
@@ -191,6 +201,15 @@ public class ScanFragment
         cameraControls.attachOverlayToParent((FrameLayout) v);
         scanControls.attachOverlayToParent((FrameLayout) v);
 
+        Bundle args = getArguments();
+        if (args.containsKey(ARG_RAW_HISTORY)) {
+            Product[] products = (new Gson()).fromJson(args.getString(ARG_RAW_HISTORY), Product[].class);
+            for (int i = products.length-1 ; i >= 0 ; i --) {
+                ProductRatingBar pbar = ProductRatingBar.fromProduct(products[i], v.getContext());
+                scanControls.addNewProductBar(pbar.getBarcode(), pbar);
+            }
+        }
+
         v.setKeepScreenOn(true);
         return v;
     }
@@ -204,6 +223,7 @@ public class ScanFragment
     public void onResume() {
         super.onResume();
         scanControls.showOverlay(true);
+        currOverlay = scanControls;
     }
 
     @Override
@@ -222,16 +242,6 @@ public class ScanFragment
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (holder == null) {
             Log.e(TAG, "*** WARNING *** surfaceCreated() gave us null surface!");
@@ -241,8 +251,6 @@ public class ScanFragment
             initCamera(holder);
         }
     }
-
-
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -350,7 +358,7 @@ public class ScanFragment
                 p.productCode = lastScanned;
                 p.images.add(id);
 
-                MainWindow.service.updateProduct(p, new Callback<Product>() {
+                MainWindow.service.addNewProduct(p, new Callback<Product>() {
                     @Override
                     public void success(Product product, Response response) {
                         pbar.setState(ProductRatingBar.States.THANKS);
@@ -422,5 +430,13 @@ public class ScanFragment
         } else {
             return false;
         }
+    }
+
+    public List<Product> getProductHistory() {
+        return scanControls.getAllProducts();
+    }
+
+    public void setHistory(Product[] products) {
+
     }
 }

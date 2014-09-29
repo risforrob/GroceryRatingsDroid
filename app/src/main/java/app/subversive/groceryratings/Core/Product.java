@@ -1,5 +1,9 @@
 package app.subversive.groceryratings.Core;
 
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -7,12 +11,13 @@ import java.util.LinkedList;
 /**
  * Created by rob on 8/24/14.
  */
-public class Product {
+public class Product implements Parcelable {
     public String parent, brandName, productName, manName, productCode, description;
     public int  ratingCount, ratingSum, stars;
     public float ratingScore;
     public boolean published;
-    public LinkedList<String> keywords, images;
+    public ArrayList<String> keywords, images;
+
 
     public Product() {}
 
@@ -22,8 +27,8 @@ public class Product {
             description = "";
             manName = "";
             brandName = "";
-            keywords = new LinkedList<String>();
-            images = new LinkedList<String>();
+            keywords = new ArrayList<String>();
+            images = new ArrayList<String>();
         }
     }
 
@@ -38,4 +43,41 @@ public class Product {
     }
     public int getNumStars() { return stars; }
     public int getRatingCount() { return ratingCount; }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(parent);
+        dest.writeString(brandName);
+        dest.writeString(productName);
+        dest.writeString(manName);
+        dest.writeString(productCode);
+        dest.writeString(description);
+    }
+
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel source) {
+            return new Product(source);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+
+    private Product(Parcel source) {
+        super();
+        parent = source.readString();
+        brandName = source.readString();
+        productName = source.readString();
+        manName = source.readString();
+        productCode = source.readString();
+        description = source.readString();
+    }
 }

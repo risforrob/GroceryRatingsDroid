@@ -3,84 +3,111 @@ package app.subversive.groceryratings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.List;
+
+import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
 import retrofit.RestAdapter;
 
 public class MainWindow extends ActionBarActivity {
-
+    private final static String TAG = MainWindow.class.getSimpleName();
     static final String endpoint = "https://1-dot-groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
     static final String imageEndpoint = "https://groceryratings.appspot.com";
     public static GroceryRatingsService service, mainService, debugGroceryService;
     public static ImageService imageService, mainImageService, debugImageService;
-    private BackFragment backFrag;
+    private ScanFragment scanFrag;
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
+        final private static String CAMERA_PARAMS = "CAMERA_PARAMS";
+        final private static String CAMERA_RES_X = "CAMERA_RES_X";
+        final private static String CAMERA_RES_Y = "CAMERA_RES_Y";
 
-        static boolean autoscan;
+        public static boolean autoscan;
+        public static String cameraParams;
+        public static int cameraResX, cameraResY;
 
         static void loadPrefs(SharedPreferences prefs) {
             autoscan = prefs.getBoolean(AUTOSCAN, false);
+            cameraParams = prefs.getString(CAMERA_PARAMS, null);
+            cameraResX = prefs.getInt(CAMERA_RES_X, -1);
+            cameraResY = prefs.getInt(CAMERA_RES_Y, -1);
         }
 
         static void writePrefs(SharedPreferences prefs) {
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(AUTOSCAN, autoscan);
+            edit.putString(CAMERA_PARAMS, cameraParams);
+            edit.putInt(CAMERA_RES_X, cameraResX);
+            edit.putInt(CAMERA_RES_Y, cameraResY);
             edit.commit();
         }
     }
-
-
-
+    private final static String HISTORY_FILE = "HISTORY_FILE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!checkCameraHardware(this)) {
-            throw new RuntimeException("No Camera");
-        }
-
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(endpoint)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .build();
-        service = mainService = restAdapter.create(GroceryRatingsService.class);
-
-        debugGroceryService = new DebugGroceryService();
-
-        RestAdapter imageAdapter = new RestAdapter.Builder()
-                .setEndpoint(imageEndpoint)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .build();
-
-        imageService = mainImageService = imageAdapter.create(ImageService.class);
-        debugImageService = new DebugImageService();
-
-        Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
-        Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
-
         setContentView(R.layout.activity_main_window);
         if (savedInstanceState == null) {
-            backFrag = ScanFragment.newInstance();
+            // todo move this into loading async task
+            scanFrag = ScanFragment.newInstance(readRawHistoryData());
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, (ScanFragment) backFrag)
+                    .add(R.id.container, scanFrag)
                     .commit();
+
+
+            if (!checkCameraHardware(this)) {
+                throw new RuntimeException("No Camera");
+            }
+
+            RestAdapter restAdapter = new RestAdapter.Builder()
+                    .setEndpoint(endpoint)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .build();
+            service = mainService = restAdapter.create(GroceryRatingsService.class);
+
+            debugGroceryService = new DebugGroceryService();
+
+            RestAdapter imageAdapter = new RestAdapter.Builder()
+                    .setEndpoint(imageEndpoint)
+                    .setLogLevel(RestAdapter.LogLevel.FULL)
+                    .build();
+
+            imageService = mainImageService = imageAdapter.create(ImageService.class);
+            debugImageService = new DebugImageService();
+
+            Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
+            Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
         }
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
+        writeHistory();
     }
 
     /** Check if this device has a camera */
@@ -129,8 +156,41 @@ public class MainWindow extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        if (!backFrag.onBackPressed()) {
+        if (scanFrag.isVisible() && !scanFrag.onBackPressed()) {
             super.onBackPressed();
         }
+    }
+
+    private void writeHistory() {
+        String jsonstring = (new Gson()).toJson(scanFrag.getProductHistory());
+        try {
+            FileOutputStream out = openFileOutput(HISTORY_FILE, MODE_PRIVATE);
+            out.write(jsonstring.getBytes());
+            out.close();
+        } catch (FileNotFoundException e) {
+            Log.i(TAG, "No file to write history");
+            // fail elegantly
+        } catch (IOException e) {
+            Log.i(TAG, "error writing history");
+            // fail elegantly
+        }
+    }
+
+    private String readRawHistoryData() {
+        File f = new File(getFilesDir(), HISTORY_FILE);
+        try {
+            RandomAccessFile rf = new RandomAccessFile(f, "r");
+            byte[] bytes = new byte[(int) rf.length()];
+            rf.readFully(bytes);
+            rf.close();
+            return new String(bytes);
+        } catch (FileNotFoundException e) {
+            Log.i(TAG, "No history to load");
+            // do nothing
+        } catch (IOException e) {
+            Log.i(TAG, "error reading history file");
+            // do nothing
+        }
+        return null;
     }
 }

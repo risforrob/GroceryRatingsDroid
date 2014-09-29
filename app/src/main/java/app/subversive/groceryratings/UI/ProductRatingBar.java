@@ -3,7 +3,6 @@ package app.subversive.groceryratings.UI;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.net.wifi.WifiConfiguration;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -45,6 +44,7 @@ public class ProductRatingBar extends FrameLayout {
 
     final long duration = 200;
     private Product product;
+    private String barcode;
 
 
     TextView productName, productNumReviews, statusText;
@@ -77,6 +77,14 @@ public class ProductRatingBar extends FrameLayout {
         init(context);
     }
 
+    public static ProductRatingBar fromProduct(Product p, Context c) {
+        ProductRatingBar pbar = new ProductRatingBar(c);
+        pbar.setProduct(p);
+        pbar.showView(pbar.rating, false);
+
+        return pbar;
+    }
+
     public void setBarcodeCallback(BarcodeCallbacks callback) { barcodeCallbacks = callback; }
 
     public void setProduct(Product product) {
@@ -89,7 +97,6 @@ public class ProductRatingBar extends FrameLayout {
         int nReviews = product.getRatingCount();
         String reviews = String.format((nReviews == 1) ? "%d Review" : "%d Reviews", nReviews);
         productNumReviews.setText(reviews);
-        state = null;
     }
 
     public void setState(States state) {
@@ -114,6 +121,7 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     public void loadBarcode(final String barcode) {
+        this.barcode = barcode;
         state = States.FETCHING;
         displayStatus("Loading Product", true, false);
         MainWindow.service.getProduct(barcode, new Callback<Product>() {
@@ -177,4 +185,10 @@ public class ProductRatingBar extends FrameLayout {
         addView(view, defaultLayout);
         return view;
     }
+
+    public final Product getProduct() {
+        return product;
+    }
+
+    public String getBarcode() { return barcode; }
 }

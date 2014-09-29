@@ -23,6 +23,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import app.subversive.groceryratings.MainWindow;
+
 
 /**
  * A class which deals with reading, parsing, and setting the camera parameters which are used to
@@ -43,9 +45,16 @@ final class CameraConfigurationManager {
 
         Point theScreenResolution = new Point();
         display.getSize(theScreenResolution);
-
         Log.i(TAG, "Screen resolution: " + theScreenResolution);
-        cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, theScreenResolution);
+
+        if (MainWindow.Preferences.cameraResX != -1 && MainWindow.Preferences.cameraResY != -1) {
+            cameraResolution = new Point(MainWindow.Preferences.cameraResX, MainWindow.Preferences.cameraResY);
+        } else {
+            cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, theScreenResolution);
+            MainWindow.Preferences.cameraResX = cameraResolution.x;
+            MainWindow.Preferences.cameraResY = cameraResolution.y;
+        }
+
         Log.i(TAG, "Camera resolution: " + cameraResolution);
 
         Camera.CameraInfo info = new Camera.CameraInfo();
@@ -54,7 +63,7 @@ final class CameraConfigurationManager {
         rotation = CameraConfigurationUtils.findDisplayOrientation(display.getRotation(), info.orientation);
     }
 
-    void setDesiredCameraParameters(Camera camera, boolean safeMode) {
+    Camera.Parameters setDesiredCameraParameters(Camera camera, boolean safeMode) {
         Camera.Parameters parameters = camera.getParameters();
 
         Log.i(TAG, "Initial camera parameters: " + parameters.flatten());
@@ -89,6 +98,8 @@ final class CameraConfigurationManager {
             cameraResolution.x = afterSize.width;
             cameraResolution.y = afterSize.height;
         }
+
+        return parameters;
     }
 
     public void flipRotation(Camera camera) {

@@ -26,6 +26,8 @@ import com.google.zxing.PlanarYUVLuminanceSource;
 
 import java.io.IOException;
 
+import app.subversive.groceryratings.MainWindow;
+
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The
  * implementation encapsulates the steps needed to take preview-sized images, which are used for
@@ -82,7 +84,15 @@ public final class CameraManager {
         Camera.Parameters parameters = theCamera.getParameters();
         String parametersFlattened = parameters.flatten(); // Save these, temporarily
         try {
-            configManager.setDesiredCameraParameters(theCamera, false);
+            Camera.Parameters params;
+            if (!MainWindow.Preferences.cameraParams.isEmpty()) {
+                params = configManager.setDesiredCameraParameters(theCamera, false);
+                MainWindow.Preferences.cameraParams = params.flatten();
+            } else {
+                params = theCamera.getParameters();
+                params.unflatten(MainWindow.Preferences.cameraParams);
+                theCamera.setParameters(params);
+            }
         } catch (RuntimeException re) {
             // Driver failed
             Log.w(TAG, "Camera rejected parameters. Setting only minimal safe-mode parameters");

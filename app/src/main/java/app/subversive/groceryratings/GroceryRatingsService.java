@@ -17,5 +17,5 @@ public interface GroceryRatingsService {
     void getProduct(@Path("productID") String productID, Callback<Product> cb);
 
     @POST("/variantdao")
-    void updateProduct(@Body Product product, Callback<Product> cb);
+    void addNewProduct(@Body Product product, Callback<Product> cb);
 }
