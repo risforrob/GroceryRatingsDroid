@@ -169,7 +169,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     @Override
     public void showOverlay(boolean withAnimation) {
-
+        startTimer();
         historyScrollView.setVisibility(View.VISIBLE);
 
         if (withAnimation) {
