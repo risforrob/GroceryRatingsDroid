@@ -52,7 +52,7 @@ public class ScanFragment
     private final static String ARG_RAW_HISTORY = "ARG_RAW_HISTORY";
     CameraManager cameraManager;
     boolean hasSurface;
-    private final String TAG = "ScanFrangment";
+    private final String TAG = ScanFragment.class.getSimpleName();
 
     CaptureActivityHandler handler;
 
@@ -196,17 +196,6 @@ public class ScanFragment
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_scan, container, false);
 
-        SurfaceView surfaceView = (SurfaceView) v.findViewById(R.id.svScan);
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        if (hasSurface) {
-            //The activity was paused but not stopped, so the surface still exists. Therefore
-            //surfaceCreated() won't be called, so init the camera here.
-            initCamera(surfaceHolder);
-        } else {
-            //Install the callback and wait for surfaceCreated() to init the camera.
-            surfaceHolder.addCallback(this);
-        }
-
         cameraControls.attachOverlayToParent((FrameLayout) v);
         scanControls.attachOverlayToParent((FrameLayout) v);
 
@@ -234,6 +223,17 @@ public class ScanFragment
         scanControls.showOverlay(false);
         scanControls.startTimer();
         currOverlay = scanControls;
+
+        SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
+        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        if (hasSurface) {
+            //The activity was paused but not stopped, so the surface still exists. Therefore
+            //surfaceCreated() won't be called, so init the camera here.
+            initCamera(surfaceHolder);
+        } else {
+            //Install the callback and wait for surfaceCreated() to init the camera.
+            surfaceHolder.addCallback(this);
+        }
     }
 
     @Override
@@ -254,6 +254,7 @@ public class ScanFragment
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        Log.i(TAG, "SurfaceCreated");
         if (holder == null) {
             Log.e(TAG, "*** WARNING *** surfaceCreated() gave us null surface!");
         }
@@ -270,7 +271,6 @@ public class ScanFragment
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     private void initCamera(SurfaceHolder surfaceHolder) {

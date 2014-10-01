@@ -79,6 +79,7 @@ public final class CameraManager {
         if (!initialized) {
             initialized = true;
             configManager.initFromCameraParameters(display, theCamera, cameraId);
+            autoFocusManager = new AutoFocusManager(theCamera);
         }
 
         Camera.Parameters parameters = theCamera.getParameters();
@@ -132,17 +133,20 @@ public final class CameraManager {
         if (theCamera != null && !previewing) {
             theCamera.startPreview();
             previewing = true;
-            autoFocusManager = new AutoFocusManager(camera);
+            autoFocusManager.start();
         }
     }
 
     public synchronized void flipPreview() {
         Camera theCamera = camera;
         if (theCamera != null && previewing) {
+            autoFocusManager.stop();
             theCamera.stopPreview();
             configManager.flipRotation(theCamera);
             Log.i(TAG, "Do a barrel roll!");
             theCamera.startPreview();
+            autoFocusManager.start();
+
         }
     }
 
@@ -150,10 +154,7 @@ public final class CameraManager {
      * Tells the camera to stop drawing preview frames.
      */
     public synchronized void stopPreview() {
-        if (autoFocusManager != null) {
-            autoFocusManager.stop();
-            autoFocusManager = null;
-        }
+        autoFocusManager.stop();
         if (camera != null && previewing) {
             camera.stopPreview();
             previewCallback.setHandler(null, 0);
@@ -200,9 +201,9 @@ public final class CameraManager {
 
     public synchronized void takePicture(Camera.PictureCallback callback) {
         if (previewing) {
-            camera.takePicture(null, null, callback);
             previewing = false;
             autoFocusManager.stop();
+            camera.takePicture(null, null, callback);
         }
     }
 }
