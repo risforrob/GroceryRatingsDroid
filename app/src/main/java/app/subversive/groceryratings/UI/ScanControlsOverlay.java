@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +62,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     View[] hiddenRatings;
 
     private final HashMap<String, ProductRatingBar> cache = new HashMap<String, ProductRatingBar>();
+    private final int mspec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 
     public ScanControlsOverlay(Callbacks handler) { this.handler = handler; }
 
@@ -93,8 +95,29 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             parent.addView(statusBar);
             parent.addView(unknownBarcode);
         }
+        setupAnimation();
+    }
 
-//        displayTimer.schedule(getTimerTask(), delayUntilPrompt);
+    private void setupAnimation() {
+        measureView(statusBar);
+        measureView(unknownBarcode);
+        animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getMeasuredHeight(), 0);
+        animStatusShow.setDuration(animDuration);
+
+        animStatusHide = ObjectAnimator.ofFloat(statusBar, "y", 0, -statusBar.getMeasuredHeight());
+        animStatusHide.setDuration(animDuration);
+        animStatusHide.addListener(new AnimUtils.HideOnEnd(statusBar));
+
+        animUnknownCodeHide = ObjectAnimator.ofFloat(unknownBarcode, "x", 0f, -unknownBarcode.getMeasuredWidth());
+        animUnknownCodeHide.setDuration(animDuration);
+        animUnknownCodeHide.addListener(new AnimUtils.HideOnEnd(unknownBarcode));
+
+        animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", unknownBarcode.getMeasuredWidth(), 0f);
+        animUnknownCodeShow.setDuration(animDuration);
+    }
+
+    private void measureView(View v) {
+        v.measure(mspec, mspec);
     }
 
     public void resetPromptTimer() {
@@ -114,20 +137,12 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public void showScanPrompt() {
         statusBar.setVisibility(View.VISIBLE);
-        if (animStatusShow == null) {
-            animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getHeight(), 0);
-            animStatusShow.setDuration(animDuration);
-        }
         animStatusShow.start();
         Log.i(TAG, "ShowScanPrompt");
     }
 
     public void hideScanPrompt() {
-        if (animStatusHide == null) {
-            animStatusHide = ObjectAnimator.ofFloat(statusBar, "y", 0, -statusBar.getHeight());
-            animStatusHide.setDuration(animDuration);
-            animStatusHide.addListener(new AnimUtils.HideOnEnd(statusBar));
-        }
+
         animStatusHide.start();
         startTimer();
     }
@@ -150,15 +165,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         historyScrollView.setVisibility(View.INVISIBLE);
         statusBar.setVisibility(View.INVISIBLE);
 
-
-        animUnknownCodeHide = ObjectAnimator.ofFloat(unknownBarcode, "x", 0f, -parent.getResources().getDisplayMetrics().widthPixels);
-        animUnknownCodeHide.setDuration(animDuration);
-        animUnknownCodeHide.addListener(new AnimUtils.HideOnEnd(unknownBarcode));
-
-        animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", parent.getResources().getDisplayMetrics().widthPixels, 0f);
-        animUnknownCodeShow.setDuration(animDuration);
-
-
     }
 
     @Override
@@ -167,7 +173,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         historyScrollView.setVisibility(View.VISIBLE);
 
         if (withAnimation) {
-            ObjectAnimator[] animators = addProductShowAnimation();
 
             AnimatorSet anim = new AnimatorSet();
             anim.setInterpolator(new AccelerateInterpolator());
@@ -178,13 +183,13 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
                     handler.onScanControlsFinishedShow();
                 }
             });
-            anim.playTogether(animators);
+            anim.playTogether(addProductShowAnimation());
             anim.start();
         }
     }
 
-    private ObjectAnimator[] addProductShowAnimation() {
-        ObjectAnimator[] animators = new ObjectAnimator[hiddenRatings.length];
+    private List<Animator> addProductShowAnimation() {
+        LinkedList<Animator> animators = new LinkedList<Animator>();
 
         for (int i = 0; i < hiddenRatings.length ; i++) {
             final View child = hiddenRatings[i];
@@ -194,15 +199,16 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
                     child.getTop());
             animator.setDuration(animDuration);
             animator.setStartDelay(i * delayAmount);
-            animators[i] = animator;
+            animators.add(animator);
         }
         hiddenRatings = null;
         return animators;
     }
 
-    private ObjectAnimator[] addProductHideAnimation() {
+    private List<Animator> addProductHideAnimation() {
+        LinkedList<Animator> animators = new LinkedList<Animator>();
         int nChildren = ratingHistory.getChildCount()-1;
-        if (nChildren < 0) { return null; }
+        if (nChildren < 0) { return animators; }
 
         final int scrollAmount = historyScrollView.getScrollY();
         final int scrollBottom = historyScrollView.getBottom();
@@ -216,14 +222,13 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
         hiddenRatings = new View[nChildren+1];
         hiddenRatings[nChildren] = child;
-        ObjectAnimator[] animators = new ObjectAnimator[nChildren+1];
 
                 ObjectAnimator animator = ObjectAnimator.ofFloat(
                                         child, "y",
                                         child.getY(),
                                         child.getY() + animAmount);
         animator.setDuration(animDuration);
-        animators[0] = animator;
+        animators.add(animator);
 
         long delay = delayAmount;
         for (int i = 1; i <= nChildren ; i++) {
@@ -235,7 +240,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
             animator.setDuration(animDuration);
             animator.setStartDelay(delay);
-            animators[i] = animator;
+            animators.add(animator);
             delay += delayAmount;
             hiddenRatings[nChildren-i] = child;
         }
@@ -247,7 +252,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         cancelTimer();
 
         AnimatorSet anim = new AnimatorSet();
-        ObjectAnimator[] animators = addProductHideAnimation();
+//        ObjectAnimator[] animators = addProductHideAnimation();
         anim.setInterpolator(new AccelerateInterpolator());
         anim.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -258,16 +263,20 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             }
         });
 
+        LinkedList<Animator> animators = new LinkedList<Animator>();
+
         if (unknownBarcode.isShown()) {
-            AnimatorSet.Builder builder = anim.play(animUnknownCodeHide);
-            if (animators != null) {
-                for (ObjectAnimator a : animators) {
-                    builder.with(a);
-                }
-            }
-        } else if (animators != null) {
-            anim.playTogether(animators);
+            animators.add(animUnknownCodeHide);
         }
+
+        if (statusBar.isShown() && !animStatusHide.isRunning()) {
+            if (animStatusShow.isRunning()) {animStatusShow.cancel();}
+            animators.add(animStatusHide);
+        }
+
+        animators.addAll(addProductHideAnimation());
+
+        anim.playTogether(animators);
         anim.start();
     }
 
