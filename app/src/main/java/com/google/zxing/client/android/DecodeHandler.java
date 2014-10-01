@@ -91,29 +91,29 @@ final class DecodeHandler extends Handler {
             } finally {
                 multiFormatReader.reset();
             }
-            if (rawResult == null) {
-                //try again with rotated data
-                byte[] rotatedData = new byte[data.length];
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++)
-                        rotatedData[x * height + height - y - 1] = data[x + y * width];
-                }
-                int tmp = width;
-                width = height;
-                height = tmp;
-
-                source = CameraManager.buildLuminanceSource(rotatedData, width, height);
-                if (source != null) {
-                    bitmap = new BinaryBitmap(new HybridBinarizer(source));
-                    try {
-                        rawResult = multiFormatReader.decodeWithState(bitmap);
-                    } catch (ReaderException re) {
-                        // continue
-                    } finally {
-                        multiFormatReader.reset();
-                    }
-                }
-            }
+//            if (rawResult == null) {
+//                //try again with rotated data
+//                byte[] rotatedData = new byte[data.length];
+//                for (int y = 0; y < height; y++) {
+//                    for (int x = 0; x < width; x++)
+//                        rotatedData[x * height + height - y - 1] = data[x + y * width];
+//                }
+//                int tmp = width;
+//                width = height;
+//                height = tmp;
+//
+//                source = CameraManager.buildLuminanceSource(rotatedData, width, height);
+//                if (source != null) {
+//                    bitmap = new BinaryBitmap(new HybridBinarizer(source));
+//                    try {
+//                        rawResult = multiFormatReader.decodeWithState(bitmap);
+//                    } catch (ReaderException re) {
+//                        // continue
+//                    } finally {
+//                        multiFormatReader.reset();
+//                    }
+//                }
+//            }
         }
 
         Handler handler = resultHandler;

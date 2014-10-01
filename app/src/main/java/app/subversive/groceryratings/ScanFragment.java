@@ -231,13 +231,15 @@ public class ScanFragment
     @Override
     public void onResume() {
         super.onResume();
-        scanControls.showOverlay(true);
+        scanControls.showOverlay(false);
+        scanControls.startTimer();
         currOverlay = scanControls;
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        scanControls.cancelTimer();
         if (handler != null) {
             handler.quitSynchronously();
             handler = null;

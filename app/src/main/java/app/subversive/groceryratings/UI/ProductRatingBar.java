@@ -68,6 +68,15 @@ public class ProductRatingBar extends FrameLayout {
 
     int indexInParent;
 
+    private boolean shouldFlash = true;
+    private long flashInterval = 2000;
+    private final Runnable flashDelay = new Runnable() {
+        @Override
+        public void run() {
+            shouldFlash = true;
+        }
+    };
+
     final static LayoutParams defaultLayout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
     static { defaultLayout.gravity = Gravity.CENTER; }
 
@@ -224,10 +233,13 @@ public class ProductRatingBar extends FrameLayout {
     public String getBarcode() { return barcode; }
 
     public void flash() {
-        if (!flashAnim.isRunning() &&
+        if (    shouldFlash &&
+                !flashAnim.isRunning() &&
                 !(state == States.FETCHING) &&
                 !(state == States.UPLOADING)) {
+            shouldFlash = false;
             flashAnim.start();
+            this.postDelayed(flashDelay, flashInterval);
         }
     }
 }
