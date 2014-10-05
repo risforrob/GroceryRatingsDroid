@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.google.zxing.client.android.camera;
+package app.subversive.groceryratings.camera;
 
-import android.content.Context;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.util.Log;
@@ -79,7 +78,7 @@ public final class CameraManager {
         if (!initialized) {
             initialized = true;
             configManager.initFromCameraParameters(display, theCamera, cameraId);
-            autoFocusManager = new AutoFocusManager(theCamera);
+            autoFocusManager = AutoFocusFactory.getManager(theCamera); //new AutoFocusManager(theCamera);
         }
 
         Camera.Parameters parameters = theCamera.getParameters();
@@ -204,6 +203,28 @@ public final class CameraManager {
             previewing = false;
             autoFocusManager.stop();
             camera.takePicture(null, null, callback);
+        }
+    }
+
+    public void autoFocus(float normX, float normY) {
+        float cameraX, cameraY;
+        switch (configManager.getRotation()) {
+            case 0:
+                cameraX = normX;
+                cameraY = normY;
+                break;
+            case 90:
+                cameraX = normY;
+                cameraY = normX * -1;
+                break;
+            case 180:
+                cameraX = normX * -1;
+                cameraY = normY * -1;
+                break;
+            case 270:
+                cameraX = normY * -1;
+                cameraY = normX;
+                break;
         }
     }
 }

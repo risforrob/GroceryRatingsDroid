@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.google.zxing.client.android.camera;
+package app.subversive.groceryratings.camera;
 
-import android.content.Context;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.Display;
-import android.view.WindowManager;
 
 import app.subversive.groceryratings.MainWindow;
 
@@ -72,7 +70,6 @@ final class CameraConfigurationManager {
             Log.w(TAG, "In camera config safe mode -- most settings will not be honored");
         }
 
-        CameraConfigurationUtils.setFocus(parameters, true, false, safeMode);
 
         if (!safeMode) {
             CameraConfigurationUtils.setBarcodeSceneMode(parameters);
@@ -111,4 +108,6 @@ final class CameraConfigurationManager {
     Point getCameraResolution() {
         return cameraResolution;
     }
+
+    public int getRotation() { return rotation; }
 }

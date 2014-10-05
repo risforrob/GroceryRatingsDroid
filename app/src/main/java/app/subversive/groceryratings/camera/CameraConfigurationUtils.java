@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package com.google.zxing.client.android.camera;
+package app.subversive.groceryratings.camera;
 
 import android.annotation.TargetApi;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Build;
 import android.util.Log;
@@ -31,7 +30,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Utility methods for configuring the Android camera.
@@ -45,44 +43,43 @@ public final class CameraConfigurationUtils {
 
     private static final int MIN_PREVIEW_PIXELS = 480 * 320; // normal screen
     private static final double MAX_ASPECT_DISTORTION = 0.15;
-    private static final int AREA_PER_1000 = 400;
 
 
-    public static void setFocus(Camera.Parameters parameters,
-                                boolean autoFocus,
-                                boolean disableContinuous,
-                                boolean safeMode) {
-
-        List<String> supportedFocusModes = parameters.getSupportedFocusModes();
-        String focusMode = null;
-        if (autoFocus) {
-            if (safeMode || disableContinuous) {
-                focusMode = findSettableValue("focus mode",
-                        supportedFocusModes,
-                        Camera.Parameters.FOCUS_MODE_AUTO);
-            } else {
-                focusMode = findSettableValue("focus mode",
-                        supportedFocusModes,
-                        Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE,
-                        Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO,
-                        Camera.Parameters.FOCUS_MODE_AUTO);
-            }
-        }
-        // Maybe selected auto-focus but not available, so fall through here:
-        if (!safeMode && focusMode == null) {
-            focusMode = findSettableValue("focus mode",
-                    supportedFocusModes,
-                    Camera.Parameters.FOCUS_MODE_MACRO,
-                    Camera.Parameters.FOCUS_MODE_EDOF);
-        }
-        if (focusMode != null) {
-            if (focusMode.equals(parameters.getFocusMode())) {
-                Log.i(TAG, "Focus mode already set to " + focusMode);
-            } else {
-                parameters.setFocusMode(focusMode);
-            }
-        }
-    }
+//    public static void setFocus(Camera.Parameters parameters,
+//                                boolean autoFocus,
+//                                boolean disableContinuous,
+//                                boolean safeMode) {
+//
+//        List<String> supportedFocusModes = parameters.getSupportedFocusModes();
+//        String focusMode = null;
+//        if (autoFocus) {
+//            if (safeMode || disableContinuous) {
+//                focusMode = findSettableValue("focus mode",
+//                        supportedFocusModes,
+//                        Camera.Parameters.FOCUS_MODE_AUTO);
+//            } else {
+//                focusMode = findSettableValue("focus mode",
+//                        supportedFocusModes,
+//                        Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE,
+//                        Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO,
+//                        Camera.Parameters.FOCUS_MODE_AUTO);
+//            }
+//        }
+//        // Maybe selected auto-focus but not available, so fall through here:
+//        if (!safeMode && focusMode == null) {
+//            focusMode = findSettableValue("focus mode",
+//                    supportedFocusModes,
+//                    Camera.Parameters.FOCUS_MODE_MACRO,
+//                    Camera.Parameters.FOCUS_MODE_EDOF);
+//        }
+//        if (focusMode != null) {
+//            if (focusMode.equals(parameters.getFocusMode())) {
+//                Log.i(TAG, "Focus mode already set to " + focusMode);
+//            } else {
+//                parameters.setFocusMode(focusMode);
+//            }
+//        }
+//    }
 
     public static void setVideoStabilization(Camera.Parameters parameters) {
         if (parameters.isVideoStabilizationSupported()) {

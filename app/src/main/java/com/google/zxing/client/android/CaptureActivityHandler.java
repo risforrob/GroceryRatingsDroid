@@ -16,8 +16,7 @@
 
 package com.google.zxing.client.android;
 
-import com.google.zxing.Result;
-import com.google.zxing.client.android.camera.CameraManager;
+import app.subversive.groceryratings.camera.CameraManager;
 
 import android.os.Handler;
 import android.os.Message;
