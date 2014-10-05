@@ -86,14 +86,14 @@ public final class CameraManager {
         String parametersFlattened = parameters.flatten(); // Save these, temporarily
         try {
             Camera.Parameters params;
-            if (!MainWindow.Preferences.cameraParams.isEmpty()) {
+//            if (!MainWindow.Preferences.cameraParams.isEmpty()) {
                 params = configManager.setDesiredCameraParameters(theCamera, false);
                 MainWindow.Preferences.cameraParams = params.flatten();
-            } else {
-                params = theCamera.getParameters();
-                params.unflatten(MainWindow.Preferences.cameraParams);
+//            } else {
+//                params = theCamera.getParameters();
+//                params.unflatten(MainWindow.Preferences.cameraParams);
                 theCamera.setParameters(params);
-            }
+//            }
         } catch (RuntimeException re) {
             // Driver failed
             Log.w(TAG, "Camera rejected parameters. Setting only minimal safe-mode parameters");
