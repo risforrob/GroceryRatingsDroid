@@ -1,8 +1,6 @@
 package app.subversive.groceryratings;
 
 import android.os.Handler;
-
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -44,13 +42,11 @@ public class ManagedTimer {
         new HashSet<RunWrapper>();
     private static final Handler handler = new Handler();
 
-    /* returns the object you feed in */
-    public static RunnableController postDelayed(Runnable r, Long delay) {
+    public static RunnableController getController(Runnable r, Long delay) {
         RunWrapper wrapper = new RunWrapper(r);
-        RunnableController controller = new RunnableController(wrapper, delay);
-        postDelayed(wrapper, delay);
-        return controller;
+        return new RunnableController(wrapper, delay);
     }
+
 
     private static void postDelayed(RunWrapper w, Long delay) {
         wrappers.add(w);

@@ -67,14 +67,12 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public ScanControlsOverlay(Callbacks handler) { this.handler = handler; }
 
-    private final Runnable timerRunnable = new Runnable() {
+    ManagedTimer.RunnableController controller = ManagedTimer.getController(new Runnable() {
         @Override
         public void run() {
-                showScanPrompt();
+            showScanPrompt();
         }
-    };
-
-    ManagedTimer.RunnableController controller;
+    }, 5000L);
 
     @Override
     public void attachOverlayToParent(FrameLayout parent) {
@@ -126,7 +124,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     public void startTimer() {
-        controller = ManagedTimer.postDelayed(timerRunnable, 5000L);
+        controller.restart();
     }
 
     public void showScanPrompt() {
