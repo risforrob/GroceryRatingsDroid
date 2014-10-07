@@ -23,35 +23,51 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
-abstract class AutoFocusManager implements Camera.AutoFocusCallback {
+abstract class AutoFocusManager {
     private final String TAG = AutoFocusManager.class.getSimpleName();
     private final long restartAutofocusDelay = 5000L;
     protected Camera camera;
+
+    private final Handler timerHandler = new Handler();
+    private final Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            resetAutoFocus();
+        }
+    };
+
 
     abstract void start();
     abstract void stop();
     protected abstract void pause();
     protected abstract void unpause();
 
-    private final Handler timerHandler = new Handler();
-    private final Runnable timerRunnable = new Runnable() {
-        @Override
-        public void run() {
-            unpause();
-        }
-    };
-
-    public void setAutoFocusArea(List<Camera.Area> focusArea, List<Camera.Area> meteringArea) {
+    public void manualAutoFocus(List<Camera.Area> focusArea, List<Camera.Area> meteringArea, final Camera.AutoFocusCallback cb) {
+        camera.cancelAutoFocus();
         timerHandler.removeCallbacks(timerRunnable);
         pause();
         Camera.Parameters params = camera.getParameters();
         params.setFocusAreas(focusArea);
         params.setMeteringAreas(meteringArea);
         camera.setParameters(params);
-        camera.autoFocus(this);
-        timerHandler.postDelayed(timerRunnable, restartAutofocusDelay);
+        camera.autoFocus(new Camera.AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                timerHandler.postDelayed(timerRunnable, restartAutofocusDelay);
+                cb.onAutoFocus(success, camera);
+            }
+        });
+    }
+
+    private final void resetAutoFocus() {
+        Camera.Parameters params = camera.getParameters();
+        params.setFocusAreas(null);
+        params.setMeteringAreas(null);
+        camera.setParameters(params);
+        unpause();
     }
 }

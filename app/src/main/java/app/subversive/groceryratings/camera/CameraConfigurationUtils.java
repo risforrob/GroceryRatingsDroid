@@ -213,6 +213,7 @@ public final class CameraConfigurationUtils {
 
     public static int findCameraId() {
         int numCameras = Camera.getNumberOfCameras();
+        Log.i(TAG, "Number of cameras: " + String.valueOf(numCameras));
         if (numCameras == 0) {
             Log.w(TAG, "No cameras!");
             return -1;
@@ -235,6 +236,7 @@ public final class CameraConfigurationUtils {
             Log.w(TAG, "Could not find backfacing camera");
             cameraId = -1;
         }
+        Log.i(TAG, "CameraID: " + String.valueOf(cameraId));
         return cameraId;
     }
 

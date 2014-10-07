@@ -24,6 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import app.subversive.groceryratings.Core.Product;
+import app.subversive.groceryratings.ManagedTimer;
 import app.subversive.groceryratings.R;
 
 /**
@@ -66,21 +67,14 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public ScanControlsOverlay(Callbacks handler) { this.handler = handler; }
 
-    private long delayUntilPrompt = 5000;
-    private final Handler timerHandler = new Handler();
-    private long timeOfLastReset;
     private final Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
-            long timeDiff = System.currentTimeMillis() - timeOfLastReset;
-
-            if (timeDiff > delayUntilPrompt) {
                 showScanPrompt();
-            } else {
-                timerHandler.postDelayed(this, timeDiff);
-            }
         }
     };
+
+    ManagedTimer.RunnableController controller;
 
     @Override
     public void attachOverlayToParent(FrameLayout parent) {
@@ -121,18 +115,18 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     public void resetPromptTimer() {
-        timeOfLastReset = System.currentTimeMillis();
+        controller.restart();
         if (statusBar.isShown()) {
             hideScanPrompt();
         }
     }
 
     public void cancelTimer() {
-        timerHandler.removeCallbacks(timerRunnable);
+        controller.cancel();
     }
 
     public void startTimer() {
-        timerHandler.postDelayed(timerRunnable, delayUntilPrompt);
+        controller = ManagedTimer.postDelayed(timerRunnable, 5000L);
     }
 
     public void showScanPrompt() {
@@ -144,7 +138,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     public void hideScanPrompt() {
 
         animStatusHide.start();
-        startTimer();
+        controller.restart();
     }
 
     private void inflateOverlay() {

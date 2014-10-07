@@ -10,14 +10,18 @@ import java.util.List;
 public class AutoFocusFactory {
     static AutoFocusManager getManager(Camera camera) {
         Camera.Parameters params = camera.getParameters();
-        List<String> focusModes = params.getSupportedFlashModes();
+        List<String> focusModes = params.getSupportedFocusModes();
+        AutoFocusManager aman;
         if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-//            return ContinuousAutoFocusManager.newInstance(camera);
-            return PollingAutoFocusManager.newInstance(camera);
+            aman = ContinuousAutoFocusManager.newInstance(camera);
+//            aman =  PollingAutoFocusManager.newInstance(camera);
+//            aman = PlaceboAutoFocusManager.newInstance(camera);
         } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
-            return PollingAutoFocusManager.newInstance(camera);
+            aman = PollingAutoFocusManager.newInstance(camera);
         } else {
-            return PlaceboAutoFocusManager.newInstance(camera);
+            aman = PlaceboAutoFocusManager.newInstance(camera);
         }
+        aman.camera = camera;
+        return aman;
     }
 }

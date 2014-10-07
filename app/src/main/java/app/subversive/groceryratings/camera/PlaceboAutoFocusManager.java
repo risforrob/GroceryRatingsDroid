@@ -1,6 +1,7 @@
 package app.subversive.groceryratings.camera;
 
 import android.hardware.Camera;
+import android.util.Log;
 
 import java.util.List;
 
@@ -8,7 +9,7 @@ import java.util.List;
  * Created by rob on 10/4/14.
  */
 public class PlaceboAutoFocusManager extends AutoFocusManager {
-
+    final static String TAG = PlaceboAutoFocusManager.class.getSimpleName();
     private PlaceboAutoFocusManager() {};
 
     @Override
@@ -32,16 +33,11 @@ public class PlaceboAutoFocusManager extends AutoFocusManager {
     }
 
     @Override
-    public void setAutoFocusArea(List<Camera.Area> focusArea, List<Camera.Area> meteringArea) {
-        // do nothing for setAutoFocus
+    public void manualAutoFocus(List<Camera.Area> focusArea, List<Camera.Area> meteringArea, Camera.AutoFocusCallback cb) {
     }
 
     static protected AutoFocusManager newInstance(Camera camera) {
+        Log.i(TAG, "Placebo!");
         return new PlaceboAutoFocusManager();
-    }
-
-    @Override
-    public void onAutoFocus(boolean success, Camera camera) {
-
     }
 }

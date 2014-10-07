@@ -6,10 +6,12 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -19,6 +21,8 @@ import android.widget.FrameLayout;
 
 import com.google.gson.Gson;
 import com.google.zxing.client.android.CaptureActivityHandler;
+
+import app.subversive.groceryratings.UI.FocusableSurfaceView;
 import app.subversive.groceryratings.camera.CameraManager;
 
 import java.io.IOException;
@@ -61,6 +65,8 @@ public class ScanFragment
     private Overlay currOverlay;
     private CameraControlsOverlay cameraControls;
     private ScanControlsOverlay scanControls;
+
+    private FocusableSurfaceView surfaceView;
 
     private byte[] imageData;
 
@@ -189,6 +195,30 @@ public class ScanFragment
         cameraControls.hideOverlay(true);
     }
 
+
+    GestureDetector.SimpleOnGestureListener touchListener = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.i(TAG, "touch");
+            float nx = e.getX() / surfaceView.getWidth();
+            float ny = e.getY() / surfaceView.getHeight();
+
+            surfaceView.setFocus(e.getX(), e.getY());
+            cameraManager.autoFocus(nx, ny, new Camera.AutoFocusCallback() {
+                @Override
+                public void onAutoFocus(boolean success, Camera camera) {
+                    surfaceView.unsetFocus();
+                }
+            });
+            return true;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+    };
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -207,6 +237,17 @@ public class ScanFragment
             }
         }
 
+        final GestureDetector gd = new GestureDetector(getActivity(), touchListener);
+
+        surfaceView = (FocusableSurfaceView) v.findViewById(R.id.svScan);
+        surfaceView.setWillNotDraw(false);
+        surfaceView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gd.onTouchEvent(event);
+            }
+        });
+
         v.setKeepScreenOn(true);
         return v;
     }
@@ -223,7 +264,7 @@ public class ScanFragment
         scanControls.startTimer();
         currOverlay = scanControls;
 
-        SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
+
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
             //The activity was paused but not stopped, so the surface still exists. Therefore

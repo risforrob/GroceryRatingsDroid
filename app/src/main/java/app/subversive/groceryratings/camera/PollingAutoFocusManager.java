@@ -10,7 +10,7 @@ import java.util.concurrent.RejectedExecutionException;
 /**
  * Created by rob on 10/4/14.
  */
-public class PollingAutoFocusManager extends AutoFocusManager {
+public class PollingAutoFocusManager extends AutoFocusManager implements Camera.AutoFocusCallback {
 
     private static final String TAG = PollingAutoFocusManager.class.getSimpleName();
 
@@ -18,7 +18,6 @@ public class PollingAutoFocusManager extends AutoFocusManager {
 
     private boolean stopped;
     private boolean focusing;
-    private Camera camera;
     private AutoFocusTask outstandingTask;
 
     private PollingAutoFocusManager() {};
@@ -28,12 +27,11 @@ public class PollingAutoFocusManager extends AutoFocusManager {
         Camera.Parameters params = camera.getParameters();
         params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         params.setFocusAreas(null);
+        params.setMeteringAreas(null);
         camera.setParameters(params);
-        cman.camera = camera;
         return cman;
     }
 
-    @Override
     public void onAutoFocus(boolean success, Camera theCamera) {
         focusing = false;
         autoFocusAgainLater();
@@ -53,12 +51,14 @@ public class PollingAutoFocusManager extends AutoFocusManager {
 
     @Override
     public void start() {
+        Log.i(TAG, "START");
         stopped = false;
         focusing = false;
         run();
     }
 
     public void run() {
+        Log.i(TAG, "RUN");
         outstandingTask = null;
         if (!stopped && !focusing) {
             try {
@@ -84,6 +84,7 @@ public class PollingAutoFocusManager extends AutoFocusManager {
 
     @Override
     public void stop() {
+        Log.i(TAG, "STOP");
         stopped = true;
         cancelOutstandingTask();
         // Doesn't hurt to call this even if not focusing
@@ -97,11 +98,13 @@ public class PollingAutoFocusManager extends AutoFocusManager {
 
     @Override
     protected void pause() {
+        Log.i(TAG,"PAUSE");
         stop();
     }
 
     @Override
     protected void unpause() {
+        Log.i(TAG, "UNPAUSE");
         start();
     }
 
@@ -113,7 +116,9 @@ public class PollingAutoFocusManager extends AutoFocusManager {
             } catch (InterruptedException e) {
                 // continue
             }
-            run();
+            if (!isCancelled()) {
+                run();
+            }
             return null;
         }
     }

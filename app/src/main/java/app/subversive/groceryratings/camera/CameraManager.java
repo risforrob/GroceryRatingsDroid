@@ -16,6 +16,8 @@
 
 package app.subversive.groceryratings.camera;
 
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.util.Log;
@@ -24,8 +26,11 @@ import android.view.SurfaceHolder;
 import com.google.zxing.PlanarYUVLuminanceSource;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import app.subversive.groceryratings.MainWindow;
+import app.subversive.groceryratings.UI.AutoFocusIndicator;
 
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The
@@ -44,11 +49,12 @@ public final class CameraManager {
     private boolean initialized;
     private boolean previewing;
     private int cameraId = -1;
-    /**
-     * Preview frames are delivered here, which we pass on to the registered handler. Make sure to
-     * clear the handler so it will only receive one message.
-     */
+
     private final PreviewCallback previewCallback;
+
+    public boolean isFocusSupported, isMeteringSupported;
+    private List<Camera.Area> focusAreas;
+    private List<Camera.Area> meteringAreas;
 
     public CameraManager() {
         configManager = new CameraConfigurationManager();
@@ -73,6 +79,7 @@ public final class CameraManager {
             theCamera = Camera.open(cameraId);
             camera = theCamera;
         }
+
         theCamera.setPreviewDisplay(holder);
 
         if (!initialized) {
@@ -85,14 +92,8 @@ public final class CameraManager {
         String parametersFlattened = parameters.flatten(); // Save these, temporarily
         try {
             Camera.Parameters params;
-//            if (!MainWindow.Preferences.cameraParams.isEmpty()) {
-                params = configManager.setDesiredCameraParameters(theCamera, false);
-                MainWindow.Preferences.cameraParams = params.flatten();
-//            } else {
-//                params = theCamera.getParameters();
-//                params.unflatten(MainWindow.Preferences.cameraParams);
-                theCamera.setParameters(params);
-//            }
+            params = configManager.setDesiredCameraParameters(theCamera, false);
+            theCamera.setParameters(params);
         } catch (RuntimeException re) {
             // Driver failed
             Log.w(TAG, "Camera rejected parameters. Setting only minimal safe-mode parameters");
@@ -107,6 +108,18 @@ public final class CameraManager {
                 // Well, darn. Give up
                 Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration");
             }
+        }
+
+        isFocusSupported = parameters.getMaxNumFocusAreas() > 0;
+        isMeteringSupported = parameters.getMaxNumMeteringAreas() > 0;
+
+        if (isFocusSupported) {
+            focusAreas = new LinkedList<Camera.Area>();
+            focusAreas.add(new Camera.Area(new Rect(), 1));
+        }
+        if (isMeteringSupported) {
+            meteringAreas = new LinkedList<Camera.Area>();
+            meteringAreas.add(new Camera.Area(new Rect(), 1));
         }
     }
 
@@ -206,25 +219,63 @@ public final class CameraManager {
         }
     }
 
-    public void autoFocus(float normX, float normY) {
-        float cameraX, cameraY;
+    private void constrainRect(Rect r, int xmin, int xmax, int ymin, int ymax) {
+        int offx = 0;
+        int offy = 0;
+        if (r.left < xmin) {
+            offx = xmin - r.left;
+        } else if (r.right > xmax) {
+            offx = xmax - r.right;
+        }
+
+        if (r.top < ymin) {
+            offy = ymin - r.top;
+        } else if (r.bottom > ymax) {
+            offy = ymax - r.bottom;
+        }
+
+        r.offset(offx, offy);
+    }
+
+    private int getCameraCoord(float v) {
+        return Math.round((v*2000)-1000);
+    }
+
+    private void setArea(float camcx, float camcy, float mult, Camera.Area area) {
+        Point res = configManager.getCameraResolution();
+        int radius = Math.round(Math.max(res.x, res.y) / 8 * mult);
+        int cx = getCameraCoord(camcx);
+        int cy = getCameraCoord(camcy);
+        area.rect.set(cx-radius, cy-radius, cx+radius, cy+radius);
+        constrainRect(area.rect, -1000, 1000, -1000, 1000);
+    }
+
+    public void autoFocus(float nx, float ny, Camera.AutoFocusCallback cb) {
+        float camcx = nx;
+        float camcy = ny;
         switch (configManager.getRotation()) {
-            case 0:
-                cameraX = normX;
-                cameraY = normY;
-                break;
             case 90:
-                cameraX = normY;
-                cameraY = normX * -1;
+                camcx = ny;
+                camcy = -nx;
                 break;
             case 180:
-                cameraX = normX * -1;
-                cameraY = normY * -1;
+                camcx = -nx;
+                camcy = -ny;
                 break;
             case 270:
-                cameraX = normY * -1;
-                cameraY = normX;
+                camcx = -ny;
+                camcy = nx;
                 break;
         }
+        if (isFocusSupported) {
+            setArea(camcx, camcy, 1.0f, focusAreas.get(0));
+        }
+
+        if (isMeteringSupported) {
+            setArea(camcx, camcy, 1.5f, meteringAreas.get(0));
+        }
+        autoFocusManager.manualAutoFocus(focusAreas, meteringAreas, cb);
+
+
     }
 }

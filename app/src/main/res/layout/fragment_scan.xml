@@ -5,7 +5,7 @@
     tools:context="app.subversive.groceryratings.ScanFragment"
     android:id="@+id/root">
 
-    <SurfaceView
+    <app.subversive.groceryratings.UI.FocusableSurfaceView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/svScan"
