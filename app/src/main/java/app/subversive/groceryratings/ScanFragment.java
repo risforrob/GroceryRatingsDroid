@@ -1,6 +1,7 @@
 package app.subversive.groceryratings;
 
 import android.content.Context;
+import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Message;
@@ -203,7 +204,7 @@ public class ScanFragment
             float nx = e.getX() / surfaceView.getWidth();
             float ny = e.getY() / surfaceView.getHeight();
 
-            surfaceView.setFocus(e.getX(), e.getY());
+            RectF r = surfaceView.setFocus(e.getX(), e.getY());
             cameraManager.autoFocus(nx, ny, new Camera.AutoFocusCallback() {
                 @Override
                 public void onAutoFocus(boolean success, Camera camera) {
