@@ -10,21 +10,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.List;
-
-import app.subversive.groceryratings.Core.Product;
+import app.subversive.groceryratings.camera.CameraUtil;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
 import retrofit.RestAdapter;
@@ -39,27 +31,16 @@ public class MainWindow extends ActionBarActivity {
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
-        final private static String CAMERA_PARAMS = "CAMERA_PARAMS";
-        final private static String CAMERA_RES_X = "CAMERA_RES_X";
-        final private static String CAMERA_RES_Y = "CAMERA_RES_Y";
 
         public static boolean autoscan;
-        public static String cameraParams;
-        public static int cameraResX, cameraResY;
 
         static void loadPrefs(SharedPreferences prefs) {
             autoscan = prefs.getBoolean(AUTOSCAN, false);
-            cameraParams = prefs.getString(CAMERA_PARAMS, null);
-            cameraResX = prefs.getInt(CAMERA_RES_X, -1);
-            cameraResY = prefs.getInt(CAMERA_RES_Y, -1);
         }
 
         static void writePrefs(SharedPreferences prefs) {
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(AUTOSCAN, autoscan);
-            edit.putString(CAMERA_PARAMS, cameraParams);
-            edit.putInt(CAMERA_RES_X, cameraResX);
-            edit.putInt(CAMERA_RES_Y, cameraResY);
             edit.commit();
         }
     }
@@ -98,6 +79,7 @@ public class MainWindow extends ActionBarActivity {
             imageService = mainImageService = imageAdapter.create(ImageService.class);
             debugImageService = new DebugImageService();
 
+            CameraUtil.initialize(this);
             Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
             Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
         }

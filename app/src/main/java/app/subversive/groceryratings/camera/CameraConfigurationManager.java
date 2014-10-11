@@ -45,13 +45,7 @@ final class CameraConfigurationManager {
         display.getSize(theScreenResolution);
         Log.i(TAG, "Screen resolution: " + theScreenResolution);
 
-        if (MainWindow.Preferences.cameraResX != -1 && MainWindow.Preferences.cameraResY != -1) {
-            cameraResolution = new Point(MainWindow.Preferences.cameraResX, MainWindow.Preferences.cameraResY);
-        } else {
-            cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, theScreenResolution);
-            MainWindow.Preferences.cameraResX = cameraResolution.x;
-            MainWindow.Preferences.cameraResY = cameraResolution.y;
-        }
+        cameraResolution = CameraConfigurationUtils.findBestPreviewSizeValue(parameters, theScreenResolution);
 
         Log.i(TAG, "Camera resolution: " + cameraResolution);
 
@@ -72,21 +66,21 @@ final class CameraConfigurationManager {
 
 
         if (!safeMode) {
-//            CameraConfigurationUtils.setBarcodeSceneMode(parameters);
-//            CameraConfigurationUtils.setVideoStabilization(parameters);
+            CameraConfigurationUtils.setBarcodeSceneMode(parameters);
+            CameraConfigurationUtils.setVideoStabilization(parameters);
         }
 
-        parameters.setFocusAreas(null);
-        parameters.setMeteringAreas(null);
-
+        int[] fps = CameraUtil.getPhotoPreviewFpsRange(parameters);
+        if (fps != null && fps.length > 0) {
+            parameters.setPreviewFpsRange(
+                    fps[Camera.Parameters.PREVIEW_FPS_MIN_INDEX],
+                    fps[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
+        }
         parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
-        parameters.setRotation(rotation);
-
-        Log.i(TAG, "Final camera parameters: " + parameters.flatten());
-
         camera.setDisplayOrientation(rotation);
         camera.setParameters(parameters);
 
+        Log.i(TAG, "Final camera parameters: " + parameters.flatten());
 
         Camera.Parameters afterParameters = camera.getParameters();
         Camera.Size afterSize = afterParameters.getPreviewSize();
