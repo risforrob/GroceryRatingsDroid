@@ -54,7 +54,6 @@ public class ScanFragment
 
 
     private final static String ARG_RAW_HISTORY = "ARG_RAW_HISTORY";
-    CameraManager cameraManager;
     boolean hasSurface;
     private final String TAG = ScanFragment.class.getSimpleName();
 
@@ -91,7 +90,6 @@ public class ScanFragment
         super.onCreate(savedInstanceState);
 
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        cameraManager = new CameraManager();
         lastScanned = "";
         cameraControls = new CameraControlsOverlay(this);
         scanControls = new ScanControlsOverlay(this);
@@ -176,11 +174,11 @@ public class ScanFragment
 
 
     private void takePicture() {
-        cameraManager.takePicture(this);
+        CameraManager.takePicture(this);
     }
 
     private void restartPhotoPreview() {
-        cameraManager.startPreview();
+        CameraManager.startPreview();
     }
 
     private void setCapturePhotoMode() {
@@ -190,7 +188,7 @@ public class ScanFragment
     }
 
     private void setScanMode() {
-        cameraManager.startPreview();
+        CameraManager.startPreview();
         restartScanner();
         currOverlay = scanControls;
         cameraControls.hideOverlay(true);
@@ -205,7 +203,7 @@ public class ScanFragment
             float ny = e.getY() / surfaceView.getHeight();
 
             RectF r = surfaceView.setFocus(e.getX(), e.getY());
-            cameraManager.autoFocus(nx, ny, new Camera.AutoFocusCallback() {
+            CameraManager.autoFocus(nx, ny, new Camera.AutoFocusCallback() {
                 @Override
                 public void onAutoFocus(boolean success, Camera camera) {
                     surfaceView.unsetFocus();
@@ -284,7 +282,7 @@ public class ScanFragment
             handler.quitSynchronously();
             handler = null;
         }
-        cameraManager.closeDriver();
+        CameraManager.closeDriver();
         if (!hasSurface) {
             SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
@@ -317,15 +315,15 @@ public class ScanFragment
         if (surfaceHolder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
-        if (cameraManager.isOpen()) {
+        if (CameraManager.isOpen()) {
             Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
             return;
         }
         try {
-            cameraManager.openDriver(surfaceHolder, getActivity().getWindowManager().getDefaultDisplay());
+            CameraManager.openDriver(surfaceHolder, getActivity().getWindowManager().getDefaultDisplay());
 //            Creating the handler starts the preview, which can also throw a RuntimeException.
             if (handler == null) {
-                handler = new CaptureActivityHandler(this, cameraManager);
+                handler = new CaptureActivityHandler(this);
             }
         } catch (IOException ioe) {
             Log.w(TAG, ioe);

@@ -36,7 +36,6 @@ public final class CaptureActivityHandler extends Handler {
     private final ScanFragment activity;
     private final DecodeThread decodeThread;
     private State state;
-    private final CameraManager cameraManager;
 
     private enum State {
         PREVIEW,
@@ -45,16 +44,14 @@ public final class CaptureActivityHandler extends Handler {
         DONE
     }
 
-    public CaptureActivityHandler(ScanFragment activity,
-                                  CameraManager cameraManager) {
+    public CaptureActivityHandler(ScanFragment activity) {
         this.activity = activity;
         decodeThread = new DecodeThread(this);
         decodeThread.start();
         state = State.SUCCESS;
 
         // Start ourselves capturing previews and decoding.
-        this.cameraManager = cameraManager;
-        cameraManager.startPreview();
+        CameraManager.startPreview();
         restartPreviewAndDecode();
     }
 
@@ -77,7 +74,7 @@ public final class CaptureActivityHandler extends Handler {
                 if (state != State.PAUSED) {
                     // We're decoding as fast as possible, so when one decode fails, start another.
                     state = State.PREVIEW;
-                    cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+                    CameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
                 }
                 break;
         }
@@ -85,7 +82,7 @@ public final class CaptureActivityHandler extends Handler {
 
     public void quitSynchronously() {
         state = State.DONE;
-        cameraManager.stopPreview();
+        CameraManager.stopPreview();
         Message quit = Message.obtain(decodeThread.getHandler(), R.id.quit);
         quit.sendToTarget();
         try {
@@ -103,7 +100,7 @@ public final class CaptureActivityHandler extends Handler {
     private void restartPreviewAndDecode() {
         if (state == State.SUCCESS || state == State.PAUSED) {
             state = State.PREVIEW;
-            cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
+            CameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
         }
     }
 

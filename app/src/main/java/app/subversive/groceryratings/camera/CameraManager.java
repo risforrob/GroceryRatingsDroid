@@ -43,23 +43,21 @@ public final class CameraManager {
 
     private static final String TAG = CameraManager.class.getSimpleName();
 
-    private final CameraConfigurationManager configManager;
-    private Camera camera;
-    private AutoFocusManager autoFocusManager;
-    private boolean initialized;
-    private boolean previewing;
-    private int cameraId = -1;
+    private static final CameraConfigurationManager configManager = new CameraConfigurationManager();
+    private static final PreviewCallback previewCallback = new PreviewCallback(configManager);
 
-    private final PreviewCallback previewCallback;
+    private static Camera camera;
+    private static AutoFocusManager autoFocusManager;
+    private static boolean initialized;
+    private static boolean previewing;
+    private static int cameraId = -1;
 
-    public boolean isFocusSupported, isMeteringSupported;
-    private List<Camera.Area> focusAreas;
-    private List<Camera.Area> meteringAreas;
 
-    public CameraManager() {
-        configManager = new CameraConfigurationManager();
-        previewCallback = new PreviewCallback(configManager);
-    }
+    public static boolean isFocusSupported, isMeteringSupported;
+    private static List<Camera.Area> focusAreas;
+    private static List<Camera.Area> meteringAreas;
+
+    private CameraManager() { }
 
     /**
      * Opens the camera driver and initializes the hardware parameters.
@@ -67,7 +65,7 @@ public final class CameraManager {
      * @param holder The surface object which the camera will draw preview frames into.
      * @throws IOException Indicates the camera driver failed to open.
      */
-    public synchronized void openDriver(SurfaceHolder holder, Display display) throws IOException {
+    public static synchronized void openDriver(SurfaceHolder holder, Display display) throws IOException {
         Camera theCamera = camera;
         if (theCamera == null) {
 
@@ -123,14 +121,14 @@ public final class CameraManager {
         }
     }
 
-    public synchronized boolean isOpen() {
+    public static synchronized boolean isOpen() {
         return camera != null;
     }
 
     /**
      * Closes the camera driver if still in use.
      */
-    public synchronized void closeDriver() {
+    public static synchronized void closeDriver() {
         if (camera != null) {
             camera.release();
             camera = null;
@@ -140,7 +138,7 @@ public final class CameraManager {
     /**
      * Asks the camera hardware to begin drawing preview frames to the screen.
      */
-    public synchronized void startPreview() {
+    public static synchronized void startPreview() {
         Camera theCamera = camera;
         if (theCamera != null && !previewing) {
             theCamera.startPreview();
@@ -149,7 +147,7 @@ public final class CameraManager {
         }
     }
 
-    public synchronized void flipPreview() {
+    public static synchronized void flipPreview() {
         Camera theCamera = camera;
         if (theCamera != null && previewing) {
             autoFocusManager.stop();
@@ -165,7 +163,7 @@ public final class CameraManager {
     /**
      * Tells the camera to stop drawing preview frames.
      */
-    public synchronized void stopPreview() {
+    public static synchronized void stopPreview() {
         autoFocusManager.stop();
         if (camera != null && previewing) {
             camera.stopPreview();
@@ -184,9 +182,9 @@ public final class CameraManager {
      */
 
 
-    long lastRequest = System.currentTimeMillis();
+    static long lastRequest = System.currentTimeMillis();
 
-    public synchronized void requestPreviewFrame(Handler handler, int message) {
+    public static synchronized void requestPreviewFrame(Handler handler, int message) {
         Camera theCamera = camera;
         if (theCamera != null && previewing) {
             Long curr = System.currentTimeMillis();
@@ -211,7 +209,7 @@ public final class CameraManager {
                 width-1, height-1, false);
     }
 
-    public synchronized void takePicture(Camera.PictureCallback callback) {
+    public static synchronized void takePicture(Camera.PictureCallback callback) {
         if (previewing) {
             previewing = false;
             autoFocusManager.stop();
@@ -219,7 +217,7 @@ public final class CameraManager {
         }
     }
 
-    private void constrainRect(Rect r, int xmin, int xmax, int ymin, int ymax) {
+    private static void constrainRect(Rect r, int xmin, int xmax, int ymin, int ymax) {
         int offx = 0;
         int offy = 0;
         if (r.left < xmin) {
@@ -237,11 +235,11 @@ public final class CameraManager {
         r.offset(offx, offy);
     }
 
-    private int getCameraCoord(float v) {
+    private static int getCameraCoord(float v) {
         return Math.round((v*2000)-1000);
     }
 
-    private void setArea(float camcx, float camcy, float mult, Camera.Area area) {
+    private static void setArea(float camcx, float camcy, float mult, Camera.Area area) {
         Point res = configManager.getCameraResolution();
         int radius = Math.round(Math.max(res.x, res.y) / 8 * mult);
         int cx = getCameraCoord(camcx);
@@ -250,7 +248,7 @@ public final class CameraManager {
         constrainRect(area.rect, -1000, 1000, -1000, 1000);
     }
 
-    public void autoFocus(float nx, float ny, Camera.AutoFocusCallback cb) {
+    public static void autoFocus(float nx, float ny, Camera.AutoFocusCallback cb) {
         float camcx = nx;
         float camcy = ny;
         switch (configManager.getRotation()) {
@@ -275,7 +273,5 @@ public final class CameraManager {
             setArea(camcx, camcy, 1.5f, meteringAreas.get(0));
         }
         autoFocusManager.manualAutoFocus(focusAreas, meteringAreas, cb);
-
-
     }
 }
