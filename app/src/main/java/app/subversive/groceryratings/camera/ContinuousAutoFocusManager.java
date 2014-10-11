@@ -18,7 +18,6 @@ public class ContinuousAutoFocusManager extends AutoFocusManager {
 
     @Override
     void stop() {
-        pause();
     }
 
     @Override

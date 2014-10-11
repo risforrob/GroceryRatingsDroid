@@ -27,19 +27,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.RejectedExecutionException;
 
+import app.subversive.groceryratings.ManagedTimer;
+
 abstract class AutoFocusManager {
     private final String TAG = AutoFocusManager.class.getSimpleName();
-    private final long restartAutofocusDelay = 5000L;
     protected Camera camera;
 
-    private final Handler timerHandler = new Handler();
-    private final Runnable timerRunnable = new Runnable() {
+    final ManagedTimer.RunnableController controller = ManagedTimer.getController(new Runnable() {
         @Override
         public void run() {
             resetAutoFocus();
         }
-    };
-
+    }, 5000L);
 
     abstract void start();
     abstract void stop();
@@ -48,7 +47,7 @@ abstract class AutoFocusManager {
 
     public void manualAutoFocus(List<Camera.Area> focusArea, List<Camera.Area> meteringArea, final Camera.AutoFocusCallback cb) {
         camera.cancelAutoFocus();
-        timerHandler.removeCallbacks(timerRunnable);
+        controller.restart();
         pause();
         Camera.Parameters params = camera.getParameters();
         params.setFocusAreas(focusArea);
@@ -57,7 +56,6 @@ abstract class AutoFocusManager {
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
-                timerHandler.postDelayed(timerRunnable, restartAutofocusDelay);
                 cb.onAutoFocus(success, camera);
             }
         });

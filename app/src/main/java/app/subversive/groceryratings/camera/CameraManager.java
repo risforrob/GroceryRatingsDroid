@@ -188,6 +188,12 @@ public final class CameraManager {
 
     public synchronized void requestPreviewFrame(Handler handler, int message) {
         Camera theCamera = camera;
+        Camera.Parameters params = camera.getParameters();
+        Log.i(TAG, params.getFocusMode());
+        Log.i(TAG, params.getAntibanding());
+        Log.i(TAG, params.getSceneMode());
+        Log.i(TAG, params.getWhiteBalance());
+        Log.i(TAG, String.valueOf(params.getAutoExposureLock()));
         if (theCamera != null && previewing) {
             Long curr = System.currentTimeMillis();
             Log.d("FPS", String.valueOf(curr - lastRequest));

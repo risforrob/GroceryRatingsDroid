@@ -6,8 +6,8 @@ import android.util.AttributeSet;
 /**
  * Created by rob on 9/4/14.
  */
-import android.content.Context;
-import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.widget.ScrollView;
 
 import java.util.ArrayList;
@@ -16,7 +16,30 @@ import java.util.ArrayList;
  * A custom ScrollView that can accept a scroll listener.
  * Borrowed from google IO 2014
  */
+
 public class ObservableScrollView extends ScrollView {
+    public static interface Callbacks {
+        public void onScrollChanged(int deltaX, int deltaY);
+        public boolean onTouchUp(MotionEvent ev);
+    }
+    GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            boolean result = false;
+            for (Callbacks c : mCallbacks) {
+                result = result || c.onTouchUp(e);
+            }
+            return result;
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+    };
+
+    GestureDetector gd = new GestureDetector(getContext(), gestureListener);
+
     private ArrayList<Callbacks> mCallbacks = new ArrayList<Callbacks>();
 
     public ObservableScrollView(Context context, AttributeSet attrs) {
@@ -31,10 +54,6 @@ public class ObservableScrollView extends ScrollView {
         }
     }
 
-    @Override
-    public int computeVerticalScrollRange() {
-        return super.computeVerticalScrollRange();
-    }
 
     public void addCallbacks(Callbacks listener) {
         if (!mCallbacks.contains(listener)) {
@@ -42,7 +61,13 @@ public class ObservableScrollView extends ScrollView {
         }
     }
 
-    public static interface Callbacks {
-        public void onScrollChanged(int deltaX, int deltaY);
+
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        if (super.onTouchEvent(ev)) {
+            return true;
+        } else {
+            return gd.onTouchEvent(ev);
+        }
     }
 }

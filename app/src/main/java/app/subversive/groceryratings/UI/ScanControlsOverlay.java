@@ -4,11 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -16,12 +14,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.ManagedTimer;
@@ -297,11 +292,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     };
 
     public void showUnknownBarcode(boolean withAnimation) {
-        if (animUnknownCodeShow.isRunning()) {
-            return;
-        } else if (animUnknownCodeHide.isRunning()) {
-            return;
-        } else {
+        if (!animUnknownCodeShow.isRunning() && !animUnknownCodeHide.isRunning()) {
             unknownBarcode.setVisibility(View.VISIBLE);
             animUnknownCodeShow.start();
         }
@@ -357,6 +348,11 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     @Override
     public void onScrollChanged(int deltaX, int deltaY) {
         hideUnknownBarcode(true);
+    }
+
+    @Override
+    public boolean onTouchUp(MotionEvent ev) {
+        return false;
     }
 
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0,0); }

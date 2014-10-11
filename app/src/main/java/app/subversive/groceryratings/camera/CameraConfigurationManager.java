@@ -72,9 +72,12 @@ final class CameraConfigurationManager {
 
 
         if (!safeMode) {
-            CameraConfigurationUtils.setBarcodeSceneMode(parameters);
-            CameraConfigurationUtils.setVideoStabilization(parameters);
+//            CameraConfigurationUtils.setBarcodeSceneMode(parameters);
+//            CameraConfigurationUtils.setVideoStabilization(parameters);
         }
+
+        parameters.setFocusAreas(null);
+        parameters.setMeteringAreas(null);
 
         parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
         parameters.setRotation(rotation);

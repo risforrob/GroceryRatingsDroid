@@ -59,7 +59,7 @@ public class ManagedTimer {
         }
     }
 
-    public static synchronized void cancelRunnable(RunWrapper w) {
+    private static synchronized void cancelRunnable(RunWrapper w) {
        if (wrappers.remove(w)) {
            handler.removeCallbacks(w);
        }

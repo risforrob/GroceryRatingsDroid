@@ -108,6 +108,7 @@ public class MainWindow extends ActionBarActivity {
         super.onPause();
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
         writeHistory();
+        ManagedTimer.cancelAll();
     }
 
     /** Check if this device has a camera */

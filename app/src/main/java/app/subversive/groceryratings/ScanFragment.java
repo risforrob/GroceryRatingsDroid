@@ -279,7 +279,6 @@ public class ScanFragment
     @Override
     public void onPause() {
         super.onPause();
-        scanControls.cancelTimer();
         if (handler != null) {
             handler.quitSynchronously();
             handler = null;
