@@ -17,8 +17,10 @@
 package app.subversive.groceryratings.camera;
 
 import android.app.Activity;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Handler;
 import android.util.Log;
@@ -212,60 +214,28 @@ public final class CameraManager {
         }
     }
 
-    private static void constrainRect(Rect r, int xmin, int xmax, int ymin, int ymax) {
-        int offx = 0;
-        int offy = 0;
-        if (r.left < xmin) {
-            offx = xmin - r.left;
-        } else if (r.right > xmax) {
-            offx = xmax - r.right;
-        }
+    public static void autoFocus(float x, float y, float radius, int width, int height, Camera.AutoFocusCallback cb) {
+        Matrix mXform = new Matrix();
+        Matrix inverse = new Matrix();
+        RectF result = new RectF();
+        Rect dims = new Rect(0, 0, width, height);
 
-        if (r.top < ymin) {
-            offy = ymin - r.top;
-        } else if (r.bottom > ymax) {
-            offy = ymax - r.bottom;
-        }
+        CameraUtil.prepareMatrix(inverse, false, configManager.getRotation(), dims);
+        inverse.invert(mXform);
 
-        r.offset(offx, offy);
-    }
 
-    private static int getCameraCoord(float v) {
-        return Math.round((v*2000)-1000);
-    }
-
-    private static void setArea(float camcx, float camcy, float mult, Camera.Area area) {
-        Point res = configManager.getCameraResolution();
-        int radius = Math.round(Math.max(res.x, res.y) / 8 * mult);
-        int cx = getCameraCoord(camcx);
-        int cy = getCameraCoord(camcy);
-        area.rect.set(cx-radius, cy-radius, cx+radius, cy+radius);
-        constrainRect(area.rect, -1000, 1000, -1000, 1000);
-    }
-
-    public static void autoFocus(float nx, float ny, Camera.AutoFocusCallback cb) {
-        float camcx = nx;
-        float camcy = ny;
-        switch (configManager.getRotation()) {
-            case 90:
-                camcx = ny;
-                camcy = -nx;
-                break;
-            case 180:
-                camcx = -nx;
-                camcy = -ny;
-                break;
-            case 270:
-                camcx = -ny;
-                camcy = nx;
-                break;
-        }
         if (isFocusSupported) {
-            setArea(camcx, camcy, 1.0f, focusAreas.get(0));
+            RectF focusRect = CameraUtil.makeRectF(x, y, radius);
+            mXform.mapRect(result, focusRect);
+            CameraUtil.clampRectF(result, -1000, -1000, 1000, 1000);
+            CameraUtil.rectFToRect(result, focusAreas.get(0).rect);
         }
 
         if (isMeteringSupported) {
-            setArea(camcx, camcy, 1.5f, meteringAreas.get(0));
+            RectF meterRect = CameraUtil.makeRectF(x, y, radius*1.5f);
+            mXform.mapRect(result, meterRect);
+            CameraUtil.cropRectF(result, -1000, -1000, 1000, 1000);
+            CameraUtil.rectFToRect(result, meteringAreas.get(0).rect);
         }
         autoFocusManager.manualAutoFocus(focusAreas, meteringAreas, cb);
     }

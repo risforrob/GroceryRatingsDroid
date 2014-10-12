@@ -1,6 +1,8 @@
 package app.subversive.groceryratings;
 
 import android.content.Context;
+import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
 import app.subversive.groceryratings.UI.ProductRatingBar;
 import app.subversive.groceryratings.UI.ScanControlsOverlay;
+import app.subversive.groceryratings.camera.CameraUtil;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -199,12 +202,16 @@ public class ScanFragment
     GestureDetector.SimpleOnGestureListener touchListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.i(TAG, "touch");
-            float nx = e.getX() / surfaceView.getWidth();
-            float ny = e.getY() / surfaceView.getHeight();
 
-            RectF r = surfaceView.setFocus(e.getX(), e.getY());
-            CameraManager.autoFocus(nx, ny, new Camera.AutoFocusCallback() {
+            surfaceView.setFocus(e.getX(), e.getY());
+
+            CameraManager.autoFocus(
+                    e.getX(),
+                    e.getY(),
+                    surfaceView.getRadius(),
+                    surfaceView.getWidth(),
+                    surfaceView.getHeight(),
+                    new Camera.AutoFocusCallback() {
                 @Override
                 public void onAutoFocus(boolean success, Camera camera) {
                     surfaceView.unsetFocus();

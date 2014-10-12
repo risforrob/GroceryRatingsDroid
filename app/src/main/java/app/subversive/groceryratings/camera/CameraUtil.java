@@ -599,6 +599,29 @@ public class CameraUtil {
         return rect;
     }
 
+    public static RectF makeRectF(float x, float y, float rad) {
+        return new RectF(x-rad,y-rad,x+rad,y+rad);
+    }
+
+    public static void clampRectF(RectF r, float left, float top, float right, float bottom) {
+        float offx = 0;
+        float offy = 0;
+        if (r.left < left) { offx = left - r.left; }
+        else if (r.right > right) { offx = right - r.right; }
+
+        if (r.top < top) { offy = top - r.top; }
+        else if (r.bottom > bottom) { offy = bottom - r.bottom; }
+
+        r.offset(offx, offy);
+    }
+
+    public static void cropRectF(RectF r, float left, float top, float right, float bottom) {
+        if (r.left < left) { r.left = left; }
+        if (r.right > right) {r.right = right; }
+        if (r.top < top) { r.top = top;}
+        if (r.bottom > bottom) { r.bottom = bottom; }
+    }
+
     public static RectF rectToRectF(Rect r) {
         return new RectF(r.left, r.top, r.right, r.bottom);
     }

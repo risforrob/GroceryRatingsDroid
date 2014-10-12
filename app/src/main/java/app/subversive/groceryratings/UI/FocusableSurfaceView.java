@@ -8,11 +8,13 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.SurfaceView;
 
+import app.subversive.groceryratings.camera.CameraUtil;
+
 /**
  * Created by rob on 10/1/14.
  */
 public class FocusableSurfaceView extends SurfaceView {
-    private float radius;
+    private int radius;
     private boolean drawFocus;
     final Paint focusPaint = new Paint();
     final RectF focusRect = new RectF();
@@ -40,11 +42,13 @@ public class FocusableSurfaceView extends SurfaceView {
 
     }
 
-    public RectF setFocus(float x, float y) {
+    public float getRadius() { return radius; }
+
+    public void setFocus(float x, float y) {
         drawFocus = true;
         focusRect.set(x - radius, y - radius, x + radius, y + radius);
+        CameraUtil.clampRectF(focusRect, 0, 0, getWidth(), getHeight());
         invalidate();
-        return focusRect;
     }
 
     public void unsetFocus() {
@@ -55,7 +59,7 @@ public class FocusableSurfaceView extends SurfaceView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (drawFocus) {
+        if (drawFocus && focusRect != null) {
             canvas.drawRect(focusRect, focusPaint);
         }
     }
