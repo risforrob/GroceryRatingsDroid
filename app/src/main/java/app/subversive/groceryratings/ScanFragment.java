@@ -277,6 +277,9 @@ public class ScanFragment
         if (currOverlay == cameraControls) {
             setScanMode(false);
         }
+        if (surfaceView != null) {
+            initCamera(surfaceView.getHolder());
+        }
     }
 
     @Override
@@ -292,7 +295,6 @@ public class ScanFragment
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
     }
 
     @Override

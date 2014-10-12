@@ -51,7 +51,6 @@ public final class CameraManager {
 
     private static Camera camera;
     private static AutoFocusManager autoFocusManager;
-    private static boolean initialized;
     private static boolean previewing;
     private static int cameraId = -1;
 
@@ -162,9 +161,6 @@ public final class CameraManager {
             if (previewing) {
                 stopPreview();
             }
-            try {
-                camera.setPreviewDisplay(null);
-            } catch (IOException ioe) {}
             camera.release();
         }
     }
