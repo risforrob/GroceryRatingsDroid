@@ -154,6 +154,20 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
         historyScrollView.setVisibility(View.INVISIBLE);
         statusBar.setVisibility(View.INVISIBLE);
+
+        unknownBarcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        statusBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
