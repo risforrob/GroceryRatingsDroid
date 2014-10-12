@@ -16,6 +16,7 @@
 
 package app.subversive.groceryratings.camera;
 
+import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -59,49 +60,33 @@ public final class CameraManager {
 
     private CameraManager() { }
 
-    /**
-     * Opens the camera driver and initializes the hardware parameters.
-     *
-     * @param holder The surface object which the camera will draw preview frames into.
-     * @throws IOException Indicates the camera driver failed to open.
-     */
-    public static synchronized void openDriver(SurfaceHolder holder, Display display) throws IOException {
-        Camera theCamera = camera;
-        if (theCamera == null) {
 
-            cameraId = CameraConfigurationUtils.findCameraId();
-            if (cameraId < 0) {
-                throw new RuntimeException("No valid camera");
-            }
+    public static void initializeCamera(Activity activity) {
+        CameraUtil.initialize(activity);
 
-            theCamera = Camera.open(cameraId);
-            camera = theCamera;
-        }
+        cameraId = CameraConfigurationUtils.findCameraId();
+        camera = Camera.open(cameraId);
 
-        theCamera.setPreviewDisplay(holder);
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        configManager.initFromCameraParameters(display, camera, cameraId);
+        autoFocusManager = AutoFocusFactory.getManager(camera);
 
-        if (!initialized) {
-            initialized = true;
-            configManager.initFromCameraParameters(display, theCamera, cameraId);
-            autoFocusManager = AutoFocusFactory.getManager(theCamera); //new AutoFocusManager(theCamera);
-        }
-
-        Camera.Parameters parameters = theCamera.getParameters();
+        Camera.Parameters parameters = camera.getParameters();
         String parametersFlattened = parameters.flatten(); // Save these, temporarily
         try {
             Camera.Parameters params;
-            params = configManager.setDesiredCameraParameters(theCamera, false);
-            theCamera.setParameters(params);
+            params = configManager.setDesiredCameraParameters(camera, false);
+            camera.setParameters(params);
         } catch (RuntimeException re) {
             // Driver failed
             Log.w(TAG, "Camera rejected parameters. Setting only minimal safe-mode parameters");
             Log.i(TAG, "Resetting to saved camera params: " + parametersFlattened);
             // Reset:
-            parameters = theCamera.getParameters();
+            parameters = camera.getParameters();
             parameters.unflatten(parametersFlattened);
             try {
-                theCamera.setParameters(parameters);
-                configManager.setDesiredCameraParameters(theCamera, true);
+                camera.setParameters(parameters);
+                configManager.setDesiredCameraParameters(camera, true);
             } catch (RuntimeException re2) {
                 // Well, darn. Give up
                 Log.w(TAG, "Camera rejected even safe-mode parameters! No configuration");
@@ -121,18 +106,13 @@ public final class CameraManager {
         }
     }
 
-    public static synchronized boolean isOpen() {
-        return camera != null;
+    public static void setPreviewDisplay(SurfaceHolder holder) throws IOException {
+        camera.setPreviewDisplay(holder);
     }
 
-    /**
-     * Closes the camera driver if still in use.
-     */
-    public static synchronized void closeDriver() {
-        if (camera != null) {
-            camera.release();
-            camera = null;
-        }
+
+    public static synchronized boolean isOpen() {
+        return camera != null;
     }
 
     /**
@@ -169,6 +149,21 @@ public final class CameraManager {
             camera.stopPreview();
             previewCallback.setHandler(null, 0);
             previewing = false;
+        }
+    }
+
+    /**
+     * Closes the camera driver if still in use.
+     */
+    public static synchronized void closeDriver() {
+        if (camera != null) {
+            if (previewing) {
+                stopPreview();
+            }
+            try {
+                camera.setPreviewDisplay(null);
+            } catch (IOException ioe) {}
+            camera.release();
         }
     }
 

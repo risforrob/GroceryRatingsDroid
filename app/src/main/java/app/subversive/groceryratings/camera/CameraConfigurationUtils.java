@@ -197,8 +197,7 @@ public final class CameraConfigurationUtils {
         int cameraId = index;
 
         if (cameraId >= numCameras) {
-            Log.w(TAG, "Could not find backfacing camera");
-            cameraId = -1;
+            throw new RuntimeException("Could not find backfacing camera");
         }
         Log.i(TAG, "CameraID: " + String.valueOf(cameraId));
         return cameraId;

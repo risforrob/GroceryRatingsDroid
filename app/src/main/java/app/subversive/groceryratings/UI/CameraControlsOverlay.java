@@ -28,6 +28,8 @@ public class CameraControlsOverlay implements Overlay {
         public void onCameraControlsFinishedHide();
     }
 
+    private final String TAG = CameraControlsOverlay.class.getSimpleName();
+
     private final long animDuration =200;
     private final long animDelay = 50;
 
@@ -51,6 +53,10 @@ public class CameraControlsOverlay implements Overlay {
 
     public CameraControlsOverlay(Callbacks handler) {
         this.handler = handler;
+    }
+
+    public void check() {
+        Log.i(TAG, String.valueOf(cancelButton.getTop()));
     }
 
     @Override
@@ -83,8 +89,12 @@ public class CameraControlsOverlay implements Overlay {
         retryButton.setVisibility(View.INVISIBLE);
     }
 
+    @Override
+    public void onParentLayoutComplete() {
+        initAnim();
+    }
+
     private void initAnim() {
-        animInitialized = true;
         float parentHeight = parent.getHeight();
 
         Log.i("top", String.valueOf(cancelButton.getTop()));
@@ -122,9 +132,9 @@ public class CameraControlsOverlay implements Overlay {
             cancelButton.setVisibility(View.VISIBLE);
             captureButton.setVisibility(View.VISIBLE);
         } else {
-            if (!animInitialized) {
-                initAnim();
-            }
+//            if (!animInitialized) {
+//                initAnim();
+//            }
             captureButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.GONE);
 
@@ -149,9 +159,9 @@ public class CameraControlsOverlay implements Overlay {
             captureButton.setVisibility(View.GONE);
             retryButton.setVisibility(View.GONE);
         } else {
-            if (!animInitialized) {
-                initAnim();
-            }
+//            if (!animInitialized) {
+//                initAnim();
+//            }
 
             animCancelBtnHide.setStartDelay(DELAYS[buttonClickIndex][0] * animDelay);
             animCaptureBtnHide.setStartDelay(DELAYS[buttonClickIndex][1] * animDelay);

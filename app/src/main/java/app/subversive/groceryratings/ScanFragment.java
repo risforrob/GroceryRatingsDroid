@@ -14,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
@@ -54,11 +53,12 @@ public class ScanFragment
 
 
     private final static String ARG_RAW_HISTORY = "ARG_RAW_HISTORY";
-    boolean hasSurface;
     private final String TAG = ScanFragment.class.getSimpleName();
 
     CaptureActivityHandler handler;
-
+    {
+        handler = new CaptureActivityHandler(this);
+    }
     private Vibrator mVibrator;
     private String lastScanned;
 
@@ -101,8 +101,6 @@ public class ScanFragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-//        Log.i(TAG, "Parceling data");
-//        outState.putParcelableArray("products", scanControls.getAllProducts());
     }
 
     @Override
@@ -114,7 +112,7 @@ public class ScanFragment
             case 1:
                 // swap overlay
                 if (currOverlay == cameraControls) {
-                    setScanMode();
+                    setScanMode(true);
                 } else {
                     setCapturePhotoMode();
                 }
@@ -182,16 +180,19 @@ public class ScanFragment
     }
 
     private void setCapturePhotoMode() {
-        handler.handleMessage(Message.obtain(handler, R.id.pause_scan));
+        handler.pause();
         scanControls.hideOverlay(true);
 
     }
 
-    private void setScanMode() {
+    private void setScanMode(boolean animated) {
         CameraManager.startPreview();
         restartScanner();
         currOverlay = scanControls;
-        cameraControls.hideOverlay(true);
+        cameraControls.hideOverlay(animated);
+        if (!animated) {
+            scanControls.showOverlay(false);
+        }
     }
 
 
@@ -224,6 +225,16 @@ public class ScanFragment
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.fragment_scan, container, false);
 
+        v.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                scanControls.onParentLayoutComplete();
+                cameraControls.onParentLayoutComplete();
+                setScanMode(true);
+                v.removeOnLayoutChangeListener(this);
+            }
+        });
+
         cameraControls.attachOverlayToParent((FrameLayout) v);
         scanControls.attachOverlayToParent((FrameLayout) v);
 
@@ -246,65 +257,35 @@ public class ScanFragment
                 return gd.onTouchEvent(event);
             }
         });
+        surfaceView.getHolder().addCallback(this);
 
         v.setKeepScreenOn(true);
         return v;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        scanControls.showOverlay(false);
-        scanControls.startTimer();
-        currOverlay = scanControls;
-
-
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        if (hasSurface) {
-            //The activity was paused but not stopped, so the surface still exists. Therefore
-            //surfaceCreated() won't be called, so init the camera here.
-            initCamera(surfaceHolder);
-        } else {
-            //Install the callback and wait for surfaceCreated() to init the camera.
-            surfaceHolder.addCallback(this);
+        handler.start();
+        if (currOverlay == cameraControls) {
+            setScanMode(false);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (handler != null) {
-            handler.quitSynchronously();
-            handler = null;
-        }
-        CameraManager.closeDriver();
-        if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.svScan);
-            SurfaceHolder surfaceHolder = surfaceView.getHolder();
-            surfaceHolder.removeCallback(this);
-        }
+        handler.stop();
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        Log.i(TAG, "SurfaceCreated");
-        if (holder == null) {
-            Log.e(TAG, "*** WARNING *** surfaceCreated() gave us null surface!");
-        }
-        if (!hasSurface) {
-            hasSurface = true;
-            initCamera(holder);
-        }
+        initCamera(holder);
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        hasSurface = false;
+
     }
 
     @Override
@@ -315,25 +296,11 @@ public class ScanFragment
         if (surfaceHolder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
-        if (CameraManager.isOpen()) {
-            Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
-            return;
-        }
         try {
-            CameraManager.openDriver(surfaceHolder, getActivity().getWindowManager().getDefaultDisplay());
-//            Creating the handler starts the preview, which can also throw a RuntimeException.
-            if (handler == null) {
-                handler = new CaptureActivityHandler(this);
-            }
+            CameraManager.setPreviewDisplay(surfaceHolder);
         } catch (IOException ioe) {
             Log.w(TAG, ioe);
-        } catch (RuntimeException e) {
-            Log.w(TAG, "Unexpected error initializing camera", e);
         }
-    }
-
-    public CaptureActivityHandler getHandler() {
-        return handler;
     }
 
     public void handleDecode(String barcode) {
@@ -358,7 +325,7 @@ public class ScanFragment
     }
 
     private void restartScanner() {
-        getHandler().handleMessage(Message.obtain(getHandler(), R.id.restart_preview));
+        handler.unpause();
     }
 
     @Override
@@ -384,7 +351,7 @@ public class ScanFragment
             }
         });
         imageData = null;
-        setScanMode();
+        setScanMode(true);
     }
 
     private void uploadImage(byte[] imageData) {
@@ -436,7 +403,7 @@ public class ScanFragment
 
     @Override
     public void onCancelPicture() {
-        setScanMode();
+        setScanMode(true);
     }
 
     @Override
@@ -476,7 +443,7 @@ public class ScanFragment
     @Override
     public boolean onBackPressed() {
         if (currOverlay != scanControls) {
-            setScanMode();
+            setScanMode(true);
             return true;
         } else {
             return false;

@@ -82,24 +82,28 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             parent.addView(statusBar);
             parent.addView(unknownBarcode);
         }
+    }
+
+    @Override
+    public void onParentLayoutComplete() {
         setupAnimation();
     }
 
     private void setupAnimation() {
-        measureView(statusBar);
-        measureView(unknownBarcode);
-        animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getMeasuredHeight(), 0);
+//        measureView(statusBar);
+//        measureView(unknownBarcode);
+        animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getHeight(), 0);
         animStatusShow.setDuration(animDuration);
 
-        animStatusHide = ObjectAnimator.ofFloat(statusBar, "y", 0, -statusBar.getMeasuredHeight());
+        animStatusHide = ObjectAnimator.ofFloat(statusBar, "y", 0, -statusBar.getHeight());
         animStatusHide.setDuration(animDuration);
         animStatusHide.addListener(new AnimUtils.HideOnEnd(statusBar));
 
-        animUnknownCodeHide = ObjectAnimator.ofFloat(unknownBarcode, "x", 0f, -unknownBarcode.getMeasuredWidth());
+        animUnknownCodeHide = ObjectAnimator.ofFloat(unknownBarcode, "x", 0f, -unknownBarcode.getWidth());
         animUnknownCodeHide.setDuration(animDuration);
         animUnknownCodeHide.addListener(new AnimUtils.HideOnEnd(unknownBarcode));
 
-        animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", unknownBarcode.getMeasuredWidth(), 0f);
+        animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", unknownBarcode.getWidth(), 0f);
         animUnknownCodeShow.setDuration(animDuration);
     }
 
@@ -172,11 +176,22 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             });
             anim.playTogether(addProductShowAnimation());
             anim.start();
+        } else {
+            if (hiddenRatings != null) {
+                for (View v : hiddenRatings) {
+                    v.setTranslationY(0);
+                }
+            }
+            historyScrollView.scrollTo(0,0);
         }
     }
 
     private List<Animator> addProductShowAnimation() {
         LinkedList<Animator> animators = new LinkedList<Animator>();
+
+        if (hiddenRatings == null || hiddenRatings.length == 0) {
+            return animators;
+        }
 
         for (int i = 0; i < hiddenRatings.length ; i++) {
             final View child = hiddenRatings[i];

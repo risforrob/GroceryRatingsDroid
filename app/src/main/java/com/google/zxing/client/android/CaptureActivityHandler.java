@@ -34,74 +34,58 @@ public final class CaptureActivityHandler extends Handler {
     private static final String TAG = CaptureActivityHandler.class.getSimpleName();
 
     private final ScanFragment activity;
-    private final DecodeThread decodeThread;
-    private State state;
-
-    private enum State {
-        PREVIEW,
-        SUCCESS,
-        PAUSED,
-        DONE
-    }
+    private DecodeThread decodeThread;
+    private boolean paused;
 
     public CaptureActivityHandler(ScanFragment activity) {
         this.activity = activity;
+
+    }
+
+    public void start() {
         decodeThread = new DecodeThread(this);
         decodeThread.start();
-        state = State.SUCCESS;
-
-        // Start ourselves capturing previews and decoding.
-        CameraManager.startPreview();
         restartPreviewAndDecode();
     }
 
     @Override
     public void handleMessage(Message message) {
         switch (message.what) {
-            case R.id.pause_scan:
-                state = State.PAUSED;
-                removeMessages(R.id.decode_succeeded);
-                removeMessages(R.id.decode_failed);
-                break;
-            case R.id.restart_preview:
-                restartPreviewAndDecode();
-                break;
             case R.id.decode_succeeded:
-                state = State.SUCCESS;
-                activity.handleDecode((String) message.obj); //, barcode, scaleFactor);
+                activity.handleDecode((String) message.obj);
                 break;
             case R.id.decode_failed:
-                if (state != State.PAUSED) {
-                    // We're decoding as fast as possible, so when one decode fails, start another.
-                    state = State.PREVIEW;
-                    CameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
-                }
+                restartPreviewAndDecode();
                 break;
         }
     }
 
-    public void quitSynchronously() {
-        state = State.DONE;
-        CameraManager.stopPreview();
-        Message quit = Message.obtain(decodeThread.getHandler(), R.id.quit);
-        quit.sendToTarget();
+    public void pause() {
+        paused = true;
+        // Be absolutely sure we don't send any queued up messages
+        removeMessages(R.id.decode_succeeded);
+        removeMessages(R.id.decode_failed);
+    }
+
+    public void unpause() {
+        paused = false;
+        restartPreviewAndDecode();
+    }
+
+    public void stop() {
+        pause();
+        Message.obtain(decodeThread.getHandler(), R.id.quit).sendToTarget();
         try {
             // Wait at most half a second; should be enough time, and onPause() will timeout quickly
             decodeThread.join(500L);
         } catch (InterruptedException e) {
             // continue
         }
-
-        // Be absolutely sure we don't send any queued up messages
-        removeMessages(R.id.decode_succeeded);
-        removeMessages(R.id.decode_failed);
+        decodeThread = null;
     }
-
     private void restartPreviewAndDecode() {
-        if (state == State.SUCCESS || state == State.PAUSED) {
-            state = State.PREVIEW;
+        if (decodeThread != null && decodeThread.isAlive() && !paused) {
             CameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
         }
     }
-
 }

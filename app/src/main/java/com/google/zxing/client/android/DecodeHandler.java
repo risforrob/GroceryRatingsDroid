@@ -47,7 +47,6 @@ final class DecodeHandler extends Handler {
         multiFormatReader = new MultiFormatReader();
         multiFormatReader.setHints(hints);
         this.resultHandler = resultHandler;
-//        this.activity = activity;
     }
 
     @Override
@@ -87,43 +86,42 @@ final class DecodeHandler extends Handler {
             } finally {
                 multiFormatReader.reset();
             }
-//            if (rawResult == null) {
-//                //try again with rotated data
-//                byte[] rotatedData = new byte[data.length];
-//                for (int y = 0; y < height; y++) {
-//                    for (int x = 0; x < width; x++)
-//                        rotatedData[x * height + height - y - 1] = data[x + y * width];
-//                }
-//                int tmp = width;
-//                width = height;
-//                height = tmp;
-//
-//                source = CameraManager.buildLuminanceSource(rotatedData, width, height);
-//                if (source != null) {
-//                    bitmap = new BinaryBitmap(new HybridBinarizer(source));
-//                    try {
-//                        rawResult = multiFormatReader.decodeWithState(bitmap);
-//                    } catch (ReaderException re) {
-//                        // continue
-//                    } finally {
-//                        multiFormatReader.reset();
-//                    }
-//                }
-//            }
+            if (rawResult == null) {
+                //try again with rotated data
+                byte[] rotatedData = new byte[data.length];
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++)
+                        rotatedData[x * height + height - y - 1] = data[x + y * width];
+                }
+                int tmp = width;
+                width = height;
+                height = tmp;
+
+                source = CameraManager.buildLuminanceSource(rotatedData, width, height);
+                if (source != null) {
+                    bitmap = new BinaryBitmap(new HybridBinarizer(source));
+                    try {
+                        rawResult = multiFormatReader.decodeWithState(bitmap);
+                    } catch (ReaderException re) {
+                        // continue
+                    } finally {
+                        multiFormatReader.reset();
+                    }
+                }
+            }
         }
 
         Handler handler = resultHandler;
         if (handler != null) {
+            Message message;
             if (rawResult != null) {
-                // Don't log the barcode contents for security.
                 long end = System.currentTimeMillis();
                 Log.i(TAG, "Found barcode in " + (end - start) + " ms");
-                Message message = Message.obtain(handler, R.id.decode_succeeded, rawResult.getText());
-                message.sendToTarget();
+                message = Message.obtain(handler, R.id.decode_succeeded, rawResult.getText());
             } else {
-                Message message = Message.obtain(handler, R.id.decode_failed);
-                message.sendToTarget();
+                message = Message.obtain(handler, R.id.decode_failed);
             }
+            message.sendToTarget();
         }
     }
 }

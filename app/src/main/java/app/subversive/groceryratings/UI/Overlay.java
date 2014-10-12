@@ -10,4 +10,5 @@ public interface Overlay {
     public void showOverlay(boolean withAnimation);
     public void hideOverlay(boolean withAnimation);
     public void detachOverlayFromParent();
+    public void onParentLayoutComplete();
 }

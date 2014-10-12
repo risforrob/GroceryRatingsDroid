@@ -16,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+
+import app.subversive.groceryratings.camera.CameraManager;
 import app.subversive.groceryratings.camera.CameraUtil;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
@@ -50,7 +52,7 @@ public class MainWindow extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main_window);
+
         if (savedInstanceState == null) {
             // todo move this into loading async task
             scanFrag = ScanFragment.newInstance(readRawHistoryData());
@@ -79,10 +81,23 @@ public class MainWindow extends ActionBarActivity {
             imageService = mainImageService = imageAdapter.create(ImageService.class);
             debugImageService = new DebugImageService();
 
-            CameraUtil.initialize(this);
             Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
             Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
+
+            setContentView(R.layout.activity_main_window);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        CameraManager.initializeCamera(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CameraManager.startPreview();
     }
 
     @Override
@@ -91,6 +106,13 @@ public class MainWindow extends ActionBarActivity {
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
         writeHistory();
         ManagedTimer.cancelAll();
+        CameraManager.stopPreview();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        CameraManager.closeDriver();
     }
 
     /** Check if this device has a camera */
