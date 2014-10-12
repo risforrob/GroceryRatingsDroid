@@ -35,7 +35,12 @@ import retrofit.client.Response;
 /**
  * Created by rob on 9/1/14.
  */
-public class ProductRatingBar extends FrameLayout {
+public class ProductRatingBar extends FrameLayout implements View.OnClickListener {
+    @Override
+    public void onClick(View v) {
+
+    }
+
     static class hideOnEnd extends AnimatorListenerAdapter {
         final View v;
         public hideOnEnd (View v) { this.v = v;  }
@@ -217,6 +222,8 @@ public class ProductRatingBar extends FrameLayout {
 
         statusText = ((TextView) status.findViewById(R.id.tvStatus));
         progress = ((ProgressBar) status.findViewById(R.id.pbLoading));
+
+        setOnClickListener(this);
     }
 
     private View defaultInflate(Context context, int resource) {
@@ -242,4 +249,6 @@ public class ProductRatingBar extends FrameLayout {
             this.postDelayed(flashDelay, flashInterval);
         }
     }
+
+
 }

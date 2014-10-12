@@ -202,21 +202,8 @@ public class ScanFragment
     GestureDetector.SimpleOnGestureListener touchListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
+            onTouchUp(e.getX(), e.getY());
 
-            surfaceView.setFocus(e.getX(), e.getY());
-
-            CameraManager.autoFocus(
-                    e.getX(),
-                    e.getY(),
-                    surfaceView.getRadius(),
-                    surfaceView.getWidth(),
-                    surfaceView.getHeight(),
-                    new Camera.AutoFocusCallback() {
-                @Override
-                public void onAutoFocus(boolean success, Camera camera) {
-                    surfaceView.unsetFocus();
-                }
-            });
             return true;
         }
 
@@ -439,6 +426,24 @@ public class ScanFragment
 
     @Override
     public void onScanControlsFinishedShow() { }
+
+    @Override
+    public void onTouchUp(float x, float y) {
+        surfaceView.setFocus(x, y);
+
+        CameraManager.autoFocus(
+                x,
+                y,
+                surfaceView.getRadius(),
+                surfaceView.getWidth(),
+                surfaceView.getHeight(),
+                new Camera.AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean success, Camera camera) {
+                        surfaceView.unsetFocus();
+                    }
+                });
+    }
 
     @Override
     public void onUnknownBarcode(String barcode) {

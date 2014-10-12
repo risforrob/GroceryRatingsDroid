@@ -31,6 +31,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         public void onCaptureNewProductPhoto();
         public void onScanControlsFinishedHide();
         public void onScanControlsFinishedShow();
+        public void onTouchUp(float x, float y);
     }
 
     private long animDuration = 200;
@@ -90,8 +91,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     private void setupAnimation() {
-//        measureView(statusBar);
-//        measureView(unknownBarcode);
         animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getHeight(), 0);
         animStatusShow.setDuration(animDuration);
 
@@ -155,7 +154,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
         historyScrollView.setVisibility(View.INVISIBLE);
         statusBar.setVisibility(View.INVISIBLE);
-
     }
 
     @Override
@@ -366,8 +364,8 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     @Override
-    public boolean onTouchUp(MotionEvent ev) {
-        return false;
+    public void onTouchUp(float x, float y) {
+        handler.onTouchUp(x, y);
     }
 
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0,0); }

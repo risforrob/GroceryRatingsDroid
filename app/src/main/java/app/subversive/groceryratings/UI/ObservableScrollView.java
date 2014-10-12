@@ -20,16 +20,15 @@ import java.util.ArrayList;
 public class ObservableScrollView extends ScrollView {
     public static interface Callbacks {
         public void onScrollChanged(int deltaX, int deltaY);
-        public boolean onTouchUp(MotionEvent ev);
+        public void onTouchUp(float x, float y);
     }
     GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            boolean result = false;
             for (Callbacks c : mCallbacks) {
-                result = result || c.onTouchUp(e);
+                c.onTouchUp(e.getX(), e.getY());
             }
-            return result;
+            return true;
         }
 
         @Override
@@ -64,10 +63,7 @@ public class ObservableScrollView extends ScrollView {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        if (super.onTouchEvent(ev)) {
-            return true;
-        } else {
-            return gd.onTouchEvent(ev);
-        }
+        gd.onTouchEvent(ev);
+        return super.onTouchEvent(ev);
     }
 }
