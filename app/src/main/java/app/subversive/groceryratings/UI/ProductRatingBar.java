@@ -36,6 +36,7 @@ import retrofit.client.Response;
  * Created by rob on 9/1/14.
  */
 public class ProductRatingBar extends FrameLayout implements View.OnClickListener {
+
     @Override
     public void onClick(View v) {
 
@@ -249,6 +250,4 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
             this.postDelayed(flashDelay, flashInterval);
         }
     }
-
-
 }

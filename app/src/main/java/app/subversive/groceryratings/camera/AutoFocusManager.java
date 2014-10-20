@@ -52,20 +52,52 @@ abstract class AutoFocusManager {
         Camera.Parameters params = camera.getParameters();
         params.setFocusAreas(focusArea);
         params.setMeteringAreas(meteringArea);
+        if (params.isAutoExposureLockSupported()) { params.setAutoExposureLock(false); }
+        if (params.isAutoWhiteBalanceLockSupported()) { params.setAutoWhiteBalanceLock(false); }
         camera.setParameters(params);
         camera.autoFocus(new Camera.AutoFocusCallback() {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
+                Camera.Parameters params = camera.getParameters();
+                if (params.isAutoExposureLockSupported()) {
+                    params.setAutoExposureLock(true);
+                }
+
+                if (params.isAutoWhiteBalanceLockSupported()) {
+                    params.setAutoWhiteBalanceLock(true);
+                }
+                camera.setParameters(params);
                 cb.onAutoFocus(success, camera);
             }
         });
     }
 
-    private final void resetAutoFocus() {
+    private void resetAutoFocus() {
         Camera.Parameters params = camera.getParameters();
         params.setFocusAreas(null);
         params.setMeteringAreas(null);
+        if (params.isAutoExposureLockSupported()) {
+            params.setAutoExposureLock(false);
+        }
+
+        if (params.isAutoWhiteBalanceLockSupported()) {
+            params.setAutoWhiteBalanceLock(false);
+        }
         camera.setParameters(params);
         unpause();
+    }
+
+    private void lockExposureWhiteBalance(Camera.Parameters params) {
+        if (params == null) {
+            params = camera.getParameters();
+        }
+        if (params.isAutoExposureLockSupported()) {
+            params.setAutoExposureLock(true);
+        }
+
+        if (params.isAutoWhiteBalanceLockSupported()) {
+            params.setAutoWhiteBalanceLock(true);
+        }
+
     }
 }

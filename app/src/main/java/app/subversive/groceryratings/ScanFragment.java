@@ -1,12 +1,9 @@
 package app.subversive.groceryratings;
 
+import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Matrix;
-import android.graphics.Rect;
-import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.os.Message;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -18,7 +15,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.app.Fragment;
 import android.widget.FrameLayout;
 
 import com.google.gson.Gson;
@@ -36,7 +32,6 @@ import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
 import app.subversive.groceryratings.UI.ProductRatingBar;
 import app.subversive.groceryratings.UI.ScanControlsOverlay;
-import app.subversive.groceryratings.camera.CameraUtil;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -151,6 +146,12 @@ public class ScanFragment
                     pbar.flash();
                 }
                 handled = true;
+                break;
+            case 7:
+                scanControls.flushHistory();
+                getActivity().finish();
+                handled = true;
+                break;
         }
         return handled || parentHandled;
     }
@@ -171,6 +172,7 @@ public class ScanFragment
         m.setChecked(MainWindow.Preferences.autoscan);
 
         menu.add(4,6,40, "Flash");
+        menu.add(5,7,50, "Flush(Exit)");
     }
 
 

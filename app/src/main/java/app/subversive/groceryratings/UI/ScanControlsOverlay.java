@@ -87,6 +87,8 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     @Override
     public void onParentLayoutComplete() {
+        ratingHistory.setMinimumHeight(parent.getHeight());
+//        ratingHistory.invalidate();
         setupAnimation();
     }
 
@@ -104,10 +106,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
         animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", unknownBarcode.getWidth(), 0f);
         animUnknownCodeShow.setDuration(animDuration);
-    }
-
-    private void measureView(View v) {
-        v.measure(mspec, mspec);
     }
 
     public void resetPromptTimer() {
@@ -392,7 +390,11 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         }
     }
 
-    public final List<Product> getAllProducts() {
+    public void flushHistory() {
+        ratingHistory.removeAllViews();
+    }
+
+    public List<Product> getAllProducts() {
         LinkedList<Product> products = new LinkedList<Product>();
         int numChildren = ratingHistory.getChildCount();
         Product p;

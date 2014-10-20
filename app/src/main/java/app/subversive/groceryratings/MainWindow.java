@@ -1,9 +1,9 @@
 package app.subversive.groceryratings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,12 +18,11 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import app.subversive.groceryratings.camera.CameraManager;
-import app.subversive.groceryratings.camera.CameraUtil;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
 import retrofit.RestAdapter;
 
-public class MainWindow extends ActionBarActivity {
+public class MainWindow extends Activity {
     private final static String TAG = MainWindow.class.getSimpleName();
     static final String endpoint = "https://1-dot-groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
     static final String imageEndpoint = "https://groceryratings.appspot.com";
@@ -43,7 +42,7 @@ public class MainWindow extends ActionBarActivity {
         static void writePrefs(SharedPreferences prefs) {
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(AUTOSCAN, autoscan);
-            edit.commit();
+            edit.apply();
         }
     }
     private final static String HISTORY_FILE = "HISTORY_FILE";
@@ -56,8 +55,7 @@ public class MainWindow extends ActionBarActivity {
         if (savedInstanceState == null) {
             // todo move this into loading async task
             scanFrag = ScanFragment.newInstance(readRawHistoryData());
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, scanFrag)
+            getFragmentManager().beginTransaction().add(R.id.container, scanFrag)
                     .commit();
 
 
