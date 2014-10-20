@@ -30,6 +30,9 @@ import java.util.concurrent.RejectedExecutionException;
 import app.subversive.groceryratings.ManagedTimer;
 
 abstract class AutoFocusManager {
+    public interface FocusFinishedCallback {
+        void onFocusFinished();
+    }
     private final String TAG = AutoFocusManager.class.getSimpleName();
     protected Camera camera;
 
@@ -40,12 +43,18 @@ abstract class AutoFocusManager {
         }
     }, 5000L);
 
+
     abstract void start();
     abstract void stop();
     protected abstract void pause();
     protected abstract void unpause();
 
+
+    private boolean isManualFocusing = false;
+    private FocusFinishedCallback focusFinishedCallback;
+
     public void manualAutoFocus(List<Camera.Area> focusArea, List<Camera.Area> meteringArea, final Camera.AutoFocusCallback cb) {
+        isManualFocusing = true;
         camera.cancelAutoFocus();
         controller.restart();
         pause();
@@ -59,14 +68,14 @@ abstract class AutoFocusManager {
             @Override
             public void onAutoFocus(boolean success, Camera camera) {
                 Camera.Parameters params = camera.getParameters();
-                if (params.isAutoExposureLockSupported()) {
-                    params.setAutoExposureLock(true);
-                }
-
-                if (params.isAutoWhiteBalanceLockSupported()) {
-                    params.setAutoWhiteBalanceLock(true);
-                }
+                if (params.isAutoExposureLockSupported()) { params.setAutoExposureLock(true); }
+                if (params.isAutoWhiteBalanceLockSupported()) { params.setAutoWhiteBalanceLock(true); }
                 camera.setParameters(params);
+                isManualFocusing = false;
+                if (focusFinishedCallback != null ) {
+                    focusFinishedCallback.onFocusFinished();
+                    focusFinishedCallback = null;
+                }
                 cb.onAutoFocus(success, camera);
             }
         });
@@ -76,28 +85,22 @@ abstract class AutoFocusManager {
         Camera.Parameters params = camera.getParameters();
         params.setFocusAreas(null);
         params.setMeteringAreas(null);
-        if (params.isAutoExposureLockSupported()) {
-            params.setAutoExposureLock(false);
-        }
-
-        if (params.isAutoWhiteBalanceLockSupported()) {
-            params.setAutoWhiteBalanceLock(false);
-        }
+        if (params.isAutoExposureLockSupported()) { params.setAutoExposureLock(false); }
+        if (params.isAutoWhiteBalanceLockSupported()) { params.setAutoWhiteBalanceLock(false); }
         camera.setParameters(params);
         unpause();
     }
 
-    private void lockExposureWhiteBalance(Camera.Parameters params) {
-        if (params == null) {
-            params = camera.getParameters();
-        }
-        if (params.isAutoExposureLockSupported()) {
-            params.setAutoExposureLock(true);
-        }
+    abstract void onAutoFocusFinished(FocusFinishedCallback cb);
 
-        if (params.isAutoWhiteBalanceLockSupported()) {
-            params.setAutoWhiteBalanceLock(true);
+    public void onFocusFinished(FocusFinishedCallback cb) {
+        if (isManualFocusing) {
+            Log.i(TAG,"isManualFocusing");
+            focusFinishedCallback = cb;
+        } else if (controller.isPending()) {
+            cb.onFocusFinished();
+        } else {
+            onAutoFocusFinished(cb);
         }
-
     }
 }

@@ -32,6 +32,13 @@ public class PlaceboAutoFocusManager extends AutoFocusManager {
 
     }
 
+
+
+    @Override
+    void onAutoFocusFinished(FocusFinishedCallback cb) {
+        cb.onFocusFinished();
+    }
+
     @Override
     public void manualAutoFocus(List<Camera.Area> focusArea, List<Camera.Area> meteringArea, Camera.AutoFocusCallback cb) {
     }

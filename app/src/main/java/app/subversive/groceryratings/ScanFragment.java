@@ -177,7 +177,8 @@ public class ScanFragment
 
 
     private void takePicture() {
-        CameraManager.takePicture(this);
+        cameraControls.setPendingState(false);
+        CameraManager.takePicture(cameraControls, this);
     }
 
     private void restartPhotoPreview() {

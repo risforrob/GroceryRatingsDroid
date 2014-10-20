@@ -13,7 +13,11 @@ public class ContinuousAutoFocusManager extends AutoFocusManager {
 
     @Override
     void start() {
-
+        Camera.Parameters params = camera.getParameters();
+        params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        params.setFocusAreas(null);
+        params.setMeteringAreas(null);
+        camera.setParameters(params);
     }
 
     @Override
@@ -36,12 +40,16 @@ public class ContinuousAutoFocusManager extends AutoFocusManager {
     }
 
     static AutoFocusManager newInstance(Camera camera) {
-        ContinuousAutoFocusManager cman = new ContinuousAutoFocusManager();
-        Camera.Parameters params = camera.getParameters();
-        params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        params.setFocusAreas(null);
-        params.setMeteringAreas(null);
-        camera.setParameters(params);
-        return cman;
+        return new ContinuousAutoFocusManager();
+    }
+
+    @Override
+    void onAutoFocusFinished(final FocusFinishedCallback cb) {
+        camera.autoFocus(new Camera.AutoFocusCallback() {
+            @Override
+            public void onAutoFocus(boolean success, Camera camera) {
+                cb.onFocusFinished();
+            }
+        });
     }
 }

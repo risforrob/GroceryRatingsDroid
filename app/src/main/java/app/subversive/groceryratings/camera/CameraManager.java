@@ -202,11 +202,17 @@ public final class CameraManager {
                 width-1, height-1, false);
     }
 
-    public static synchronized void takePicture(Camera.PictureCallback callback) {
+    public static synchronized void takePicture(
+            final Camera.ShutterCallback shutterCallback, final Camera.PictureCallback pictureCallback) {
         if (previewing) {
             previewing = false;
-            autoFocusManager.stop();
-            camera.takePicture(null, null, callback);
+            autoFocusManager.onFocusFinished(new AutoFocusManager.FocusFinishedCallback() {
+                @Override
+                public void onFocusFinished() {
+                    autoFocusManager.stop();
+                    camera.takePicture(shutterCallback, null, pictureCallback);
+                }
+            });
         }
     }
 

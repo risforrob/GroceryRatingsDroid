@@ -19,6 +19,7 @@ public class PollingAutoFocusManager extends AutoFocusManager implements Camera.
     private boolean stopped;
     private boolean focusing;
     private AutoFocusTask outstandingTask;
+    private FocusFinishedCallback focusFinishedCallback;
 
     private PollingAutoFocusManager() {};
 
@@ -34,6 +35,10 @@ public class PollingAutoFocusManager extends AutoFocusManager implements Camera.
 
     public void onAutoFocus(boolean success, Camera theCamera) {
         focusing = false;
+        if (focusFinishedCallback != null) {
+            focusFinishedCallback.onFocusFinished();
+            focusFinishedCallback = null;
+        }
         autoFocusAgainLater();
     }
 
@@ -106,6 +111,15 @@ public class PollingAutoFocusManager extends AutoFocusManager implements Camera.
     protected void unpause() {
         Log.i(TAG, "UNPAUSE");
         start();
+    }
+
+    @Override
+    void onAutoFocusFinished(FocusFinishedCallback cb) {
+        if (focusing) {
+            focusFinishedCallback = cb;
+        } else {
+            cb.onFocusFinished();
+        }
     }
 
     private final class AutoFocusTask extends AsyncTask<Void,Void,Void> {

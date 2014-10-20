@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.graphics.Rect;
+import android.hardware.Camera;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +13,14 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import app.subversive.groceryratings.R;
 
 /**
  * Created by rob on 9/8/14.
  */
-public class CameraControlsOverlay implements Overlay {
+public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
     public interface Callbacks {
         public void onTakePicture();
         public void onConfirmPicture();
@@ -30,14 +32,17 @@ public class CameraControlsOverlay implements Overlay {
 
     private final String TAG = CameraControlsOverlay.class.getSimpleName();
 
-    private final long animDuration =200;
+    private final long animDuration = 200;
     private final long animDelay = 50;
+    private final long flashDuration = 300;
 
     private final long[][] DELAYS = {{0, 1, 2},{1,0,1}};
 
     private FrameLayout parent;
     private boolean inflated, attached;
     private ImageButton cancelButton, captureButton, retryButton;
+    private View flashView;
+    private ProgressBar photoPending;
     private Callbacks handler;
 
     ObjectAnimator
@@ -46,17 +51,14 @@ public class CameraControlsOverlay implements Overlay {
             animCaptureBtnHide,
             animCaptureBtnShow,
             animRetryBtnShow,
-            animRetryBtnHide;
+            animRetryBtnHide,
+            animCameraFlash;
 
-    boolean animInitialized;
+
     private int buttonClickIndex;
 
     public CameraControlsOverlay(Callbacks handler) {
         this.handler = handler;
-    }
-
-    public void check() {
-        Log.i(TAG, String.valueOf(cancelButton.getTop()));
     }
 
     @Override
@@ -79,6 +81,8 @@ public class CameraControlsOverlay implements Overlay {
         cancelButton = (ImageButton) parent.findViewById(R.id.btnCancelTakePicture);
         captureButton = (ImageButton) parent.findViewById(R.id.btnTakePicture);
         retryButton = (ImageButton) parent.findViewById(R.id.btnRetakePicture);
+        flashView = parent.findViewById(R.id.flashView);
+        photoPending = (ProgressBar) parent.findViewById(R.id.cameraPhotoPending);
 
         cancelButton.setOnClickListener(cancelPictureListener);
         captureButton.setOnClickListener(takePictureListener);
@@ -87,6 +91,7 @@ public class CameraControlsOverlay implements Overlay {
         cancelButton.setVisibility(View.INVISIBLE);
         captureButton.setVisibility(View.INVISIBLE);
         retryButton.setVisibility(View.INVISIBLE);
+        photoPending.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -122,6 +127,11 @@ public class CameraControlsOverlay implements Overlay {
         animRetryBtnHide = ObjectAnimator.ofFloat(retryButton, "y", retryButton.getTop(), parentHeight);
         animRetryBtnHide.setDuration(animDuration);
         animRetryBtnHide.addListener(new AnimUtils.HideOnEnd(retryButton));
+
+        animCameraFlash = ObjectAnimator.ofFloat(flashView, "alpha", 1, 0);
+        animCameraFlash.setDuration(flashDuration);
+        animCameraFlash.setInterpolator(new DecelerateInterpolator());
+        animCameraFlash.addListener(new AnimUtils.HideOnEnd(flashView));
     }
 
 
@@ -214,16 +224,27 @@ public class CameraControlsOverlay implements Overlay {
         showRetryButton(withAnimation);
     }
 
+    public void setPendingState(boolean withAnimation) {
+        setCameraIconPending(withAnimation);
+    }
+
+    private void setCameraIconPending(boolean withAnimation) {
+        captureButton.setImageResource(0);
+        photoPending.setVisibility(View.VISIBLE);
+    }
+
     private void setCameraIconTakePicture(boolean withAnimation) {
         captureButton.setBackgroundResource(R.drawable.circle);
         captureButton.setImageResource(R.drawable.ic_action_camera);
         captureButton.setOnClickListener(takePictureListener);
+        photoPending.setVisibility(View.INVISIBLE);
     }
 
     private void setCameraIconConfirm(boolean withAnimation) {
         captureButton.setBackgroundResource(R.drawable.circle_green);
         captureButton.setImageResource(R.drawable.ic_action_accept);
         captureButton.setOnClickListener(confirmPictureListener);
+        photoPending.setVisibility(View.INVISIBLE);
     }
 
     private void hideRetryButton(boolean withAnimation) {
@@ -287,5 +308,13 @@ public class CameraControlsOverlay implements Overlay {
     private void onConfirmPicture() {
         buttonClickIndex = 1;
         handler.onConfirmPicture();
+    }
+
+    @Override
+    public void onShutter() {
+        if (!animCameraFlash.isRunning()) {
+            flashView.setVisibility(View.VISIBLE);
+            animCameraFlash.start();
+        }
     }
 }

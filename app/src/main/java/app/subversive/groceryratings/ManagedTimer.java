@@ -10,6 +10,7 @@ public class ManagedTimer {
     public static class RunnableController {
         final long delay;
         final RunWrapper wrapper;
+
         private RunnableController(RunWrapper wrapper, long delay) {
             this.delay = delay;
             this.wrapper = wrapper;
@@ -23,12 +24,16 @@ public class ManagedTimer {
             cancel();
             postDelayed(wrapper, delay);
         }
+
+        public boolean isPending() { return wrapper.isPending; }
     }
 
     private static class RunWrapper implements Runnable {
         final Runnable innerRunnable;
+        private boolean isPending;
         public RunWrapper (Runnable r) {
             innerRunnable = r;
+            isPending = false;
         }
 
         @Override
@@ -51,17 +56,20 @@ public class ManagedTimer {
     private static void postDelayed(RunWrapper w, Long delay) {
         wrappers.add(w);
         handler.postDelayed(w, delay);
+        w.isPending = true;
     }
 
     public static synchronized void cancelAll() {
         for (RunWrapper wrapper : wrappers) {
             handler.removeCallbacks(wrapper);
+            wrapper.isPending = false;
         }
     }
 
     private static synchronized void cancelRunnable(RunWrapper w) {
        if (wrappers.remove(w)) {
            handler.removeCallbacks(w);
+           w.isPending = false;
        }
     }
 }
