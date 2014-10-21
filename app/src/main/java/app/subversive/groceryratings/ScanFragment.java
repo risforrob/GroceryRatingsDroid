@@ -432,6 +432,7 @@ public class ScanFragment
 
     @Override
     public void onTouchUp(float x, float y) {
+
         surfaceView.setFocus(x, y);
 
         CameraManager.autoFocus(

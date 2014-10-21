@@ -217,6 +217,10 @@ public final class CameraManager {
     }
 
     public static void autoFocus(float x, float y, float radius, int width, int height, Camera.AutoFocusCallback cb) {
+        if (!previewing) {
+            cb.onAutoFocus(false, camera);
+            return;
+        }
         Matrix mXform = new Matrix();
         Matrix inverse = new Matrix();
         RectF result = new RectF();
