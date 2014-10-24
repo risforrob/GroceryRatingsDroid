@@ -23,12 +23,16 @@ import app.subversive.groceryratings.test.DebugImageService;
 import retrofit.RestAdapter;
 
 public class MainWindow extends Activity {
+    interface UpNavigation { public void onNavigateUp(); }
+
     private final static String TAG = MainWindow.class.getSimpleName();
     static final String endpoint = "https://1-dot-groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
     static final String imageEndpoint = "https://groceryratings.appspot.com";
     public static GroceryRatingsService service, mainService, debugGroceryService;
     public static ImageService imageService, mainImageService, debugImageService;
     private ScanFragment scanFrag;
+
+    private UpNavigation mUpNav;
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
@@ -139,20 +143,27 @@ public class MainWindow extends Activity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == 4) {
-            Log.i("MainWindow", "debug mode!");
-            item.setChecked(!item.isChecked());
-            if (item.isChecked()) {
-                service = debugGroceryService;
-                imageService = debugImageService;
-            } else {
-                service = mainService;
-                imageService = mainImageService;
-            }
-            return false;
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                return true;
+            case android.R.id.home:
+                if (mUpNav != null) {
+                    mUpNav.onNavigateUp();
+                    return true;
+                } else {
+                    return false;
+                }
+            case 4:
+                Log.i("MainWindow", "debug mode!");
+                item.setChecked(!item.isChecked());
+                if (item.isChecked()) {
+                    service = debugGroceryService;
+                    imageService = debugImageService;
+                } else {
+                    service = mainService;
+                    imageService = mainImageService;
+                }
+                return false;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -161,6 +172,17 @@ public class MainWindow extends Activity {
     public void onBackPressed() {
         if (scanFrag.isVisible() && !scanFrag.onBackPressed()) {
             super.onBackPressed();
+        }
+    }
+
+    void setUpNav(UpNavigation nav) {
+        if (nav != null) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            mUpNav = nav;
+        } else {
+            getActionBar().setDisplayHomeAsUpEnabled(false);
+            getActionBar().setHomeButtonEnabled(false);
+            mUpNav = null;
         }
     }
 

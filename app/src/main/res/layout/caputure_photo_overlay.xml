@@ -41,24 +41,12 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:id="@+id/btnRetakePicture"
-        android:layout_gravity="right|bottom"
-        android:background="@drawable/circle"
-        android:src="@drawable/ic_action_undo"
-        android:scaleType="fitCenter"
-        android:padding="8dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginRight="16dp"/>
-
-    <ImageButton
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:id="@+id/btnCancelTakePicture"
         android:layout_gravity="left|bottom"
         android:background="@drawable/circle_red"
         android:src="@drawable/ic_action_cancel"
         android:scaleType="fitCenter"
         android:padding="8dp"
         android:layout_marginBottom="24dp"
-        android:layout_marginLeft="16dp"/>
+        android:layout_marginLeft="24dp"/>
 
 </merge>

@@ -1,6 +1,7 @@
 package app.subversive.groceryratings;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.hardware.Camera;
 import android.os.Bundle;
@@ -192,6 +193,7 @@ public class ScanFragment
     }
 
     private void setScanMode(boolean animated) {
+        ((MainWindow) getActivity()).setUpNav(null);
         CameraManager.startPreview();
         restartScanner();
         currOverlay = scanControls;
@@ -401,14 +403,15 @@ public class ScanFragment
     }
 
     @Override
-    public void onCancelPicture() {
-        setScanMode(true);
-    }
-
-    @Override
     public void onCameraControlsFinishedShow() {
-
+        ((MainWindow) getActivity()).setUpNav(new MainWindow.UpNavigation() {
+            @Override
+            public void onNavigateUp() {
+                onBackPressed();
+            }
+        });
     }
+
 
     @Override
     public void onCameraControlsFinishedHide() {

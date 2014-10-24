@@ -25,14 +25,13 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
         public void onTakePicture();
         public void onConfirmPicture();
         public void onRetryPicture();
-        public void onCancelPicture();
         public void onCameraControlsFinishedShow();
         public void onCameraControlsFinishedHide();
     }
 
     private final String TAG = CameraControlsOverlay.class.getSimpleName();
 
-    private final long animDuration = 200;
+    private final long animDuration = 100;
     private final long animDelay = 50;
     private final long flashDuration = 300;
 
@@ -40,14 +39,12 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
 
     private FrameLayout parent;
     private boolean inflated, attached;
-    private ImageButton cancelButton, captureButton, retryButton;
+    private ImageButton captureButton, retryButton;
     private View flashView;
     private ProgressBar photoPending;
     private Callbacks handler;
 
     ObjectAnimator
-            animCancelBtnShow,
-            animCancelBtnHide,
             animCaptureBtnHide,
             animCaptureBtnShow,
             animRetryBtnShow,
@@ -70,7 +67,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
             inflateOverlay();
             inflated = true;
         } else {
-            parent.addView(cancelButton);
             parent.addView(captureButton);
             parent.addView(retryButton);
         }
@@ -78,17 +74,14 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
 
     private void inflateOverlay() {
         LayoutInflater.from(parent.getContext()).inflate(R.layout.caputure_photo_overlay, parent, true);
-        cancelButton = (ImageButton) parent.findViewById(R.id.btnCancelTakePicture);
         captureButton = (ImageButton) parent.findViewById(R.id.btnTakePicture);
         retryButton = (ImageButton) parent.findViewById(R.id.btnRetakePicture);
         flashView = parent.findViewById(R.id.flashView);
         photoPending = (ProgressBar) parent.findViewById(R.id.cameraPhotoPending);
 
-        cancelButton.setOnClickListener(cancelPictureListener);
         captureButton.setOnClickListener(takePictureListener);
         retryButton.setOnClickListener(retryPictureListener);
 
-        cancelButton.setVisibility(View.INVISIBLE);
         captureButton.setVisibility(View.INVISIBLE);
         retryButton.setVisibility(View.INVISIBLE);
         photoPending.setVisibility(View.INVISIBLE);
@@ -101,18 +94,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
 
     private void initAnim() {
         float parentHeight = parent.getHeight();
-
-        Log.i("top", String.valueOf(cancelButton.getTop()));
-        Log.i("parentHeight", String.valueOf(parentHeight));
-
-        animCancelBtnShow = ObjectAnimator.ofFloat(cancelButton, "y", parentHeight, cancelButton.getTop());
-        animCancelBtnShow.setDuration(animDuration);
-        animCancelBtnShow.setStartDelay(animDelay);
-        animCancelBtnShow.addListener(new AnimUtils.ShowOnStart(cancelButton));
-
-        animCancelBtnHide = ObjectAnimator.ofFloat(cancelButton, "y", cancelButton.getTop(), parentHeight);
-        animCancelBtnHide.setDuration(animDuration);
-        animCancelBtnHide.addListener(new AnimUtils.HideOnEnd(cancelButton));
 
         animCaptureBtnShow = ObjectAnimator.ofFloat(captureButton, "y", parentHeight, captureButton.getTop());
         animCaptureBtnShow.setDuration(animDuration);
@@ -139,7 +120,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
     public void showOverlay(boolean withAnimation) {
         setCaptureState(false);
         if (!withAnimation) {
-            cancelButton.setVisibility(View.VISIBLE);
             captureButton.setVisibility(View.VISIBLE);
         } else {
 //            if (!animInitialized) {
@@ -149,7 +129,7 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
             retryButton.setVisibility(View.GONE);
 
             AnimatorSet anim = new AnimatorSet();
-            anim.play(animCaptureBtnShow).with(animCancelBtnShow);
+            anim.play(animCaptureBtnShow);
             anim.setInterpolator(new DecelerateInterpolator());
             anim.addListener(new AnimatorListenerAdapter() {
                 @Override
@@ -165,7 +145,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
     @Override
     public void hideOverlay(boolean withAnimation) {
         if (!withAnimation) {
-            cancelButton.setVisibility(View.GONE);
             captureButton.setVisibility(View.GONE);
             retryButton.setVisibility(View.GONE);
         } else {
@@ -173,19 +152,12 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
 //                initAnim();
 //            }
 
-            animCancelBtnHide.setStartDelay(DELAYS[buttonClickIndex][0] * animDelay);
-            animCaptureBtnHide.setStartDelay(DELAYS[buttonClickIndex][1] * animDelay);
-            animRetryBtnHide.setStartDelay(DELAYS[buttonClickIndex][2] * animDelay);
+            animCaptureBtnHide.setStartDelay(DELAYS[buttonClickIndex][0] * animDelay);
+            animRetryBtnHide.setStartDelay(DELAYS[buttonClickIndex][1] * animDelay);
 
             AnimatorSet anim = new AnimatorSet();
             anim.setInterpolator(new AccelerateInterpolator());
-            AnimatorSet.Builder builder;
-            if (buttonClickIndex == 0) {
-                builder = anim.play(animCancelBtnHide).with(animCaptureBtnHide);
-            } else {
-                builder = anim.play(animCaptureBtnHide).with(animCancelBtnHide);
-            }
-
+            AnimatorSet.Builder builder = anim.play(animCaptureBtnHide);
             if (retryButton.isShown()) {
                 builder.with(animRetryBtnHide);
             }
@@ -207,7 +179,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
     public void detachOverlayFromParent() {
         hideOverlay(false);
 
-        parent.removeView(cancelButton);
         parent.removeView(captureButton);
         parent.removeView(retryButton);
         parent = null;
@@ -262,13 +233,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
         }
     }
 
-    private final View.OnClickListener cancelPictureListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            onCancelPicture();
-        }
-    };
-
     private final View.OnClickListener takePictureListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -289,11 +253,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
             onConfirmPicture();
         }
     };
-
-    private void onCancelPicture() {
-        buttonClickIndex = 0;
-        handler.onCancelPicture();
-    }
 
     private void onTakePicture() {
         buttonClickIndex = 1;
