@@ -1,8 +1,8 @@
 package app.subversive.groceryratings;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.Context;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Vibrator;
@@ -257,9 +257,15 @@ public class ScanFragment
             }
         });
         surfaceView.getHolder().addCallback(this);
-
         v.setKeepScreenOn(true);
         return v;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Point r = CameraManager.getCameraResolution();
+        surfaceView.setDesiredAspectRatio((float)r.x/(float)r.y);
     }
 
     @Override
@@ -473,9 +479,5 @@ public class ScanFragment
 
     public List<Product> getProductHistory() {
         return scanControls.getAllProducts();
-    }
-
-    public void setHistory(Product[] products) {
-
     }
 }

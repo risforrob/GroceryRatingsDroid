@@ -6,8 +6,8 @@
     android:id="@+id/root">
 
     <app.subversive.groceryratings.UI.FocusableSurfaceView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/svScan"
         android:layout_gravity="center"
         />

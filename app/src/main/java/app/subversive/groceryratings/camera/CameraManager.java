@@ -26,6 +26,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
 import com.google.zxing.PlanarYUVLuminanceSource;
 
 import java.io.IOException;
@@ -104,6 +106,16 @@ public final class CameraManager {
         if (isMeteringSupported) {
             meteringAreas = new LinkedList<Camera.Area>();
             meteringAreas.add(new Camera.Area(new Rect(), 1));
+        }
+    }
+
+    public static Point getCameraResolution() {
+        if (configManager.getRotation() == 0 ||
+                configManager.getRotation() == 180 ) {
+            return configManager.getCameraResolution();
+        } else {
+            Point r = configManager.getCameraResolution();
+            return new Point(r.y, r.x);
         }
     }
 
