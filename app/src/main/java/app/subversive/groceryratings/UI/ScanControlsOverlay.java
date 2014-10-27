@@ -37,6 +37,8 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     private long animDuration = 200;
     private long delayAmount = 30;
 
+    private int touchOffsetX, touchOffsetY;
+
 
     FrameLayout parent;
     boolean attached, inflated;
@@ -69,6 +71,11 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             showScanPrompt();
         }
     }, 5000L);
+
+    public void setTouchOffset(int x, int y) {
+        touchOffsetX = x;
+        touchOffsetY = y;
+    }
 
     @Override
     public void attachOverlayToParent(FrameLayout parent) {
@@ -377,7 +384,8 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     @Override
     public void onTouchUp(float x, float y) {
-        handler.onTouchUp(x, y);
+
+        handler.onTouchUp(x + touchOffsetX, y + touchOffsetY);
     }
 
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0,0); }

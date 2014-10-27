@@ -230,6 +230,8 @@ public class ScanFragment
                 scanControls.onParentLayoutComplete();
                 cameraControls.onParentLayoutComplete();
                 setScanMode(true);
+                Log.i(TAG, String.format("%d x %d", surfaceView.getTop(), surfaceView.getLeft()));
+                scanControls.setTouchOffset(-surfaceView.getLeft(), -surfaceView.getTop());
                 v.removeOnLayoutChangeListener(this);
             }
         });
