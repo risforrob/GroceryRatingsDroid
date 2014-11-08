@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Show me a barcode to scan."
+    android:id="@+id/statusText"
+    android:textSize="20sp"
+    android:gravity="center"
+    android:textColor="#ffffffff"
+    android:background="#a6000000"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:layout_gravity="top|center"
+/>
