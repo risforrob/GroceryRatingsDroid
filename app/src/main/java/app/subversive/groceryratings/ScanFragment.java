@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,10 +55,7 @@ public class ScanFragment
     private final static String ARG_RAW_HISTORY = "ARG_RAW_HISTORY";
     private final String TAG = ScanFragment.class.getSimpleName();
 
-    CaptureActivityHandler handler;
-    {
-        handler = new CaptureActivityHandler(this);
-    }
+    final CaptureActivityHandler handler; { handler = new CaptureActivityHandler(this); }
     private Vibrator mVibrator;
     private String lastScanned;
 

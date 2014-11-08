@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +22,7 @@ import java.util.List;
 import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.ManagedTimer;
 import app.subversive.groceryratings.R;
+import app.subversive.groceryratings.ScanFragment;
 
 /**
  * Created by rob on 9/10/14.
@@ -34,6 +36,37 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         public void onTouchUp(float x, float y);
     }
 
+    public class Status {
+        final View view;
+        public Status(View v) {
+            view = v;
+            parent.addView(v, statusLayoutParams);
+            v.setVisibility(View.GONE);
+        }
+
+        public void show(boolean animated) {
+            if (currentStatus != null) {
+                currentStatus.hide(animated);
+            }
+            currentStatus = this;
+            view.setVisibility(View.VISIBLE);
+
+        }
+
+        public void hide(boolean animated) {
+            view.setVisibility(View.GONE);
+            currentStatus = null;
+        }
+    }
+
+    private Status currentStatus;
+
+    final private FrameLayout.LayoutParams statusLayoutParams =
+            new FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.CENTER | Gravity.TOP);
+
     private long animDuration = 200;
     private long delayAmount = 30;
 
@@ -45,24 +78,23 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     Callbacks handler;
 
     ObservableScrollView historyScrollView;
-    LinearLayout statusBar, unknownBarcode;
-
+    LinearLayout unknownBarcode;
+    TextView statusBar;
     RatingsLayout ratingHistory;
-    TextView statusText, btnPhotoNo, btnPhotoYes;
 
     private final ViewGroup.LayoutParams defaultLP =
             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-    ObjectAnimator animUnknownCodeHide,
-                   animUnknownCodeShow,
-                   animStatusHide,
-                   animStatusShow;
+//    ObjectAnimator animUnknownCodeHide,
+//                   animUnknownCodeShow,
+//                   animStatusHide,
+//                   animStatusShow;
 
     View[] hiddenRatings;
 
-    private final HashMap<String, ProductRatingBar> cache = new HashMap<String, ProductRatingBar>();
-    private final int mspec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+    Status statusPrompt, statusUnknown;
 
+    private final HashMap<String, ProductRatingBar> cache = new HashMap<String, ProductRatingBar>();
     public ScanControlsOverlay(Callbacks handler) { this.handler = handler; }
 
     ManagedTimer.RunnableController controller = ManagedTimer.getController(new Runnable() {
@@ -85,10 +117,10 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         if (!inflated) {
             inflateOverlay();
             inflated = true;
+            statusPrompt = new Status(statusBar);
+            statusUnknown = new Status(unknownBarcode);
         } else {
             parent.addView(historyScrollView);
-            parent.addView(statusBar);
-            parent.addView(unknownBarcode);
         }
     }
 
@@ -100,26 +132,27 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     private void setupAnimation() {
-        animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getHeight(), 0);
-        animStatusShow.setDuration(animDuration);
-
-        animStatusHide = ObjectAnimator.ofFloat(statusBar, "y", 0, -statusBar.getHeight());
-        animStatusHide.setDuration(animDuration);
-        animStatusHide.addListener(new AnimUtils.HideOnEnd(statusBar));
-
-        animUnknownCodeHide = ObjectAnimator.ofFloat(unknownBarcode, "x", 0f, -unknownBarcode.getWidth());
-        animUnknownCodeHide.setDuration(animDuration);
-        animUnknownCodeHide.addListener(new AnimUtils.HideOnEnd(unknownBarcode));
-
-        animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", unknownBarcode.getWidth(), 0f);
-        animUnknownCodeShow.setDuration(animDuration);
+//        animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getHeight(), 0);
+//        animStatusShow.setDuration(animDuration);
+//
+//        animStatusHide = ObjectAnimator.ofFloat(statusBar, "y", 0, -statusBar.getHeight());
+//        animStatusHide.setDuration(animDuration);
+//        animStatusHide.addListener(new AnimUtils.HideOnEnd(statusBar));
+//
+//        animUnknownCodeHide = ObjectAnimator.ofFloat(unknownBarcode, "x", 0f, -unknownBarcode.getWidth());
+//        animUnknownCodeHide.setDuration(animDuration);
+//        animUnknownCodeHide.addListener(new AnimUtils.HideOnEnd(unknownBarcode));
+//
+//        animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", unknownBarcode.getWidth(), 0f);
+//        animUnknownCodeShow.setDuration(animDuration);
     }
 
     public void resetPromptTimer() {
         controller.restart();
-        if (statusBar.isShown()) {
-            hideScanPrompt();
-        }
+//        if (statusBar.isShown()) {
+//            hideScanPrompt();
+//        }
+        statusPrompt.hide(true);
     }
 
     public void cancelTimer() {
@@ -131,14 +164,18 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     public void showScanPrompt() {
-        statusBar.setVisibility(View.VISIBLE);
-        animStatusShow.start();
+
+//        statusBar.setVisibility(View.VISIBLE);
+//        animStatusShow.start();
+        statusPrompt.show(true);
         Log.i(TAG, "ShowScanPrompt");
     }
 
     public void hideScanPrompt() {
-
-        animStatusHide.start();
+        statusPrompt.hide(true);
+//        if (!animStatusHide.isRunning()) {
+//            animStatusHide.start();
+//        }
         controller.restart();
     }
 
@@ -146,28 +183,27 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_barcode_overlay, parent, true);
         historyScrollView = (ObservableScrollView) parent.findViewById(R.id.scrollView);
         ratingHistory = (RatingsLayout) parent.findViewById(R.id.RatingHolder);
-        statusBar = (LinearLayout) parent.findViewById(R.id.statusBar);
-        unknownBarcode = (LinearLayout) parent.findViewById(R.id.unknownBarcode);
-        statusText = (TextView) parent.findViewById(R.id.statusText);
-        btnPhotoNo = (TextView) parent.findViewById(R.id.tvNoScanBarcode);
-        btnPhotoYes = (TextView) parent.findViewById(R.id.tvYesScanBarcode);
-
         historyScrollView.addCallbacks(this);
-
-        btnPhotoNo.setOnClickListener(noPhotoListener);
-        btnPhotoYes.setOnClickListener(yesPhotoListener);
-
         historyScrollView.setVisibility(View.INVISIBLE);
-        statusBar.setVisibility(View.INVISIBLE);
 
-        unknownBarcode.setOnClickListener(new View.OnClickListener() {
+
+
+        statusBar = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.status_scan_prompt, parent, false);
+        statusBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
             }
         });
 
-        statusBar.setOnClickListener(new View.OnClickListener() {
+
+
+        unknownBarcode = (LinearLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.unknown_barcode, parent, false);
+        TextView btnPhotoNo = (TextView) unknownBarcode.findViewById(R.id.tvNoScanBarcode);
+        TextView btnPhotoYes = (TextView) unknownBarcode.findViewById(R.id.tvYesScanBarcode);
+        btnPhotoNo.setOnClickListener(noPhotoListener);
+        btnPhotoYes.setOnClickListener(yesPhotoListener);
+        unknownBarcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -285,13 +321,15 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         LinkedList<Animator> animators = new LinkedList<Animator>();
 
         if (unknownBarcode.isShown()) {
-            animators.add(animUnknownCodeHide);
+            statusUnknown.hide(true);
+//            animators.add(animUnknownCodeHide);
         }
 
-        if (statusBar.isShown() && !animStatusHide.isRunning()) {
-            if (animStatusShow.isRunning()) {animStatusShow.cancel();}
-            animators.add(animStatusHide);
-        }
+//        if (statusBar.isShown() && !animStatusHide.isRunning()) {
+//            if (animStatusShow.isRunning()) {animStatusShow.cancel();}
+//            animators.add(animStatusHide);
+//        }
+        statusPrompt.hide(true);
 
         animators.addAll(addProductHideAnimation());
 
@@ -324,14 +362,20 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     };
 
     public void showUnknownBarcode(boolean withAnimation) {
-        if (!animUnknownCodeShow.isRunning() && !animUnknownCodeHide.isRunning()) {
-            unknownBarcode.setVisibility(View.VISIBLE);
-            animUnknownCodeShow.start();
-        }
+//        if (!animUnknownCodeShow.isRunning()) {
+//            if (animUnknownCodeHide.isRunning()) {
+//                animUnknownCodeHide.cancel();
+//            }
+//            unknownBarcode.setVisibility(View.VISIBLE);
+//            animUnknownCodeShow.start();
+//        }
+        resetPromptTimer();
+        statusUnknown.show(true);
     }
 
     public void hideUnknownBarcode(boolean withAnimation) {
-        animUnknownCodeHide.start();
+//        animUnknownCodeHide.start();
+        statusUnknown.hide(true);
     }
 
     private void moveProductBarToTop(ProductRatingBar pbar) {
@@ -383,10 +427,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     @Override
-    public void onTouchUp(float x, float y) {
-
-        handler.onTouchUp(x + touchOffsetX, y + touchOffsetY);
-    }
+    public void onTouchUp(float x, float y) { handler.onTouchUp(x + touchOffsetX, y + touchOffsetY); }
 
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0,0); }
 

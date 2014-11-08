@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
+import io.fabric.sdk.android.Fabric;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -54,6 +56,7 @@ public class MainWindow extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
 
 
         if (savedInstanceState == null) {

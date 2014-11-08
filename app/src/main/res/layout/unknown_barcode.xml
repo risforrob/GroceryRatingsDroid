@@ -7,6 +7,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="#c0000000"
     android:padding="8dp"
+    android:layout_gravity="top|center"
     >
 
     <TextView
