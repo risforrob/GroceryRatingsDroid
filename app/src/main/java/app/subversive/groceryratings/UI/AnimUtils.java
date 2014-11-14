@@ -8,6 +8,7 @@ import android.view.View;
  * Created by rob on 9/12/14.
  */
 public class AnimUtils {
+    public static long StatusSwapDuration = 500;
     public static class HideOnEnd extends AnimatorListenerAdapter {
         private View view;
         public HideOnEnd(View view) {

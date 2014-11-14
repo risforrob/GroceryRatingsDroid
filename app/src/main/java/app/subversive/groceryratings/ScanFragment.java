@@ -227,7 +227,7 @@ public class ScanFragment
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 scanControls.onParentLayoutComplete();
                 cameraControls.onParentLayoutComplete();
-                setScanMode(true);
+                setScanMode(false);
                 Log.i(TAG, String.format("%d x %d", surfaceView.getTop(), surfaceView.getLeft()));
                 scanControls.setTouchOffset(-surfaceView.getLeft(), -surfaceView.getTop());
                 v.removeOnLayoutChangeListener(this);
@@ -257,7 +257,7 @@ public class ScanFragment
             }
         });
         surfaceView.getHolder().addCallback(this);
-        v.setKeepScreenOn(true);
+        surfaceView.setKeepScreenOn(true);
         return v;
     }
 

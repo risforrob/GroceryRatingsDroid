@@ -36,37 +36,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         public void onTouchUp(float x, float y);
     }
 
-    public class Status {
-        final View view;
-        public Status(View v) {
-            view = v;
-            parent.addView(v, statusLayoutParams);
-            v.setVisibility(View.GONE);
-        }
-
-        public void show(boolean animated) {
-            if (currentStatus != null) {
-                currentStatus.hide(animated);
-            }
-            currentStatus = this;
-            view.setVisibility(View.VISIBLE);
-
-        }
-
-        public void hide(boolean animated) {
-            view.setVisibility(View.GONE);
-            currentStatus = null;
-        }
-    }
-
-    private Status currentStatus;
-
-    final private FrameLayout.LayoutParams statusLayoutParams =
-            new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    Gravity.CENTER | Gravity.TOP);
-
     private long animDuration = 200;
     private long delayAmount = 30;
 
@@ -82,6 +51,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     TextView statusBar;
     RatingsLayout ratingHistory;
 
+    StatusManager mStatusManager;
     private final ViewGroup.LayoutParams defaultLP =
             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
@@ -92,7 +62,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     View[] hiddenRatings;
 
-    Status statusPrompt, statusUnknown;
+    StatusManager.Status statusPrompt, statusUnknown;
 
     private final HashMap<String, ProductRatingBar> cache = new HashMap<String, ProductRatingBar>();
     public ScanControlsOverlay(Callbacks handler) { this.handler = handler; }
@@ -114,14 +84,19 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         this.parent = parent;
         if (attached) {throw new RuntimeException("Overlay is already attached to a parent"); }
 
+
+
         if (!inflated) {
             inflateOverlay();
             inflated = true;
-            statusPrompt = new Status(statusBar);
-            statusUnknown = new Status(unknownBarcode);
+
         } else {
             parent.addView(historyScrollView);
         }
+
+        mStatusManager = new StatusManager(parent);
+        statusPrompt = mStatusManager.createStatus(statusBar);
+        statusUnknown = mStatusManager.createStatus(unknownBarcode);
     }
 
     @Override
@@ -169,14 +144,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 //        animStatusShow.start();
         statusPrompt.show(true);
         Log.i(TAG, "ShowScanPrompt");
-    }
-
-    public void hideScanPrompt() {
-        statusPrompt.hide(true);
-//        if (!animStatusHide.isRunning()) {
-//            animStatusHide.start();
-//        }
-        controller.restart();
     }
 
     private void inflateOverlay() {
@@ -320,17 +287,21 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
         LinkedList<Animator> animators = new LinkedList<Animator>();
 
-        if (unknownBarcode.isShown()) {
-            statusUnknown.hide(true);
+//        if (unknownBarcode.isShown()) {
+//            statusUnknown.hide(true);
 //            animators.add(animUnknownCodeHide);
-        }
+//        }
 
 //        if (statusBar.isShown() && !animStatusHide.isRunning()) {
 //            if (animStatusShow.isRunning()) {animStatusShow.cancel();}
 //            animators.add(animStatusHide);
 //        }
-        statusPrompt.hide(true);
+//        statusPrompt.hide(true);
 
+        Animator mStatusAnim = mStatusManager.getStatusHideAnimator();
+        if (mStatusAnim != null) {
+            animators.add(mStatusAnim);
+        }
         animators.addAll(addProductHideAnimation());
 
         anim.playTogether(animators);
