@@ -55,11 +55,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     private final ViewGroup.LayoutParams defaultLP =
             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-//    ObjectAnimator animUnknownCodeHide,
-//                   animUnknownCodeShow,
-//                   animStatusHide,
-//                   animStatusShow;
-
     View[] hiddenRatings;
 
     StatusManager.Status statusPrompt, statusUnknown;
@@ -84,8 +79,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         this.parent = parent;
         if (attached) {throw new RuntimeException("Overlay is already attached to a parent"); }
 
-
-
         if (!inflated) {
             inflateOverlay();
             inflated = true;
@@ -107,26 +100,11 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     private void setupAnimation() {
-//        animStatusShow = ObjectAnimator.ofFloat(statusBar, "y", -statusBar.getHeight(), 0);
-//        animStatusShow.setDuration(animDuration);
-//
-//        animStatusHide = ObjectAnimator.ofFloat(statusBar, "y", 0, -statusBar.getHeight());
-//        animStatusHide.setDuration(animDuration);
-//        animStatusHide.addListener(new AnimUtils.HideOnEnd(statusBar));
-//
-//        animUnknownCodeHide = ObjectAnimator.ofFloat(unknownBarcode, "x", 0f, -unknownBarcode.getWidth());
-//        animUnknownCodeHide.setDuration(animDuration);
-//        animUnknownCodeHide.addListener(new AnimUtils.HideOnEnd(unknownBarcode));
-//
-//        animUnknownCodeShow = ObjectAnimator.ofFloat(unknownBarcode,"x", unknownBarcode.getWidth(), 0f);
-//        animUnknownCodeShow.setDuration(animDuration);
+
     }
 
     public void resetPromptTimer() {
         controller.restart();
-//        if (statusBar.isShown()) {
-//            hideScanPrompt();
-//        }
         statusPrompt.hide(true);
     }
 
@@ -139,9 +117,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     public void showScanPrompt() {
-
-//        statusBar.setVisibility(View.VISIBLE);
-//        animStatusShow.start();
         statusPrompt.show(true);
         Log.i(TAG, "ShowScanPrompt");
     }
@@ -286,18 +261,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         });
 
         LinkedList<Animator> animators = new LinkedList<Animator>();
-
-//        if (unknownBarcode.isShown()) {
-//            statusUnknown.hide(true);
-//            animators.add(animUnknownCodeHide);
-//        }
-
-//        if (statusBar.isShown() && !animStatusHide.isRunning()) {
-//            if (animStatusShow.isRunning()) {animStatusShow.cancel();}
-//            animators.add(animStatusHide);
-//        }
-//        statusPrompt.hide(true);
-
         Animator mStatusAnim = mStatusManager.getStatusHideAnimator();
         if (mStatusAnim != null) {
             animators.add(mStatusAnim);
@@ -333,19 +296,11 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     };
 
     public void showUnknownBarcode(boolean withAnimation) {
-//        if (!animUnknownCodeShow.isRunning()) {
-//            if (animUnknownCodeHide.isRunning()) {
-//                animUnknownCodeHide.cancel();
-//            }
-//            unknownBarcode.setVisibility(View.VISIBLE);
-//            animUnknownCodeShow.start();
-//        }
         resetPromptTimer();
         statusUnknown.show(true);
     }
 
     public void hideUnknownBarcode(boolean withAnimation) {
-//        animUnknownCodeHide.start();
         statusUnknown.hide(true);
     }
 

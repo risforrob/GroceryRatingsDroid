@@ -122,9 +122,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
         if (!withAnimation) {
             captureButton.setVisibility(View.VISIBLE);
         } else {
-//            if (!animInitialized) {
-//                initAnim();
-//            }
             captureButton.setVisibility(View.VISIBLE);
             retryButton.setVisibility(View.GONE);
 
@@ -148,9 +145,6 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
             captureButton.setVisibility(View.GONE);
             retryButton.setVisibility(View.GONE);
         } else {
-//            if (!animInitialized) {
-//                initAnim();
-//            }
 
             animCaptureBtnHide.setStartDelay(DELAYS[buttonClickIndex][0] * animDelay);
             animRetryBtnHide.setStartDelay(DELAYS[buttonClickIndex][1] * animDelay);
