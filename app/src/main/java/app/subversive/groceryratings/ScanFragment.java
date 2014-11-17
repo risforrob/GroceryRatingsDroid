@@ -260,7 +260,7 @@ public class ScanFragment
             }
         });
         surfaceView.getHolder().addCallback(this);
-        surfaceView.setKeepScreenOn(true);
+//        surfaceView.setKeepScreenOn(true);
 
 //        inflater.inflate(R.layout.splash_screen, (ViewGroup) v);
 //        splashView = v.findViewById(R.id.splashView);
