@@ -41,8 +41,8 @@ public final class CameraConfigurationUtils {
 
     private static final String TAG = "CameraConfiguration";
 
-    private static final int MIN_PREVIEW_PIXELS = 480 * 320; // normal screen
-    private static final double MAX_ASPECT_DISTORTION = 0.15;
+//    private static final int MIN_PREVIEW_PIXELS = 480 * 320; // normal screen
+//    private static final double MAX_ASPECT_DISTORTION = 0.15;
 
 
     public static void setVideoStabilization(Camera.Parameters parameters) {
@@ -100,44 +100,44 @@ public final class CameraConfigurationUtils {
             }
         });
 
-        if (Log.isLoggable(TAG, Log.INFO)) {
-            StringBuilder previewSizesString = new StringBuilder();
-            for (Camera.Size supportedPreviewSize : supportedPreviewSizes) {
-                previewSizesString.append(supportedPreviewSize.width).append('x')
-                        .append(supportedPreviewSize.height).append(' ');
-            }
-            Log.i(TAG, "Supported preview sizes: " + previewSizesString);
-        }
-
-        double screenAspectRatio = (double) screenResolution.x / (double) screenResolution.y;
+//        if (Log.isLoggable(TAG, Log.INFO)) {
+//            StringBuilder previewSizesString = new StringBuilder();
+//            for (Camera.Size supportedPreviewSize : supportedPreviewSizes) {
+//                previewSizesString.append(supportedPreviewSize.width).append('x')
+//                        .append(supportedPreviewSize.height).append(' ');
+//            }
+//            Log.i(TAG, "Supported preview sizes: " + previewSizesString);
+//        }
+//
+//        double screenAspectRatio = (double) screenResolution.x / (double) screenResolution.y;
 
         // Remove sizes that are unsuitable
-        Iterator<Camera.Size> it = supportedPreviewSizes.iterator();
-        while (it.hasNext()) {
-            Camera.Size supportedPreviewSize = it.next();
-            int realWidth = supportedPreviewSize.width;
-            int realHeight = supportedPreviewSize.height;
-            if (realWidth * realHeight < MIN_PREVIEW_PIXELS) {
-                it.remove();
-                continue;
-            }
-
-            boolean isCandidatePortrait = realWidth < realHeight;
-            int maybeFlippedWidth = isCandidatePortrait ? realHeight : realWidth;
-            int maybeFlippedHeight = isCandidatePortrait ? realWidth : realHeight;
-            double aspectRatio = (double) maybeFlippedWidth / (double) maybeFlippedHeight;
-            double distortion = Math.abs(aspectRatio - screenAspectRatio);
-            if (distortion > MAX_ASPECT_DISTORTION) {
-                it.remove();
-                continue;
-            }
-
-            if (maybeFlippedWidth == screenResolution.x && maybeFlippedHeight == screenResolution.y) {
-                Point exactPoint = new Point(realWidth, realHeight);
-                Log.i(TAG, "Found preview size exactly matching screen size: " + exactPoint);
-                return exactPoint;
-            }
-        }
+//        Iterator<Camera.Size> it = supportedPreviewSizes.iterator();
+//        while (it.hasNext()) {
+//            Camera.Size supportedPreviewSize = it.next();
+//            int realWidth = supportedPreviewSize.width;
+//            int realHeight = supportedPreviewSize.height;
+//            if (realWidth * realHeight < MIN_PREVIEW_PIXELS) {
+//                it.remove();
+//                continue;
+//            }
+//
+//            boolean isCandidatePortrait = realWidth < realHeight;
+//            int maybeFlippedWidth = isCandidatePortrait ? realHeight : realWidth;
+//            int maybeFlippedHeight = isCandidatePortrait ? realWidth : realHeight;
+//            double aspectRatio = (double) maybeFlippedWidth / (double) maybeFlippedHeight;
+//            double distortion = Math.abs(aspectRatio - screenAspectRatio);
+//            if (distortion > MAX_ASPECT_DISTORTION) {
+//                it.remove();
+//                continue;
+//            }
+//
+//            if (maybeFlippedWidth == screenResolution.x && maybeFlippedHeight == screenResolution.y) {
+//                Point exactPoint = new Point(realWidth, realHeight);
+//                Log.i(TAG, "Found preview size exactly matching screen size: " + exactPoint);
+//                return exactPoint;
+//            }
+//        }
 
         // If no exact match, use largest preview size. This was not a great idea on older devices because
         // of the additional computation needed. We're likely to get here on newer Android 4+ devices, where

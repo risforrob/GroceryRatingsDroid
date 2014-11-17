@@ -60,7 +60,7 @@ public class MainWindow extends Activity {
 
 
         if (savedInstanceState == null) {
-            // todo move this into loading async task
+            // todo move this into splash_screen async task
             scanFrag = ScanFragment.newInstance(readRawHistoryData());
             getFragmentManager().beginTransaction().add(R.id.container, scanFrag)
                     .commit();

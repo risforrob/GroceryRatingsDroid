@@ -1,5 +1,7 @@
 package app.subversive.groceryratings.UI;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
@@ -104,6 +106,23 @@ public class StatusManager {
     }
 
     public ObjectAnimator getStatusHideAnimator() {
-        return currentStatus == null ? null : currentStatus.animator;
+        if (currentStatus == null) {
+            return null;
+        } else {
+            if (currentStatus.animator.isStarted()) {
+                currentStatus.animator.cancel();
+            }
+            currentStatus.animator.setFloatValues(currentStatus.view.getY(), -currentStatus.view.getHeight());
+            currentStatus.animator.removeAllListeners();
+            currentStatus.animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    animation.removeListener(this);
+                    currentStatus = null;
+                }
+            });
+            return currentStatus.animator;
+        }
     }
 }

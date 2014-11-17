@@ -62,6 +62,7 @@ public class ScanFragment
     private Overlay currOverlay;
     private CameraControlsOverlay cameraControls;
     private ScanControlsOverlay scanControls;
+    private View splashView;
 
     private FocusableSurfaceView surfaceView;
 
@@ -116,11 +117,13 @@ public class ScanFragment
                 handled = true;
                 break;
 
+            // add product
             case 2:
                 handleDecode(DebugGroceryService.addNewProduct());
                 handled = true;
                 break;
 
+            // show unknown
             case 3:
                 scanControls.showUnknownBarcode(true);
                 handled = true;
@@ -258,6 +261,9 @@ public class ScanFragment
         });
         surfaceView.getHolder().addCallback(this);
         surfaceView.setKeepScreenOn(true);
+
+//        inflater.inflate(R.layout.splash_screen, (ViewGroup) v);
+//        splashView = v.findViewById(R.id.splashView);
         return v;
     }
 

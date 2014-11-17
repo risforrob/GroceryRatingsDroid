@@ -161,9 +161,26 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     public void displayStatus(String statusString, boolean showProgress, boolean animated) {
         statusText.setText(statusString);
         progress.setVisibility(showProgress ? VISIBLE : GONE);
-        if (!status.isShown()) {
+        if (!status.isShown() && isShown()) {
             showView(status, animated);
         }
+    }
+
+    private void showView(View newView, boolean animated) {
+        if (animated) {
+            if (displayedView != null) {
+                displayedView.animate().alpha(0f).setDuration(duration).setListener(new hideOnEnd(displayedView)).start();
+            }
+            newView.setAlpha(0f);
+            newView.setVisibility(VISIBLE);
+            newView.animate().alpha(1f).setDuration(duration).start();
+        } else {
+            if (displayedView != null) {
+                displayedView.setVisibility(INVISIBLE);
+            }
+            newView.setVisibility(VISIBLE);
+        }
+        displayedView = newView;
     }
 
     public void loadBarcode(final String barcode) {
@@ -193,22 +210,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         });
     }
 
-    private void showView(View newView, boolean animated) {
-        if (animated) {
-            if (displayedView != null) {
-                displayedView.animate().alpha(0f).setDuration(duration).setListener(new hideOnEnd(displayedView)).start();
-            }
-            newView.setAlpha(0f);
-            newView.setVisibility(VISIBLE);
-            newView.animate().alpha(1f).setDuration(duration).start();
-        } else {
-            if (displayedView != null) {
-                displayedView.setVisibility(INVISIBLE);
-            }
-            newView.setVisibility(VISIBLE);
-        }
-        displayedView = newView;
-    }
+
 
     private void init(Context context) {
         setBackgroundColor(getResources().getColor(R.color.blackOverlay));

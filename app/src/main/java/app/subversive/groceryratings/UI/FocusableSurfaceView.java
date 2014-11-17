@@ -19,6 +19,7 @@ public class FocusableSurfaceView extends SurfaceView {
     final Paint focusPaint = new Paint();
     final RectF focusRect = new RectF();
     private float desiredAspectRatio = 1;
+    private final int prvRectDivider = 15; // make preview rect 1/15th of sensor size.
 
     public FocusableSurfaceView(Context context) {
         super(context);
@@ -66,7 +67,7 @@ public class FocusableSurfaceView extends SurfaceView {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        radius = Math.max(w,h) / 12;
+        radius = Math.max(w,h) / prvRectDivider;
     }
 
     public void setDesiredAspectRatio(float a) {
@@ -93,11 +94,5 @@ public class FocusableSurfaceView extends SurfaceView {
         float newAspectRatio = (float) width / (float) height;
         Log.d("Focusable|resultRatio", String.format("%d x %d = %.2f (%.2f)", width, height, newAspectRatio, desiredAspectRatio));
         setMeasuredDimension(width, height);
-    }
-
-    private int adjustMspec(int mspec) {
-        return MeasureSpec.getMode(mspec) == MeasureSpec.AT_MOST
-                ? MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(mspec), MeasureSpec.UNSPECIFIED)
-                : mspec;
     }
 }
