@@ -13,7 +13,7 @@ import app.subversive.groceryratings.ManagedTimer;
  */
 public class AOFrameLayout extends FrameLayout {
     final String TAG = AOFrameLayout.class.getSimpleName();
-    ManagedTimer.RunnableController mTimer;
+    public ManagedTimer.RunnableController mTimer;
     final Long screenTimeout = 60000L;
 
     public AOFrameLayout(Context context) {
@@ -40,6 +40,7 @@ public class AOFrameLayout extends FrameLayout {
                 setKeepScreenOn(false);
             }
         }, screenTimeout);
+        mTimer.restart();
     }
 
     @Override
@@ -48,5 +49,9 @@ public class AOFrameLayout extends FrameLayout {
         if (!getKeepScreenOn()) { setKeepScreenOn(true); }
         mTimer.restart();
         return super.onInterceptTouchEvent(ev);
+    }
+
+    public void restartTimer() {
+        if (mTimer != null) { mTimer.restart(); }
     }
 }

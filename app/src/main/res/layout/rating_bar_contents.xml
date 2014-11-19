@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    tools:background="#a6000000"
+    tools:background="@color/blackOverlay"
     android:id="@+id/RatingBarLayout">
 
     <TextView

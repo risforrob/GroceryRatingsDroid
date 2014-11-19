@@ -9,5 +9,5 @@
     android:id="@+id/tvStatus"
     android:textSize="20sp"
     android:textColor="#ffffffff"
-    tools:background="#a1000000"
+    tools:background="@color/blackOverlay"
     android:gravity="center" />

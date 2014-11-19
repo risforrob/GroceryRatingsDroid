@@ -163,6 +163,8 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         progress.setVisibility(showProgress ? VISIBLE : GONE);
         if (!status.isShown() && isShown()) {
             showView(status, animated);
+        } else {
+            showView(status, false);
         }
     }
 

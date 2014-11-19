@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import com.google.gson.Gson;
 import com.google.zxing.client.android.CaptureActivityHandler;
 
+import app.subversive.groceryratings.UI.AOFrameLayout;
 import app.subversive.groceryratings.UI.FocusableSurfaceView;
 import app.subversive.groceryratings.camera.CameraManager;
 
@@ -62,7 +63,6 @@ public class ScanFragment
     private Overlay currOverlay;
     private CameraControlsOverlay cameraControls;
     private ScanControlsOverlay scanControls;
-    private View splashView;
 
     private FocusableSurfaceView surfaceView;
 
@@ -223,7 +223,7 @@ public class ScanFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View v = inflater.inflate(R.layout.fragment_scan, container, false);
+        final AOFrameLayout v = (AOFrameLayout) inflater.inflate(R.layout.fragment_scan, container, false);
 
         v.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -237,8 +237,8 @@ public class ScanFragment
             }
         });
 
-        cameraControls.attachOverlayToParent((FrameLayout) v);
-        scanControls.attachOverlayToParent((FrameLayout) v);
+        cameraControls.attachOverlayToParent(v);
+        scanControls.attachOverlayToParent(v);
 
         Bundle args = getArguments();
         if (args.containsKey(ARG_RAW_HISTORY)) {
@@ -278,6 +278,7 @@ public class ScanFragment
     public void onResume() {
         super.onResume();
         handler.start();
+        ((AOFrameLayout) getView().findViewById(R.id.root)).restartTimer();
         if (currOverlay == cameraControls) {
             setScanMode(false);
         }
@@ -317,6 +318,8 @@ public class ScanFragment
     }
 
     public void handleDecode(String barcode) {
+        ((AOFrameLayout) getView()).mTimer.restart();
+
         Log.i(TAG, barcode);
         scanControls.resetPromptTimer();
         if (!lastScanned.equals(barcode)) {
