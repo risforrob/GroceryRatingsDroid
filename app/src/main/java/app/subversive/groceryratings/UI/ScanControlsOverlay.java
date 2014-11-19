@@ -67,7 +67,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         public void run() {
             showScanPrompt();
         }
-    }, 5000L);
+    }, 15000L);
 
     public void setTouchOffset(int x, int y) {
         touchOffsetX = x;
