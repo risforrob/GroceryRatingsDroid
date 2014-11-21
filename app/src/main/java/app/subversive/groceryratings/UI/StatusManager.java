@@ -89,14 +89,13 @@ public class StatusManager {
     }
 
     private void hideStatus(Status status, boolean animated) {
-        if (status != currentStatus || currentStatus == null) {
-            status.view.setVisibility(View.GONE);
-        } else if (animated) {
-            status.animator.setFloatValues(status.view.getY(), -status.view.getHeight());
-            status.animator.start();
-            currentStatus = null;
-        } else {
-            status.view.setVisibility(View.GONE);
+        if (status == currentStatus) {
+            if (animated) {
+                status.animator.setFloatValues(status.view.getY(), -status.view.getHeight());
+                status.animator.start();
+            } else {
+                status.view.setVisibility(View.GONE);
+            }
             currentStatus = null;
         }
     }

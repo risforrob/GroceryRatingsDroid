@@ -1,6 +1,7 @@
 package app.subversive.groceryratings;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -18,10 +19,12 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.UUID;
 
 import app.subversive.groceryratings.camera.CameraManager;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
 public class MainWindow extends Activity {
@@ -62,7 +65,9 @@ public class MainWindow extends Activity {
         if (savedInstanceState == null) {
             // todo move this into splash_screen async task
             scanFrag = ScanFragment.newInstance(readRawHistoryData());
-            getFragmentManager().beginTransaction().add(R.id.container, scanFrag)
+            getFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.container, scanFrag)
                     .commit();
 
 
@@ -70,10 +75,21 @@ public class MainWindow extends Activity {
                 throw new RuntimeException("No Camera");
             }
 
+            final String uuid = Installation.id(this);
+
+            RequestInterceptor ri = new RequestInterceptor() {
+                @Override
+                public void intercept(RequestFacade request) {
+                    request.addQueryParam("deviceId", uuid);
+                }
+            };
+
             RestAdapter restAdapter = new RestAdapter.Builder()
                     .setEndpoint(endpoint)
+                    .setRequestInterceptor(ri)
                     .setLogLevel(RestAdapter.LogLevel.FULL)
                     .build();
+
             service = mainService = restAdapter.create(GroceryRatingsService.class);
 
             debugGroceryService = new DebugGroceryService();
@@ -138,6 +154,7 @@ public class MainWindow extends Activity {
         MenuItem m = menu.add(2,4,9,"Debug Service");
         m.setCheckable(true);
 
+        menu.add(3,8,100,"Send Feedback");
         return true;
     }
 
@@ -167,13 +184,25 @@ public class MainWindow extends Activity {
                     imageService = mainImageService;
                 }
                 return false;
+
+            case 8:
+                getFragmentManager()
+                        .beginTransaction()
+                        .hide(scanFrag)
+                        .add(R.id.container, FeedbackFragment.newInstance())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .addToBackStack(null)
+                        .commit();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onBackPressed() {
-        if (scanFrag.isVisible() && !scanFrag.onBackPressed()) {
+        if (scanFrag.isVisible() && scanFrag.onBackPressed()) {
+            // do nothing, scanFrag handled this
+        } else {
             super.onBackPressed();
         }
     }

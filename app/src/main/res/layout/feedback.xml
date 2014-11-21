@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/etEmail"
+        android:hint="Email Address (Optional)"
+        android:gravity="center_vertical" />
+
+    <EditText
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/etFeedback"
+        android:layout_weight="1"
+        android:hint="Please share your feedback ..."
+        android:gravity="top" />
+
+    <Button
+        android:layout_width="match_parent"
+        style="?android:borderlessButtonStyle"
+        android:layout_height="48dp"
+        android:text="Send Feedback"
+        android:id="@+id/btnSendFeedback" />
+</LinearLayout>

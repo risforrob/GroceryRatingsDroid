@@ -89,10 +89,6 @@ public class ScanFragment
 
         mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
         lastScanned = "";
-        cameraControls = new CameraControlsOverlay(this);
-        scanControls = new ScanControlsOverlay(this);
-
-
         setHasOptionsMenu(true);
     }
 
@@ -237,6 +233,8 @@ public class ScanFragment
             }
         });
 
+        cameraControls = new CameraControlsOverlay(this);
+        scanControls = new ScanControlsOverlay(this);
         cameraControls.attachOverlayToParent(v);
         scanControls.attachOverlayToParent(v);
 

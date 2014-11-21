@@ -67,7 +67,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         public void run() {
             showScanPrompt();
         }
-    }, 15000L);
+    }, 10000L);
 
     public void setTouchOffset(int x, int y) {
         touchOffsetX = x;
@@ -297,11 +297,11 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public void showUnknownBarcode(boolean withAnimation) {
         resetPromptTimer();
-        statusUnknown.show(true);
+        statusUnknown.show(withAnimation);
     }
 
     public void hideUnknownBarcode(boolean withAnimation) {
-        statusUnknown.hide(true);
+        statusUnknown.hide(withAnimation);
     }
 
     private void moveProductBarToTop(ProductRatingBar pbar) {
@@ -349,6 +349,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     @Override
     public void onScrollChanged(int deltaX, int deltaY) {
+
         hideUnknownBarcode(true);
     }
 
