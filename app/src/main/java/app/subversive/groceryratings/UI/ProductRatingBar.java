@@ -7,7 +7,12 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -75,7 +80,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     int indexInParent;
 
     private boolean shouldFlash = true;
-    private long flashInterval = 2000;
+    private long flashInterval = 2000L;
     private final Runnable flashDelay = new Runnable() {
         @Override
         public void run() {
@@ -141,7 +146,14 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         productStars.setRating(product.getNumStars());
 
         int nReviews = product.getRatingCount();
-        String reviews = String.format((nReviews == 1) ? "%d Review" : "%d Reviews", nReviews);
+        String reviews;
+        if (nReviews == 0) {
+            reviews = null;
+        } else if (nReviews > 99) {
+            reviews = "(99+)";
+        } else {
+            reviews = String.format("(%d)", nReviews);
+        }
         productNumReviews.setText(reviews);
     }
 
@@ -228,6 +240,18 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         statusText = ((TextView) status.findViewById(R.id.tvStatus));
         progress = ((ProgressBar) status.findViewById(R.id.pbLoading));
 
+        Bitmap b = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(b);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setColor(Color.GREEN);
+        c.drawCircle(15, 15, 15, p);
+        BitmapDrawable bd = new BitmapDrawable(context.getResources(), b);
+        b.setWidth(32);
+        Log.i("foo", String.format("%d %d %d", b.getWidth(), bd.getIntrinsicWidth(), bd.getBitmap().getWidth()));
+        productStars.setProgressDrawableTiled(bd);
+
+//        productStars.setProgressDrawable();
+//        productStars.setProgressDrawableTiled();
         setOnClickListener(this);
     }
 
