@@ -72,7 +72,8 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 
 
     TextView productName, productNumReviews, statusText;
-    RatingBar productStars;
+//    RatingBar productStars;
+    Rater productStars;
     ProgressBar progress;
 
     View rating, status, displayedView;
@@ -234,21 +235,22 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         status = defaultInflate(context, R.layout.rating_bar_status);
 
         productName = ((TextView) rating.findViewById(R.id.productName));
-        productStars = ((RatingBar) rating.findViewById(R.id.productStars));
+//        productStars = ((RatingBar) rating.findViewById(R.id.productStars));
+        productStars = ((Rater) rating.findViewById(R.id.productStars));
         productNumReviews = ((TextView) rating.findViewById(R.id.productNumReviews));
 
         statusText = ((TextView) status.findViewById(R.id.tvStatus));
         progress = ((ProgressBar) status.findViewById(R.id.pbLoading));
 
-        Bitmap b = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
-        Canvas c = new Canvas(b);
-        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setColor(Color.GREEN);
-        c.drawCircle(15, 15, 15, p);
-        BitmapDrawable bd = new BitmapDrawable(context.getResources(), b);
-        b.setWidth(32);
-        Log.i("foo", String.format("%d %d %d", b.getWidth(), bd.getIntrinsicWidth(), bd.getBitmap().getWidth()));
-        productStars.setProgressDrawableTiled(bd);
+//        Bitmap b = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
+//        Canvas c = new Canvas(b);
+//        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+//        p.setColor(Color.GREEN);
+//        c.drawCircle(15, 15, 15, p);
+//        BitmapDrawable bd = new BitmapDrawable(context.getResources(), b);
+//        b.setWidth(32);
+//        Log.i("foo", String.format("%d %d %d", b.getWidth(), bd.getIntrinsicWidth(), bd.getBitmap().getWidth()));
+//        productStars.setProgressDrawableTiled(bd);
 
 //        productStars.setProgressDrawable();
 //        productStars.setProgressDrawableTiled();

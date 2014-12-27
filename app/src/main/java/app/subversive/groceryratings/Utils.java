@@ -37,10 +37,12 @@ public class Utils {
     }
 
 
-    private static float dpMultiplier = 1;
+    private static float dpMultiplier = 3;
 
-    public static void setDPMultiplier(float dpMultiplier) { Utils.dpMultiplier = dpMultiplier; }
-    public static int dp2px (int px) { return (int) ((px * dpMultiplier) + 0.5f); }
+    public static void setDPMultiplier(float dpMultiplier) {
+        Utils.dpMultiplier = dpMultiplier;
+    }
+    public static int dp2px (int dp) { return (int) ((dp * dpMultiplier) + 0.5f); }
     public static void setAllPaddingDP (View v, int padding) {
         v.setPadding(dp2px(padding), dp2px(padding), dp2px(padding), dp2px(padding));
     }
