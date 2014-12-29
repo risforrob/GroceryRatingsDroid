@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="blackOverlay">#a6000000</color>
+    <color name="vingetCenter">#90000000</color>
+    <color name="vignetOuter">#ff000000</color>
     <color name="blackOverlayFlash">#a6808080</color>
 </resources>

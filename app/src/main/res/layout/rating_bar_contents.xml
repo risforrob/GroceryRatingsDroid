@@ -39,8 +39,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/productStars"
         android:layout_gravity="center_vertical"
-        android:layout_margin="8dp"
-        rater:foregroundColor="#ff208020"/>
+        rater:foregroundColor="#ff208020" />
 
     <TextView
         android:layout_width="36sp"

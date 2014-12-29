@@ -41,16 +41,20 @@ public class MainWindow extends Activity {
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
+        final private static String TUTORIAL_COMPLETED = "TUTORIAL_COMPLETED";
 
         public static boolean autoscan;
+        public static boolean tutorialComplete;
 
         static void loadPrefs(SharedPreferences prefs) {
             autoscan = prefs.getBoolean(AUTOSCAN, false);
+            tutorialComplete = prefs.getBoolean(TUTORIAL_COMPLETED, false);
         }
 
         static void writePrefs(SharedPreferences prefs) {
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(AUTOSCAN, autoscan);
+            edit.putBoolean(TUTORIAL_COMPLETED, tutorialComplete);
             edit.apply();
         }
     }

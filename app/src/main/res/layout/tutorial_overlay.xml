@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:customFont="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:background="@drawable/tutorial_bacground" >
+    <!--android:background="@color/blackOverlay">-->
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".3"
+    />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="36sp"
+        android:text="WELCOME TO"
+        android:id="@+id/textView2"
+        style="@style/TutorialFont"
+        />
+
+    <app.subversive.groceryratings.UI.FontTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="58sp"
+        tools:textSize="48sp"
+        android:text="Grocery Ratings"
+        android:id="@+id/textView3"
+        style="@style/TutorialFont"
+        customFont:font="fonts/oleo.ttf"
+        />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".30"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show barcodes to your phone to scan them and load product ratings."
+        android:gravity="center_horizontal"
+        android:id="@+id/textView4"
+        style="@style/TutorialFont"
+        android:textSize="18sp"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".2"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Swipe up to review your recent history of scanned products."
+        android:id="@+id/textView5"
+        android:textSize="18sp"
+        style="@style/TutorialFont"
+        android:paddingLeft="40dp"
+        android:paddingRight="40dp"
+        />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".4"
+        />
+
+</LinearLayout>

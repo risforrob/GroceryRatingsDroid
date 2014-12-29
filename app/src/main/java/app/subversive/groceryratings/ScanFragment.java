@@ -68,7 +68,7 @@ public class ScanFragment
 
     private byte[] imageData;
 
-    final ArrayList<MenuItem> debugMenuItems = new ArrayList<MenuItem>();
+    final ArrayList<MenuItem> debugMenuItems = new ArrayList<>();
 
     public static ScanFragment newInstance(String rawHistoryData) {
         ScanFragment fragment = new ScanFragment();
@@ -258,10 +258,8 @@ public class ScanFragment
             }
         });
         surfaceView.getHolder().addCallback(this);
-//        surfaceView.setKeepScreenOn(true);
 
-//        inflater.inflate(R.layout.splash_screen, (ViewGroup) v);
-//        splashView = v.findViewById(R.id.splashView);
+        inflater.inflate(R.layout.tutorial_overlay, v);
         return v;
     }
 
