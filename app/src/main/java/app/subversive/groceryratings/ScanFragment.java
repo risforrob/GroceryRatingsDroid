@@ -24,6 +24,7 @@ import com.google.zxing.client.android.CaptureActivityHandler;
 
 import app.subversive.groceryratings.UI.AOFrameLayout;
 import app.subversive.groceryratings.UI.FocusableSurfaceView;
+import app.subversive.groceryratings.UI.TutorialOverlay;
 import app.subversive.groceryratings.camera.CameraManager;
 
 import java.io.IOException;
@@ -49,6 +50,7 @@ public class ScanFragment
             Camera.PictureCallback,
             CameraControlsOverlay.Callbacks,
             ScanControlsOverlay.Callbacks,
+            TutorialOverlay.Callbacks,
             ProductRatingBar.BarcodeCallbacks,
             BackFragment        {
 
@@ -63,6 +65,7 @@ public class ScanFragment
     private Overlay currOverlay;
     private CameraControlsOverlay cameraControls;
     private ScanControlsOverlay scanControls;
+    private TutorialOverlay tutorial;
 
     private FocusableSurfaceView surfaceView;
 
@@ -147,6 +150,7 @@ public class ScanFragment
                 break;
             case 7:
                 scanControls.flushHistory();
+                MainWindow.Preferences.tutorialComplete = false;
                 getActivity().finish();
                 handled = true;
                 break;
@@ -216,32 +220,30 @@ public class ScanFragment
     };
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         final AOFrameLayout v = (AOFrameLayout) inflater.inflate(R.layout.fragment_scan, container, false);
 
-        v.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                scanControls.onParentLayoutComplete();
-                cameraControls.onParentLayoutComplete();
-                setScanMode(false);
-                Log.i(TAG, String.format("%d x %d", surfaceView.getTop(), surfaceView.getLeft()));
-                scanControls.setTouchOffset(-surfaceView.getLeft(), -surfaceView.getTop());
-                v.removeOnLayoutChangeListener(this);
-            }
-        });
+
 
         cameraControls = new CameraControlsOverlay(this);
         scanControls = new ScanControlsOverlay(this);
         cameraControls.attachOverlayToParent(v);
         scanControls.attachOverlayToParent(v);
+        if (!MainWindow.Preferences.tutorialComplete) {
+            tutorial = new TutorialOverlay(this);
+            tutorial.attachOverlayToParent(v);
+            tutorial.showOverlay(false);
+            currOverlay = tutorial;
+        }
 
         Bundle args = getArguments();
         if (args.containsKey(ARG_RAW_HISTORY)) {
             Product[] products = (new Gson()).fromJson(args.getString(ARG_RAW_HISTORY), Product[].class);
-            for (int i = products.length-1 ; i >= 0 ; i --) {
+            for (int i = products.length-1 ; i >= 0 ; i--) {
                 ProductRatingBar pbar = ProductRatingBar.fromProduct(products[i], v.getContext());
                 scanControls.addNewProductBar(pbar.getBarcode(), pbar);
             }
@@ -259,7 +261,19 @@ public class ScanFragment
         });
         surfaceView.getHolder().addCallback(this);
 
-        inflater.inflate(R.layout.tutorial_overlay, v);
+        v.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                scanControls.onParentLayoutComplete();
+                cameraControls.onParentLayoutComplete();
+                scanControls.setTouchOffset(-surfaceView.getLeft(), -surfaceView.getTop());
+
+                if (MainWindow.Preferences.tutorialComplete) {
+                    setScanMode(false);
+                }
+                v.removeOnLayoutChangeListener(this);
+            }
+        });
         return v;
     }
 
@@ -274,6 +288,7 @@ public class ScanFragment
     public void onResume() {
         super.onResume();
         handler.start();
+        handler.pause();
         ((AOFrameLayout) getView().findViewById(R.id.root)).restartTimer();
         if (currOverlay == cameraControls) {
             setScanMode(false);
@@ -484,5 +499,17 @@ public class ScanFragment
 
     public List<Product> getProductHistory() {
         return scanControls.getAllProducts();
+    }
+
+    @Override
+    public void onTutorialClicked() {
+        tutorial.hideOverlay(true);
+        MainWindow.Preferences.tutorialComplete = true;
+    }
+
+    @Override
+    public void onTutorialClosed() {
+        tutorial.detachOverlayFromParent();
+        setScanMode(false);
     }
 }
