@@ -489,7 +489,7 @@ public class ScanFragment
 
     @Override
     public boolean onBackPressed() {
-        if (currOverlay != scanControls) {
+        if (currOverlay == cameraControls) {
             setScanMode(true);
             return true;
         } else {

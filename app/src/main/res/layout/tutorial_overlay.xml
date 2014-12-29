@@ -10,9 +10,6 @@
     android:background="@drawable/tutorial_bacground"
     android:id="@+id/tutorialRoot"
     >
-
-    <!--android:background="@color/blackOverlay">-->
-
     <View
         android:layout_width="fill_parent"
         android:layout_height="0dp"
@@ -25,8 +22,7 @@
         android:textSize="36sp"
         android:text="WELCOME TO"
         android:id="@+id/textView2"
-        style="@style/TutorialFont"
-        />
+        style="@style/TutorialFont" />
 
     <app.subversive.groceryratings.UI.FontTextView
         android:layout_width="wrap_content"
@@ -42,19 +38,31 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight=".30"/>
+        android:layout_weight=".2"/>
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="2px"
+        android:background="#ffffff"
+        android:layout_marginLeft="84dp"
+        android:layout_marginRight="84dp"
+        />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".2"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show barcodes to your phone to scan them and load product ratings."
+        android:text="Point your phone's camera at barcodes to load product ratings."
         android:gravity="center_horizontal"
         android:id="@+id/textView4"
         style="@style/TutorialFont"
         android:textSize="18sp"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
-        />
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp" />
 
     <View
         android:layout_width="fill_parent"
@@ -66,13 +74,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Swipe up to review your recent history of scanned products."
+        android:text="Swipe up to review your history of recently scanned products."
         android:id="@+id/textView5"
         android:textSize="18sp"
         style="@style/TutorialFont"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
-        />
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp" />
 
     <View
         android:layout_width="fill_parent"
