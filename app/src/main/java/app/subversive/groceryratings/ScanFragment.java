@@ -287,11 +287,12 @@ public class ScanFragment
     @Override
     public void onResume() {
         super.onResume();
-        handler.start();
-        handler.pause();
         ((AOFrameLayout) getView().findViewById(R.id.root)).restartTimer();
+
         if (currOverlay == cameraControls) {
             setScanMode(false);
+        } else if (currOverlay == scanControls) {
+            restartScanner();
         }
         if (surfaceView != null) {
             initCamera(surfaceView.getHolder());
@@ -352,7 +353,7 @@ public class ScanFragment
     }
 
     private void restartScanner() {
-        handler.unpause();
+        handler.start();
     }
 
     @Override

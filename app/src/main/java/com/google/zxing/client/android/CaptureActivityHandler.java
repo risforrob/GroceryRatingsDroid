@@ -43,9 +43,16 @@ public final class CaptureActivityHandler extends Handler {
     }
 
     public void start() {
-        decodeThread = new DecodeThread(this);
-        decodeThread.start();
-        restartPreviewAndDecode();
+        if (decodeThread == null) {
+            decodeThread = new DecodeThread(this);
+            decodeThread.start();
+            paused = true;
+            restartPreviewAndDecode();
+        }
+        if (paused) {
+            paused = false;
+            restartPreviewAndDecode();
+        }
     }
 
     @Override
@@ -65,11 +72,6 @@ public final class CaptureActivityHandler extends Handler {
         // Be absolutely sure we don't send any queued up messages
         removeMessages(R.id.decode_succeeded);
         removeMessages(R.id.decode_failed);
-    }
-
-    public void unpause() {
-        paused = false;
-        restartPreviewAndDecode();
     }
 
     public void stop() {

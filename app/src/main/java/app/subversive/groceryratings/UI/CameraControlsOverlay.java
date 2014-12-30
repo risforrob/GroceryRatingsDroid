@@ -4,9 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.graphics.Rect;
 import android.hardware.Camera;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -199,7 +197,7 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
     }
 
     private void setCameraIconTakePicture(boolean withAnimation) {
-        captureButton.setBackgroundResource(R.drawable.circle);
+        captureButton.setBackgroundResource(R.drawable.circle_grey);
         captureButton.setImageResource(R.drawable.ic_action_camera);
         captureButton.setOnClickListener(takePictureListener);
         photoPending.setVisibility(View.INVISIBLE);
