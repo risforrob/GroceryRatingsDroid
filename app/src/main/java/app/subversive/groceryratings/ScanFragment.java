@@ -289,10 +289,13 @@ public class ScanFragment
         super.onResume();
         ((AOFrameLayout) getView().findViewById(R.id.root)).restartTimer();
 
+        handler.start();
         if (currOverlay == cameraControls) {
             setScanMode(false);
         } else if (currOverlay == scanControls) {
             restartScanner();
+        } else if (currOverlay == tutorial) {
+            handler.pause();
         }
         if (surfaceView != null) {
             initCamera(surfaceView.getHolder());

@@ -56,13 +56,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Point your phone's camera at barcodes to load product ratings."
+        android:text="Show barcodes to your phone's camera to scan them and lookup product ratings."
         android:gravity="center_horizontal"
         android:id="@+id/textView4"
         style="@style/TutorialFont"
         android:textSize="18sp"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp" />
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp" />
 
     <View
         android:layout_width="fill_parent"
@@ -78,13 +78,13 @@
         android:id="@+id/textView5"
         android:textSize="18sp"
         style="@style/TutorialFont"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp" />
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp" />
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight=".3"
+        android:layout_weight=".4"
         />
 
 </LinearLayout>

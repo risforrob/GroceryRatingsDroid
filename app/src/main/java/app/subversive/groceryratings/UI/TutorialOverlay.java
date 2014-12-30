@@ -1,7 +1,12 @@
 package app.subversive.groceryratings.UI;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 
 import app.subversive.groceryratings.R;
@@ -18,6 +23,7 @@ public class TutorialOverlay implements Overlay {
     FrameLayout parent;
     View root;
     Callbacks mHandler;
+    ObjectAnimator hideAnimation;
 
     public TutorialOverlay(Callbacks handler) {
         mHandler = handler;
@@ -35,6 +41,16 @@ public class TutorialOverlay implements Overlay {
             }
         });
         root.setVisibility(View.GONE);
+        hideAnimation = ObjectAnimator.ofFloat(root, "alpha", 1, 0);
+        hideAnimation.setDuration(200L);
+        hideAnimation.setInterpolator(new AccelerateInterpolator());
+        hideAnimation.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                root.setVisibility(View.GONE);
+                mHandler.onTutorialClosed();
+            }
+        });
     }
 
     @Override
@@ -44,8 +60,10 @@ public class TutorialOverlay implements Overlay {
 
     @Override
     public void hideOverlay(boolean withAnimation) {
-        root.setVisibility(View.GONE);
         if (withAnimation) {
+            hideAnimation.start();
+        } else {
+            root.setVisibility(View.GONE);
             mHandler.onTutorialClosed();
         }
     }
