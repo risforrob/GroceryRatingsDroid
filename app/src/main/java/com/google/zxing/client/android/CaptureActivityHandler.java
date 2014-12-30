@@ -76,15 +76,18 @@ public final class CaptureActivityHandler extends Handler {
 
     public void stop() {
         pause();
-        Message.obtain(decodeThread.getHandler(), R.id.quit).sendToTarget();
-        try {
-            // Wait at most half a second; should be enough time, and onPause() will timeout quickly
-            decodeThread.join(500L);
-        } catch (InterruptedException e) {
-            // continue
+        if (decodeThread != null) {
+            Message.obtain(decodeThread.getHandler(), R.id.quit).sendToTarget();
+            try {
+                // Wait at most half a second; should be enough time, and onPause() will timeout quickly
+                decodeThread.join(500L);
+            } catch (InterruptedException e) {
+                // continue
+            }
+            decodeThread = null;
         }
-        decodeThread = null;
     }
+
     private void restartPreviewAndDecode() {
         if (decodeThread != null && decodeThread.isAlive() && !paused) {
             CameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);

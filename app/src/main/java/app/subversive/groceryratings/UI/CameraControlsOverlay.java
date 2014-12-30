@@ -197,14 +197,14 @@ public class CameraControlsOverlay implements Overlay, Camera.ShutterCallback {
     }
 
     private void setCameraIconTakePicture(boolean withAnimation) {
-        captureButton.setBackgroundResource(R.drawable.circle_grey);
+        captureButton.setBackgroundResource(R.drawable.capture_selector);
         captureButton.setImageResource(R.drawable.ic_action_camera);
         captureButton.setOnClickListener(takePictureListener);
         photoPending.setVisibility(View.INVISIBLE);
     }
 
     private void setCameraIconConfirm(boolean withAnimation) {
-        captureButton.setBackgroundResource(R.drawable.circle_green);
+        captureButton.setBackgroundResource(R.drawable.confirm_selector);
         captureButton.setImageResource(R.drawable.ic_action_accept);
         captureButton.setOnClickListener(confirmPictureListener);
         photoPending.setVisibility(View.INVISIBLE);

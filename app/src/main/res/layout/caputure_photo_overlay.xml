@@ -19,11 +19,12 @@
         android:layout_height="64dp"
         android:id="@+id/btnTakePicture"
         android:layout_gravity="center_horizontal|bottom"
-        android:background="@drawable/circle"
+        android:background="@drawable/capture_selector"
         android:src="@drawable/ic_action_camera"
         android:scaleType="fitCenter"
         android:padding="8dp"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:clickable="true"/>
 
     <ProgressBar
         style="?android:attr/progressBarStyle"
@@ -42,7 +43,7 @@
         android:layout_height="48dp"
         android:id="@+id/btnRetakePicture"
         android:layout_gravity="left|bottom"
-        android:background="@drawable/circle_red"
+        android:background="@drawable/cancel_selector"
         android:src="@drawable/ic_action_cancel"
         android:scaleType="fitCenter"
         android:padding="8dp"
