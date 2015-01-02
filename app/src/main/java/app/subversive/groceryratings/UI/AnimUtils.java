@@ -2,7 +2,9 @@ package app.subversive.groceryratings.UI;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 /**
  * Created by rob on 9/12/14.
@@ -35,5 +37,14 @@ public class AnimUtils {
             super.onAnimationStart(animation);
             view.setVisibility(View.VISIBLE);
         }
+    }
+
+    public static ObjectAnimator alphaAnim(View animRoot, int start, int end, long duration) {
+        animRoot.setVisibility(View.VISIBLE);
+        animRoot.setAlpha(start);
+        ObjectAnimator anim = ObjectAnimator.ofFloat(animRoot, "alpha", start, end);
+        anim.setDuration(duration);
+        anim.setInterpolator(new AccelerateDecelerateInterpolator());
+        return anim;
     }
 }

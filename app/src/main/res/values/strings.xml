@@ -5,5 +5,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tutorial1">Show barcodes to your phone\'s camera to scan them and lookup product ratings.</string>
+    <string name="tutorial2">Swipe up to review your history of recently scanned products.</string>
+    <string name="tutorial3">If you scan a product we haven\'t discovered, take a photo so we can add it.</string>
 
 </resources>

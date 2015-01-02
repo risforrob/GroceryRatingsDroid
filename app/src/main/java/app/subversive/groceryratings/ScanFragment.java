@@ -507,12 +507,12 @@ public class ScanFragment
 
     @Override
     public void onTutorialClicked() {
-        tutorial.hideOverlay(true);
-        MainWindow.Preferences.tutorialComplete = true;
+        tutorial.nextTutorial();
     }
 
     @Override
     public void onTutorialClosed() {
+//        MainWindow.Preferences.tutorialComplete = true;
         tutorial.detachOverlayFromParent();
         setScanMode(false);
     }

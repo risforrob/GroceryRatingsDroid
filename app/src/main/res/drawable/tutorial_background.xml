@@ -4,6 +4,6 @@
     <gradient
         android:startColor="@color/vingetCenter"
         android:endColor="@color/vignetOuter"
-        android:gradientRadius="300%p"
+        android:gradientRadius="250%p"
         android:type="radial"/>
 </shape>

@@ -7,13 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    android:background="@drawable/tutorial_bacground"
+    android:background="@drawable/tutorial_background"
     android:id="@+id/tutorialRoot"
     >
     <View
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".2"
+        android:layout_height="50dp"
     />
 
     <TextView
@@ -21,10 +20,13 @@
         android:layout_height="wrap_content"
         android:textSize="44sp"
         android:text="Welcome To"
-        android:id="@+id/textView2"
+        android:id="@+id/tvWelcome"
         style="@style/TutorialFont"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
 
     <app.subversive.groceryratings.UI.FontTextView
         android:layout_width="wrap_content"
@@ -32,61 +34,60 @@
         android:textSize="58sp"
         tools:textSize="48sp"
         android:text="Grocery Ratings"
-        android:id="@+id/textView3"
+        android:id="@+id/tvLogo"
         style="@style/TutorialFont"
         customFont:font="fonts/oleo.ttf"
+        android:visibility="invisible"
+        tools:visibility="visible"
         />
 
     <View
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".2"/>
+        android:layout_height="50dp"/>
 
     <View
         android:layout_width="fill_parent"
-        android:layout_height="2px"
+        android:layout_height="2dp"
+        android:id="@+id/tutorialDivder"
         android:background="#ffffff"
         android:layout_marginLeft="84dp"
         android:layout_marginRight="84dp"
+        android:visibility="invisible"
+        tools:visibility="visible"
         />
 
     <View
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".2"/>
+        android:layout_height="50dp"/>
+
+    <TextView
+        android:drawableTop="@drawable/phone_barcode"
+        android:drawablePadding="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tutorial1"
+        android:gravity="center_horizontal"
+        android:id="@+id/tvTutorial"
+        style="@style/TutorialFont"
+        android:textSize="20sp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginRight="48dp"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show barcodes to your phone's camera to scan them and lookup product ratings."
-        android:gravity="center_horizontal"
-        android:id="@+id/textView4"
-        style="@style/TutorialFont"
-        android:textSize="18sp"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="48dp" />
-
-    <View
-        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight=".2"/>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="Swipe up to review your history of recently scanned products."
-        android:id="@+id/textView5"
-        android:textSize="18sp"
+        android:layout_weight="1"
+        android:text="(Touch Screen to Continue)"
+        android:gravity="bottom"
         style="@style/TutorialFont"
-        android:layout_marginLeft="48dp"
-        android:layout_marginRight="48dp" />
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight=".4"
+        android:textSize="16sp"
+        android:layout_marginBottom="12dp"
+        android:visibility="invisible"
+        tools:visibility="visible"
+        android:id="@+id/tutorialFooter"
         />
 
 </LinearLayout>

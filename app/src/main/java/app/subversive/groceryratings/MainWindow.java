@@ -204,7 +204,7 @@ public class MainWindow extends Activity {
 
     @Override
     public void onBackPressed() {
-        if (scanFrag.isVisible() && scanFrag.onBackPressed()) {
+        if (scanFrag != null && scanFrag.isVisible() && scanFrag.onBackPressed()) {
             // do nothing, scanFrag handled this
         } else {
             super.onBackPressed();
