@@ -84,7 +84,7 @@
         android:gravity="bottom"
         style="@style/TutorialFont"
         android:textSize="16sp"
-        android:layout_marginBottom="12dp"g
+        android:layout_marginBottom="12dp"
         android:visibility="invisible"
         tools:visibility="visible"
         android:id="@+id/tutorialFooter"
