@@ -46,13 +46,6 @@ public class TutorialOverlay implements Overlay {
         this.parent = parent;
         LayoutInflater.from(parent.getContext()).inflate(R.layout.tutorial_overlay, parent, true);
         root = parent.findViewById(R.id.tutorialRoot);
-        root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                mHandler.onTutorialClicked();
-            }
-        });
         tutorial = (TextView) root.findViewById(R.id.tvTutorial);
         root.setVisibility(View.GONE);
     }
@@ -72,6 +65,18 @@ public class TutorialOverlay implements Overlay {
         anim.play(dividerAnim).after(1500L);
         anim.play(tutorialAnim).after(1700L);
         anim.play(footerAnim).after(1900L);
+
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mHandler.onTutorialClicked();
+                    }
+                });
+            }
+        });
 
         anim.start();
     }

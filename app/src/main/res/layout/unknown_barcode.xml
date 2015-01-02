@@ -6,7 +6,7 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/blackOverlay"
-    android:padding="8dp"
+    android:paddingTop="12dp"
     android:layout_gravity="top|center"
     >
 
@@ -15,51 +15,37 @@
         android:layout_height="wrap_content"
         android:text="I don't recognize this product.\nWould you like to submit a photo?"
         android:id="@+id/textView"
-        android:textSize="20sp"
+        android:textSize="18sp"
         android:gravity="center"
         android:textColor="#ffffffff"/>
 
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="right">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
 
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:text="No Thanks."
-            android:textSize="20sp"
-            android:gravity="center"
             android:textColor="#ffffffff"
             android:drawableLeft="@drawable/ic_action_cancel"
-            android:id="@+id/tvNoScanBarcode"/>
+            android:id="@+id/tvNoScanBarcode"
+            style="?android:borderlessButtonStyle"
+            />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
-
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="20sp"
-            android:gravity="center"
             android:textColor="#ffffffff"
             android:text="Yes!"
             android:drawableLeft="@drawable/ic_action_accept"
             android:id="@+id/tvYesScanBarcode"
+            style="?android:borderlessButtonStyle"
+            android:layout_marginRight="16dp"
             />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
         </LinearLayout>
 </LinearLayout>

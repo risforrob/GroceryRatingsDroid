@@ -4,10 +4,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceView;
 
+import app.subversive.groceryratings.R;
 import app.subversive.groceryratings.camera.CameraUtil;
 
 /**
@@ -15,6 +17,8 @@ import app.subversive.groceryratings.camera.CameraUtil;
  */
 public class FocusableSurfaceView extends SurfaceView {
     private int radius;
+    private int drawableRadius;
+    private Drawable focusDrawable;
     private boolean drawFocus;
     final Paint focusPaint = new Paint();
     final RectF focusRect = new RectF();
@@ -40,6 +44,8 @@ public class FocusableSurfaceView extends SurfaceView {
         focusPaint.setColor(Color.WHITE);
         focusPaint.setStyle(Paint.Style.STROKE);
         focusPaint.setStrokeWidth(4);
+        focusDrawable = getContext().getResources().getDrawable(R.drawable.icon_focus);
+        drawableRadius = focusDrawable.getIntrinsicWidth() / 2;
     }
 
     public float getRadius() { return radius; }
@@ -48,6 +54,7 @@ public class FocusableSurfaceView extends SurfaceView {
         drawFocus = true;
         focusRect.set(x - radius, y - radius, x + radius, y + radius);
         CameraUtil.clampRectF(focusRect, 0, 0, getWidth(), getHeight());
+        focusDrawable.setBounds((int)focusRect.left, (int)focusRect.top, (int)focusRect.right, (int)focusRect.bottom);
         invalidate();
     }
 
@@ -60,7 +67,7 @@ public class FocusableSurfaceView extends SurfaceView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (drawFocus) {
-            canvas.drawRect(focusRect, focusPaint);
+            focusDrawable.draw(canvas);
         }
     }
 
