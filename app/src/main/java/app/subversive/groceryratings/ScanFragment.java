@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.google.gson.Gson;
+import com.google.zxing.ResultPoint;
+import com.google.zxing.ResultPointCallback;
 import com.google.zxing.client.android.CaptureActivityHandler;
 
 import app.subversive.groceryratings.UI.AOFrameLayout;
@@ -72,6 +74,16 @@ public class ScanFragment
     private byte[] imageData;
 
     final ArrayList<MenuItem> debugMenuItems = new ArrayList<>();
+    private ResultPointCallback pointsCallback = new ResultPointCallback() {
+        @Override
+        public void foundPossibleResultPoint(ResultPoint resultPoint) {
+            if (surfaceView != null) {
+                surfaceView.PointUpdate(resultPoint);
+            }
+        }
+
+
+    };
 
     public static ScanFragment newInstance(String rawHistoryData) {
         ScanFragment fragment = new ScanFragment();
@@ -515,5 +527,9 @@ public class ScanFragment
         MainWindow.Preferences.tutorialComplete = true;
         tutorial.detachOverlayFromParent();
         setScanMode(false);
+    }
+
+    public ResultPointCallback getPointsCallback() {
+        return pointsCallback;
     }
 }

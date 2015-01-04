@@ -6,17 +6,19 @@
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/blackOverlay"
-    android:paddingTop="12dp"
+    android:paddingTop="16dp"
     android:layout_gravity="top|center"
     >
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="I don't recognize this product.\nWould you like to submit a photo?"
+        android:text="I don't recognize this product.  Would you like to submit a photo?"
         android:id="@+id/textView"
         android:textSize="18sp"
         android:gravity="center"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:textColor="#ffffffff"/>
 
     <LinearLayout
@@ -29,7 +31,7 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Thanks."
+            android:text="No Thanks"
             android:textColor="#ffffffff"
             android:drawableLeft="@drawable/ic_action_cancel"
             android:id="@+id/tvNoScanBarcode"
@@ -40,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#ffffffff"
-            android:text="Yes!"
+            android:text="Yes"
             android:drawableLeft="@drawable/ic_action_accept"
             android:id="@+id/tvYesScanBarcode"
             style="?android:borderlessButtonStyle"

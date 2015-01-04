@@ -18,6 +18,7 @@ package com.google.zxing.client.android;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
+import com.google.zxing.ResultPointCallback;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -43,7 +44,7 @@ final class DecodeThread extends Thread {
     private final Handler resultHandler;
     private final CountDownLatch handlerInitLatch;
 
-    DecodeThread(Handler resultHandler) {
+    DecodeThread(Handler resultHandler, ResultPointCallback pointsCallback) {
 
         this.resultHandler = resultHandler;
         handlerInitLatch = new CountDownLatch(1);
@@ -53,8 +54,10 @@ final class DecodeThread extends Thread {
         decodeFormats.addAll(DecodeFormatManager.PRODUCT_FORMATS);
         //decodeFormats.addAll(DecodeFormatManager.INDUSTRIAL_FORMATS);
 
-        hints = new EnumMap<DecodeHintType, Object>(DecodeHintType.class);
+        hints = new EnumMap<>(DecodeHintType.class);
         hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
+        hints.put(DecodeHintType.TRY_HARDER, true);
+//        hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, pointsCallback);
 
         //todo add charset hints
 //        if (characterSet != null) {

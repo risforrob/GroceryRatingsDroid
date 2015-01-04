@@ -44,7 +44,7 @@ public final class CaptureActivityHandler extends Handler {
 
     public void start() {
         if (decodeThread == null) {
-            decodeThread = new DecodeThread(this);
+            decodeThread = new DecodeThread(this, activity.getPointsCallback());
             decodeThread.start();
             paused = true;
             restartPreviewAndDecode();
@@ -57,14 +57,23 @@ public final class CaptureActivityHandler extends Handler {
 
     @Override
     public void handleMessage(Message message) {
-        switch (message.what) {
-            case R.id.decode_succeeded:
-                activity.handleDecode((String) message.obj);
-                break;
-            case R.id.decode_failed:
-                restartPreviewAndDecode();
-                break;
+        if (message.what == R.id.decode_succeeded) {
+            pause();
+            activity.handleDecode((String) message.obj);
+        } else {
+            restartPreviewAndDecode();
         }
+
+//        restartPreviewAndDecode();
+//        switch (message.what) {
+//            case R.id.decode_succeeded:
+//                activity.handleDecode((String) message.obj);
+//                restartPreviewAndDecode();
+//                break;
+//            case R.id.decode_failed:
+//                restartPreviewAndDecode();
+//                break;
+//        }
     }
 
     public void pause() {
