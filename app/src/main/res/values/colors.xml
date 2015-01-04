@@ -4,4 +4,6 @@
     <color name="vingetCenter">#90000000</color>
     <color name="vignetOuter">#ff000000</color>
     <color name="blackOverlayFlash">#a6808080</color>
+    <color name="raterFilled">#ff24a424</color>
+    <color name="raterEmpty">#ff888888</color>
 </resources>

@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import app.subversive.groceryratings.R;
 import app.subversive.groceryratings.Utils;
 
 /**
@@ -34,30 +35,34 @@ public class Rater extends View {
 
     public Rater(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-//        TypedArray arr = context.getTheme().obtainStyledAttributes(attrs, R.styleable.rater, 0, 0);
-//        Log.v("rater", String.format("%d", attrs.getAttributeCount()));
-//        init(context, arr.getColor(R.styleable.rater_forgroundColor, Color.LTGRAY), arr.getColor(R.styleable.rater_backgroundColor, Color.DKGRAY));
-//        arr.recycle();
-        init(context, 0, 0);
+        TypedArray arr = context.getTheme().obtainStyledAttributes(attrs, R.styleable.rater, 0, 0);
+        init(
+                context,
+                arr.getColor(R.styleable.rater_foregroundColor, getResources().getColor(R.color.raterFilled)),
+                arr.getColor(R.styleable.rater_backgroundColor, getResources().getColor(R.color.raterEmpty)),
+                arr.getInt(R.styleable.rater_numStars, numStars),
+                arr.getDimensionPixelSize(R.styleable.rater_radius, Utils.dp2px(6)),
+                arr.getDimensionPixelSize(R.styleable.rater_paddingStars, Utils.dp2px(2)),
+                arr.getDimensionPixelSize(R.styleable.rater_ringWidth, Utils.dp2px(1))
+            );
+        arr.recycle();
     }
 
-    private void init(Context context, int fg, int bg) {
-        paddingStars = Utils.dp2px(2);
-        radius = Utils.dp2px(6);
+    private void init(Context context, int fg, int bg, int numStars, int radius, int paddingStars, int ringRadius) {
+        this.paddingStars = paddingStars;
+        this.radius = radius;
+        this.numStars = numStars;
+        strokeWidth = ringRadius;
 
         fgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         fgPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         fgPaint.setStrokeWidth(strokeWidth);
-        fgPaint.setColor(Color.rgb(36,164,36));
-//        fgPaint.setColor(Color.LTGRAY);
+        fgPaint.setColor(fg);
 
         bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         bgPaint.setStyle(Paint.Style.STROKE);
         bgPaint.setStrokeWidth(strokeWidth);
-        bgPaint.setColor(Color.GRAY);
-//        bgPaint.setColor(Color.LTGRAY);
-//        bgPaint.setColor(Color.rgb(32,128,32));
-
+        bgPaint.setColor(bg);
     }
 
     public void setRating(int rating) {
