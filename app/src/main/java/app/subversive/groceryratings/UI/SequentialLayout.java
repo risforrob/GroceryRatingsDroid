@@ -15,7 +15,13 @@ import app.subversive.groceryratings.R;
  */
 public class SequentialLayout extends ViewGroup {
     private int maxRows;
-    private int childrenToLayout;
+    private int wPadding = 16;
+    private int hPadding = 16;
+
+    ArrayList<Integer> rowInnerPadding = new ArrayList<>();
+    ArrayList<Integer> rowHeights = new ArrayList<>();
+
+
 
     public SequentialLayout(Context context) {
         this(context, null);
@@ -34,25 +40,28 @@ public class SequentialLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if (changed) {
-            int leftWithPadding = l + getPaddingLeft();
-            int rowLeft = leftWithPadding;
-            int top = t + getPaddingTop();
-            int rowMaxHeight = 0;
 
+        if (changed) {
+            int rowLeft = getPaddingLeft();
+            int top = getPaddingTop();
+            int availWidth = (r - l) - getPaddingLeft() - getPaddingRight();
+//            int rowMaxHeight = 0;
+            int rowNum = 0;
+            int currRowPadding = rowInnerPadding.get(0);
             for (int i = 0 ; i < getChildCount() ; i++ ) {
                 final View child = getChildAt(i);
-                final MarginLayoutParams lp = (MarginLayoutParams) child.getLayoutParams();
-                int childLeft = rowLeft+lp.leftMargin;
-                int childTop = top + lp.topMargin;
 
-                if (rowLeft + child.getMeasuredWidth() > r) {
-                    top = top + rowMaxHeight;
-                    rowMaxHeight = 0;
-                    rowLeft = leftWithPadding;
+
+                if (rowLeft + child.getMeasuredWidth() > availWidth) {
+                    rowNum += 1;
+                    top = top + rowHeights.get(rowNum);
+                    currRowPadding = rowInnerPadding.get(rowNum);
+                    rowLeft = getPaddingLeft();
                 }
-                child.layout(childLeft, childTop, childLeft + child.getMeasuredWidth(), childTop + child.getMeasuredHeight());
-                rowMaxHeight = Math.max(rowMaxHeight, child.getMeasuredHeight() + lp.topMargin);
+
+                child.layout(rowLeft, top, rowLeft + child.getMeasuredWidth(), top + child.getMeasuredHeight());
+//                rowMaxHeight = Math.max(rowMaxHeight, child.getMeasuredHeight());
+                rowLeft = rowLeft + child.getMeasuredWidth() + currRowPadding;
             }
         }
     }
@@ -63,16 +72,13 @@ public class SequentialLayout extends ViewGroup {
         int desiredHeight = 0;
         int availableWidth = View.MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
         int currRowMaxHeight = 0;
-        int rowCount = 1;
+        int rowCount = 0;
         int currRowWidth = 0;
-        for (int i = 0 ; i < getChildCount() ; i++ ) {
+        int rowMinWidth = 0;
+        int rowChildCount = 0;
+        for (int i = 0; i < getChildCount(); i++) {
             final View child = getChildAt(i);
-            measureChildWithMargins(
-                    child,
-                    widthMeasureSpec,
-                    getPaddingLeft()+getPaddingRight(),
-                    heightMeasureSpec,
-                    getPaddingTop()+getPaddingBottom());
+            measureChild(child, widthMeasureSpec, heightMeasureSpec);
 
             int childWidth = child.getMeasuredWidth();
             int childHeight = child.getMeasuredHeight();
@@ -82,15 +88,30 @@ public class SequentialLayout extends ViewGroup {
             }
 
             if (currRowWidth + childWidth <= availableWidth) {
-                currRowWidth += childWidth;
+                currRowWidth += (childWidth + wPadding);
+                rowMinWidth += childWidth;
                 currRowMaxHeight = Math.max(currRowMaxHeight, childHeight);
+                rowChildCount += 1;
             } else {
+                rowInnerPadding.add((availableWidth - rowMinWidth) / (rowChildCount - 1));
+                rowHeights.add(currRowMaxHeight + hPadding);
                 rowCount += 1;
-                currRowWidth = childWidth;
-                desiredHeight += currRowMaxHeight;
+                currRowWidth = childWidth + wPadding;
+                rowMinWidth = childWidth;
+                desiredHeight += (currRowMaxHeight + hPadding);
                 currRowMaxHeight = childHeight;
+                rowChildCount = 1;
             }
         }
+
+        if (rowChildCount > 1) {
+            rowInnerPadding.add((availableWidth - rowMinWidth) / (rowChildCount - 1));
+        } else {
+            rowInnerPadding.add(0);
+        }
+        rowHeights.add(currRowMaxHeight + hPadding);
+
+
         desiredHeight += currRowMaxHeight;
         desiredHeight = desiredHeight + getPaddingTop() + getPaddingBottom();
 
