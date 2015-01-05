@@ -31,7 +31,7 @@ public class MainWindow extends Activity {
     interface UpNavigation { public void onNavigateUp(); }
 
     private final static String TAG = MainWindow.class.getSimpleName();
-    static final String endpoint = "https://1-dot-groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
+    static final String endpoint = "https://groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
     static final String imageEndpoint = "https://groceryratings.appspot.com";
     public static GroceryRatingsService service, mainService, debugGroceryService;
     public static ImageService imageService, mainImageService, debugImageService;

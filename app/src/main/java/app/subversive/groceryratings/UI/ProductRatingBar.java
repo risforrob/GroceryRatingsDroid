@@ -7,29 +7,16 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AnimationSet;
-import android.view.animation.CycleInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
-import app.subversive.groceryratings.Core.Product;
+import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.MainWindow;
 import app.subversive.groceryratings.R;
 import app.subversive.groceryratings.Utils;
@@ -67,7 +54,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     private States state;
 
     final long duration = 200;
-    private Product product;
+    private Variant variant;
     private String barcode;
 
 
@@ -129,9 +116,9 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         init(context);
     }
 
-    public static ProductRatingBar fromProduct(Product p, Context c) {
+    public static ProductRatingBar fromProduct(Variant p, Context c) {
         ProductRatingBar pbar = new ProductRatingBar(c);
-        pbar.setProduct(p);
+        pbar.setVariant(p);
         pbar.showView(pbar.rating, false);
 
         return pbar;
@@ -139,14 +126,14 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 
     public void setBarcodeCallback(BarcodeCallbacks callback) { barcodeCallbacks = callback; }
 
-    public void setProduct(Product product) {
+    public void setVariant(Variant variant) {
         state = States.SUCCESS;
-        this.product = product;
+        this.variant = variant;
 
-        productName.setText(product.getName());
-        productStars.setRating(product.getNumStars());
+        productName.setText(variant.getName());
+        productStars.setRating(variant.getNumStars());
 
-        int nReviews = product.getRatingCount();
+        int nReviews = variant.getRatingCount();
         String reviews;
         if (nReviews == 0) {
             reviews = null;
@@ -201,16 +188,16 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     public void loadBarcode(final String barcode) {
         this.barcode = barcode;
         state = States.FETCHING;
-        displayStatus("Loading Product", true, false);
-        MainWindow.service.getProduct(barcode, new Callback<Product>() {
+        displayStatus("Loading Variant", true, false);
+        MainWindow.service.getProduct(barcode, new Callback<Variant>() {
             @Override
-            public void success(Product product, Response response) {
-                if (product != null && product.published) {
-                    setProduct(product);
+            public void success(Variant variant, Response response) {
+                if (variant != null && variant.published) {
+                    setVariant(variant);
                     showView(rating, true);
                 } else {
                     state = States.UNKNOWN;
-                    displayStatus("Unknown Product", false, true);
+                    displayStatus("Unknown Variant", false, true);
                     if (indexInParent == 0 && barcodeCallbacks != null) {
                         barcodeCallbacks.onUnknownBarcode(barcode);
                     }
@@ -220,7 +207,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
             @Override
             public void failure(RetrofitError error) {
                 state = States.ERROR;
-                displayStatus("Error Loading Product", false, true);
+                displayStatus("Error Loading Variant", false, true);
             }
         });
     }
@@ -264,8 +251,8 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         return view;
     }
 
-    public final Product getProduct() {
-        return product;
+    public final Variant getVariant() {
+        return variant;
     }
 
     public String getBarcode() { return barcode; }

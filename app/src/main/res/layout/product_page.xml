@@ -8,12 +8,138 @@
     android:layout_height="match_parent"
     android:padding="8dp">
 
-    <app.subversive.groceryratings.UI.Rater
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        rater:radius="12dp"
-        rater:paddingStars="4dp"
-        rater:ringWidth="3dp"
-        />
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="8dp">
+
+        <ImageButton
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:id="@+id/imageButton" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="8dp">
+
+            <app.subversive.groceryratings.UI.Rater
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                rater:radius="10dp"
+                rater:paddingStars="4dp"
+                rater:ringWidth="3dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Large Text"
+                android:id="@+id/textView2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/textView3" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <GridLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="5">
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            />
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            />
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            />
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            />
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            />
+
+        <View
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            />
+
+        <View
+            android:layout_width="32dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            />
+
+        <View
+            android:layout_width="64dp"
+            android:layout_height="24dp"
+            android:background="#999"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_columnSpan="2"
+            />
+
+    </GridLayout>
+
+    <include layout="@layout/review_item"/>
+
+    <include layout="@layout/review_item"/>
+
+    <include layout="@layout/review_item"/>
+
 
 </LinearLayout>

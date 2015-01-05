@@ -5,9 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
@@ -19,10 +17,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import app.subversive.groceryratings.Core.Product;
+import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.ManagedTimer;
 import app.subversive.groceryratings.R;
-import app.subversive.groceryratings.ScanFragment;
 
 /**
  * Created by rob on 9/10/14.
@@ -370,17 +367,17 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         ratingHistory.removeAllViews();
     }
 
-    public List<Product> getAllProducts() {
-        LinkedList<Product> products = new LinkedList<Product>();
+    public List<Variant> getAllProducts() {
+        LinkedList<Variant> variants = new LinkedList<Variant>();
         int numChildren = ratingHistory.getChildCount();
-        Product p;
+        Variant p;
         for (int i = 0 ; i < numChildren ; i++) {
-            p = ((ProductRatingBar) ratingHistory.getChildAt(i)).getProduct();
+            p = ((ProductRatingBar) ratingHistory.getChildAt(i)).getVariant();
             if (p != null) {
-                products.add(p);
+                variants.add(p);
             }
         }
-        return products;
+        return variants;
     }
 
     public void flashTop() {

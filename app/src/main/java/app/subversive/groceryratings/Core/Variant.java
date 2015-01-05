@@ -1,38 +1,38 @@
 package app.subversive.groceryratings.Core;
 
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by rob on 8/24/14.
  */
-public class Product implements Parcelable {
+public class Variant implements Parcelable {
     public String parent, brandName, productName, manName, productCode, description;
     public int  ratingCount, ratingSum, stars;
     public float ratingScore;
     public boolean published;
     public ArrayList<String> keywords, images;
+    public List<Rating> ratings;
 
 
-    public Product() {}
+    public Variant() {}
 
-    public Product(boolean defaults) {
+    public Variant(boolean defaults) {
         if (defaults) {
             productName = "";
             description = "";
             manName = "";
             brandName = "";
-            keywords = new ArrayList<String>();
-            images = new ArrayList<String>();
+            keywords = new ArrayList<>();
+            images = new ArrayList<>();
+            ratings = new ArrayList<>();
         }
     }
 
-    public Product(String name, int stars, int ratings) {
+    public Variant(String name, int stars, int ratings) {
         productName = name;
         this.stars = stars;
         ratingCount = ratings;
@@ -59,19 +59,19 @@ public class Product implements Parcelable {
         dest.writeString(description);
     }
 
-    public static final Creator<Product> CREATOR = new Creator<Product>() {
+    public static final Creator<Variant> CREATOR = new Creator<Variant>() {
         @Override
-        public Product createFromParcel(Parcel source) {
-            return new Product(source);
+        public Variant createFromParcel(Parcel source) {
+            return new Variant(source);
         }
 
         @Override
-        public Product[] newArray(int size) {
-            return new Product[size];
+        public Variant[] newArray(int size) {
+            return new Variant[size];
         }
     };
 
-    private Product(Parcel source) {
+    private Variant(Parcel source) {
         super();
         parent = source.readString();
         brandName = source.readString();
@@ -79,5 +79,9 @@ public class Product implements Parcelable {
         manName = source.readString();
         productCode = source.readString();
         description = source.readString();
+    }
+
+    public List<TasteTag> getTasteTags() {
+        return new ArrayList<>();
     }
 }

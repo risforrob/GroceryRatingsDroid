@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,13 +16,13 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.google.gson.Gson;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.ResultPointCallback;
 import com.google.zxing.client.android.CaptureActivityHandler;
 
+import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.UI.AOFrameLayout;
 import app.subversive.groceryratings.UI.FocusableSurfaceView;
 import app.subversive.groceryratings.UI.TutorialOverlay;
@@ -33,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.subversive.groceryratings.Core.Product;
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
 import app.subversive.groceryratings.UI.ProductRatingBar;
@@ -174,7 +172,7 @@ public class ScanFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         debugMenuItems.add(menu.add(1, 1, 10, "Swap Overlay"));
-        debugMenuItems.add(menu.add(1, 2, 20, "Add Product"));
+        debugMenuItems.add(menu.add(1, 2, 20, "Add Variant"));
         debugMenuItems.add(menu.add(1, 3, 30, "Show Unknown"));
 
         for (MenuItem m : debugMenuItems) {
@@ -254,9 +252,9 @@ public class ScanFragment
 
         Bundle args = getArguments();
         if (args.containsKey(ARG_RAW_HISTORY)) {
-            Product[] products = (new Gson()).fromJson(args.getString(ARG_RAW_HISTORY), Product[].class);
-            for (int i = products.length-1 ; i >= 0 ; i--) {
-                ProductRatingBar pbar = ProductRatingBar.fromProduct(products[i], v.getContext());
+            Variant[] variants = (new Gson()).fromJson(args.getString(ARG_RAW_HISTORY), Variant[].class);
+            for (int i = variants.length-1 ; i >= 0 ; i--) {
+                ProductRatingBar pbar = ProductRatingBar.fromProduct(variants[i], v.getContext());
                 scanControls.addNewProductBar(pbar.getBarcode(), pbar);
             }
         }
@@ -415,13 +413,13 @@ public class ScanFragment
                     return;
                 }
 
-                Product p = new Product(true);
+                Variant p = new Variant(true);
                 p.productCode = lastScanned;
                 p.images.add(id);
 
-                MainWindow.service.addNewProduct(p, new Callback<Product>() {
+                MainWindow.service.addNewProduct(p, new Callback<Variant>() {
                     @Override
-                    public void success(Product product, Response response) {
+                    public void success(Variant variant, Response response) {
                         pbar.setState(ProductRatingBar.States.THANKS);
                     }
 
@@ -513,7 +511,7 @@ public class ScanFragment
         }
     }
 
-    public List<Product> getProductHistory() {
+    public List<Variant> getProductHistory() {
         return scanControls.getAllProducts();
     }
 
