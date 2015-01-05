@@ -46,8 +46,6 @@ public class RatingsLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-
-
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 
         int desiredHeight = getSuggestedMinimumHeight();

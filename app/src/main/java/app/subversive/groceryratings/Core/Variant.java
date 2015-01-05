@@ -11,14 +11,16 @@ import java.util.List;
  */
 public class Variant implements Parcelable {
     public String parent, brandName, productName, manName, productCode, description;
-    public int  ratingCount, ratingSum, stars;
+    public int ratingCount, ratingSum, stars;
     public float ratingScore;
     public boolean published;
     public ArrayList<String> keywords, images;
-    public List<Rating> ratings;
+    public ArrayList<Rating> ratings;
+    public ArrayList<TasteTag> tags;
 
 
-    public Variant() {}
+    public Variant() {
+    }
 
     public Variant(boolean defaults) {
         if (defaults) {
@@ -41,8 +43,14 @@ public class Variant implements Parcelable {
     public String getName() {
         return productName;
     }
-    public int getNumStars() { return stars; }
-    public int getRatingCount() { return ratingCount; }
+
+    public int getNumStars() {
+        return stars;
+    }
+
+    public int getRatingCount() {
+        return ratingCount;
+    }
 
     @Override
     public int describeContents() {
@@ -81,7 +89,16 @@ public class Variant implements Parcelable {
         description = source.readString();
     }
 
-    public List<TasteTag> getTasteTags() {
-        return new ArrayList<>();
+    public ArrayList<TasteTag> getTasteTags() {
+        return tags;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public static String formatRatingString(int numRatings) {
+        return (numRatings == 0) ? "No Reviews" :
+                String.format("%d %s", numRatings, (numRatings == 1) ? "Review" : "Reviews");
     }
 }

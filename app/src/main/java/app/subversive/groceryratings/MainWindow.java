@@ -257,8 +257,7 @@ public class MainWindow extends Activity {
     }
 
     void displayVariantData(Variant v) {
-        Log.v("VariantClick", v.getName());
-        ProductPageFragment frag = ProductPageFragment.newInstance();
+        ProductPageFragment frag = ProductPageFragment.newInstance(v);
         getFragmentManager()
                 .beginTransaction()
                 .hide(scanFrag)
@@ -267,4 +266,6 @@ public class MainWindow extends Activity {
                 .addToBackStack(null)
                 .commit();
     }
+
+
 }

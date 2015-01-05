@@ -18,7 +18,7 @@
         <ImageButton
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:id="@+id/imageButton" />
+            android:id="@+id/prodImageButton" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -30,24 +30,25 @@
             <app.subversive.groceryratings.UI.Rater
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                rater:radius="10dp"
-                rater:paddingStars="4dp"
-                rater:ringWidth="3dp"
+                rater:radius="8dp"
+                rater:paddingStars="2dp"
+                rater:ringWidth="2dp"
+                android:id="@+id/productStars"
                 />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Large Text"
-                android:id="@+id/textView2" />
+                android:text="Product Name"
+                android:id="@+id/productName" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Medium Text"
-                android:id="@+id/textView3" />
+                android:id="@+id/productNumRatings" />
         </LinearLayout>
 
     </LinearLayout>
