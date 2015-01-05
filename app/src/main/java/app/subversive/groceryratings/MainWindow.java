@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import com.crashlytics.android.Crashlytics;
 import com.google.gson.Gson;
 
+import app.subversive.groceryratings.Core.Variant;
 import io.fabric.sdk.android.Fabric;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -193,7 +194,7 @@ public class MainWindow extends Activity {
                 getFragmentManager()
                         .beginTransaction()
                         .hide(scanFrag)
-                        .add(R.id.container, FeedbackFragment.newInstance())
+                        .replace(R.id.container, FeedbackFragment.newInstance())
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                         .addToBackStack(null)
                         .commit();
@@ -253,5 +254,17 @@ public class MainWindow extends Activity {
             // do nothing
         }
         return null;
+    }
+
+    void displayVariantData(Variant v) {
+        Log.v("VariantClick", v.getName());
+        ProductPageFragment frag = ProductPageFragment.newInstance();
+        getFragmentManager()
+                .beginTransaction()
+                .hide(scanFrag)
+                .replace(R.id.container, frag)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
     }
 }

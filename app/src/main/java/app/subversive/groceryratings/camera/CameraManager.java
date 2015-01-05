@@ -26,16 +26,12 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
 import com.google.zxing.PlanarYUVLuminanceSource;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
-
-import app.subversive.groceryratings.MainWindow;
-import app.subversive.groceryratings.UI.AutoFocusIndicator;
 
 /**
  * This object wraps the Camera service object and expects to be the only one talking to it. The

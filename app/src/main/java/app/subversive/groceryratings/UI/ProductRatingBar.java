@@ -31,7 +31,9 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-
+        if (variant != null && loadRatingsCB != null) {
+            loadRatingsCB.onLoadRatingDetails(variant);
+        }
     }
 
     static class hideOnEnd extends AnimatorListenerAdapter {
@@ -49,6 +51,10 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         void onUnknownBarcode(String barcode);
     }
 
+    public interface LoadRatingDetailsCallback {
+        void onLoadRatingDetails(Variant variant);
+    }
+
 
     public enum States {FETCHING, UNKNOWN, SUCCESS, PHOTO, ERROR, THANKS, UPLOADING}
     private States state;
@@ -59,13 +65,13 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 
 
     TextView productName, productNumReviews, statusText;
-//    RatingBar productStars;
     Rater productStars;
     ProgressBar progress;
 
     View rating, status, displayedView;
 
     int indexInParent;
+
 
     private boolean shouldFlash = true;
     private long flashInterval = 2000L;
@@ -98,6 +104,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     }
 
     private BarcodeCallbacks barcodeCallbacks;
+    private LoadRatingDetailsCallback loadRatingsCB;
 
     public void setIndex(int index) {indexInParent = index; }
 
@@ -125,6 +132,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     }
 
     public void setBarcodeCallback(BarcodeCallbacks callback) { barcodeCallbacks = callback; }
+    public void setRatingDetailsCallback(LoadRatingDetailsCallback callback) { loadRatingsCB = callback; }
 
     public void setVariant(Variant variant) {
         state = States.SUCCESS;
@@ -188,7 +196,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     public void loadBarcode(final String barcode) {
         this.barcode = barcode;
         state = States.FETCHING;
-        displayStatus("Loading Variant", true, false);
+        displayStatus("Loading Product", true, false);
         MainWindow.service.getProduct(barcode, new Callback<Variant>() {
             @Override
             public void success(Variant variant, Response response) {
@@ -197,7 +205,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
                     showView(rating, true);
                 } else {
                     state = States.UNKNOWN;
-                    displayStatus("Unknown Variant", false, true);
+                    displayStatus("Unknown Product", false, true);
                     if (indexInParent == 0 && barcodeCallbacks != null) {
                         barcodeCallbacks.onUnknownBarcode(barcode);
                     }
@@ -207,7 +215,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
             @Override
             public void failure(RetrofitError error) {
                 state = States.ERROR;
-                displayStatus("Error Loading Variant", false, true);
+                displayStatus("Error Loading Product", false, true);
             }
         });
     }
@@ -222,25 +230,12 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         status = defaultInflate(context, R.layout.rating_bar_status);
 
         productName = ((TextView) rating.findViewById(R.id.productName));
-//        productStars = ((RatingBar) rating.findViewById(R.id.productStars));
         productStars = ((Rater) rating.findViewById(R.id.productStars));
         productNumReviews = ((TextView) rating.findViewById(R.id.productNumReviews));
 
         statusText = ((TextView) status.findViewById(R.id.tvStatus));
         progress = ((ProgressBar) status.findViewById(R.id.pbLoading));
 
-//        Bitmap b = Bitmap.createBitmap(32, 32, Bitmap.Config.ARGB_8888);
-//        Canvas c = new Canvas(b);
-//        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-//        p.setColor(Color.GREEN);
-//        c.drawCircle(15, 15, 15, p);
-//        BitmapDrawable bd = new BitmapDrawable(context.getResources(), b);
-//        b.setWidth(32);
-//        Log.i("foo", String.format("%d %d %d", b.getWidth(), bd.getIntrinsicWidth(), bd.getBitmap().getWidth()));
-//        productStars.setProgressDrawableTiled(bd);
-
-//        productStars.setProgressDrawable();
-//        productStars.setProgressDrawableTiled();
         setOnClickListener(this);
     }
 

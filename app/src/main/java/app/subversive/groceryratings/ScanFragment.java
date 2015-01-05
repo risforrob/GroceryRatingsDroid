@@ -530,4 +530,9 @@ public class ScanFragment
     public ResultPointCallback getPointsCallback() {
         return pointsCallback;
     }
+
+    @Override
+    public void onLoadVariantDetails(Variant variant) {
+        ((MainWindow) getActivity()).displayVariantData(variant);
+    }
 }

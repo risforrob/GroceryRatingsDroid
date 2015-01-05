@@ -31,6 +31,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         public void onScanControlsFinishedHide();
         public void onScanControlsFinishedShow();
         public void onTouchUp(float x, float y);
+        public void onLoadVariantDetails(Variant variant);
     }
 
     private long animDuration = 200;
@@ -56,7 +57,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     StatusManager.Status statusPrompt, statusUnknown;
 
-    private final HashMap<String, ProductRatingBar> cache = new HashMap<String, ProductRatingBar>();
+    private final HashMap<String, ProductRatingBar> cache = new HashMap<>();
     public ScanControlsOverlay(Callbacks handler) { this.handler = handler; }
 
     ManagedTimer.RunnableController controller = ManagedTimer.getController(new Runnable() {
@@ -70,6 +71,15 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         touchOffsetX = x;
         touchOffsetY = y;
     }
+
+    ProductRatingBar.LoadRatingDetailsCallback ratingDetailsCallback = new ProductRatingBar.LoadRatingDetailsCallback() {
+        @Override
+        public void onLoadRatingDetails(Variant variant) {
+            if (handler != null) {
+                handler.onLoadVariantDetails(variant);
+            }
+        }
+    };
 
     @Override
     public void attachOverlayToParent(FrameLayout parent) {
@@ -309,6 +319,8 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public void addNewProductBar(String barcode, ProductRatingBar pbar) {
         cache.put(barcode, pbar);
+
+        pbar.setRatingDetailsCallback(ratingDetailsCallback);
 
         int numChildren = ratingHistory.getChildCount();
         int maxChildren = ratingHistory.maxChildren;
