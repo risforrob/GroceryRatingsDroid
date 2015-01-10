@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.List;
 import java.util.UUID;
 
 import app.subversive.groceryratings.camera.CameraManager;
@@ -59,7 +60,7 @@ public class MainWindow extends Activity {
             edit.apply();
         }
     }
-    private final static String HISTORY_FILE = "HISTORY_FILE";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,7 @@ public class MainWindow extends Activity {
 
         if (savedInstanceState == null) {
             // todo move this into splash_screen async task
-            scanFrag = ScanFragment.newInstance(readRawHistoryData());
+            scanFrag = ScanFragment.newInstance();
             getFragmentManager()
                     .beginTransaction()
                     .add(R.id.container, scanFrag)
@@ -130,7 +131,6 @@ public class MainWindow extends Activity {
     protected void onPause() {
         super.onPause();
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
-        writeHistory();
         ManagedTimer.cancelAll();
         CameraManager.stopPreview();
     }
@@ -223,39 +223,6 @@ public class MainWindow extends Activity {
         }
     }
 
-    private void writeHistory() {
-        String jsonstring = (new Gson()).toJson(scanFrag.getProductHistory());
-        try {
-            FileOutputStream out = openFileOutput(HISTORY_FILE, MODE_PRIVATE);
-            out.write(jsonstring.getBytes());
-            out.close();
-        } catch (FileNotFoundException e) {
-            Log.i(TAG, "No file to write history");
-            // fail elegantly
-        } catch (IOException e) {
-            Log.i(TAG, "error writing history");
-            // fail elegantly
-        }
-    }
-
-    private String readRawHistoryData() {
-        File f = new File(getFilesDir(), HISTORY_FILE);
-        try {
-            RandomAccessFile rf = new RandomAccessFile(f, "r");
-            byte[] bytes = new byte[(int) rf.length()];
-            rf.readFully(bytes);
-            rf.close();
-            return new String(bytes);
-        } catch (FileNotFoundException e) {
-            Log.i(TAG, "No history to load");
-            // do nothing
-        } catch (IOException e) {
-            Log.i(TAG, "error reading history file");
-            // do nothing
-        }
-        return null;
-    }
-
     void displayVariantData(Variant v) {
         ProductPageFragment frag = ProductPageFragment.newInstance(v);
         getFragmentManager()
@@ -266,6 +233,4 @@ public class MainWindow extends Activity {
                 .addToBackStack(null)
                 .commit();
     }
-
-
 }

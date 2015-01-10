@@ -6,8 +6,8 @@
     android:orientation="horizontal"
     android:layout_width="fill_parent"
     android:layout_height="36dp"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     tools:background="@color/blackOverlay"
     android:id="@+id/RatingBarLayout"
     android:gravity="center">
@@ -26,14 +26,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/productStars"
-        rater:radius="6dp"/>
+        rater:radius="6dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="36dp"
         android:layout_height="wrap_content"
         android:text="(99+)"
         android:id="@+id/productNumReviews"
         android:textSize="14sp"
-        android:textColor="#ffffffff"/>
+        android:textColor="#ffffffff"
+        android:gravity="center"
+        />
 
 </LinearLayout>

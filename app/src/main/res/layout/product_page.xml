@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:rater="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="8dp">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_margin="8dp">
 
         <ImageButton
@@ -30,9 +28,9 @@
             <app.subversive.groceryratings.UI.Rater
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                rater:radius="8dp"
-                rater:paddingStars="2dp"
-                rater:ringWidth="2dp"
+                custom:radius="8dp"
+                custom:paddingStars="2dp"
+                custom:ringWidth="2dp"
                 android:id="@+id/productStars"
                 />
 
@@ -56,48 +54,35 @@
     <app.subversive.groceryratings.UI.SequentialLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
+        android:layout_margin="8dp"
+        android:id="@+id/layoutTags"
+        custom:minimumHorizontalPadding="8dp"
+        custom:verticalPadding="8dp"
+        custom:justifiedSpacing="true"
+        custom:centered="false"
+        custom:numRows="2"
+        />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         >
 
-        <View
-            android:layout_width="100dp"
-            android:layout_height="32dp"
-            android:background="#666" />
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ratingHolder"
+            android:orientation="vertical">
 
-        <View
-            android:layout_width="75dp"
-            android:layout_height="32dp"
-            android:background="#666" />
-
-        <View
-            android:layout_width="125dp"
-            android:layout_height="32dp"
-            android:background="#666" />
-
-        <View
-            android:layout_width="200dp"
-            android:layout_height="32dp"
-            android:background="#666" />
-
-        <View
-            android:layout_width="60dp"
-            android:layout_height="32dp"
-            android:background="#666" />
-
-        <View
-            android:layout_width="48dp"
-            android:layout_height="32dp"
-            android:background="#666" />
+            <!--<app.subversive.groceryratings.UI.RatingDisplay-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"/>-->
 
 
+            </LinearLayout>
 
-    </app.subversive.groceryratings.UI.SequentialLayout>
+        </ScrollView>
 
-    <include layout="@layout/review_item"/>
-
-    <include layout="@layout/review_item"/>
-
-    <include layout="@layout/review_item"/>
 
 
 </LinearLayout>

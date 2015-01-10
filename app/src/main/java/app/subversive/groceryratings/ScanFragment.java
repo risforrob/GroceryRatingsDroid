@@ -55,7 +55,6 @@ public class ScanFragment
             BackFragment        {
 
 
-    private final static String ARG_RAW_HISTORY = "ARG_RAW_HISTORY";
     private final String TAG = ScanFragment.class.getSimpleName();
 
     final CaptureActivityHandler handler; { handler = new CaptureActivityHandler(this); }
@@ -83,12 +82,9 @@ public class ScanFragment
 
     };
 
-    public static ScanFragment newInstance(String rawHistoryData) {
+    public static ScanFragment newInstance() {
         ScanFragment fragment = new ScanFragment();
         Bundle args = new Bundle();
-        if (rawHistoryData != null && !rawHistoryData.isEmpty()) {
-            args.putString(ARG_RAW_HISTORY, rawHistoryData);
-        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -250,9 +246,8 @@ public class ScanFragment
             currOverlay = tutorial;
         }
 
-        Bundle args = getArguments();
-        if (args.containsKey(ARG_RAW_HISTORY)) {
-            Variant[] variants = (new Gson()).fromJson(args.getString(ARG_RAW_HISTORY), Variant[].class);
+        Variant[] variants = HistoryManager.readHistory(getActivity());
+        if (variants != null) {
             for (int i = variants.length-1 ; i >= 0 ; i--) {
                 ProductRatingBar pbar = ProductRatingBar.fromProduct(variants[i], v.getContext());
                 scanControls.addNewProductBar(pbar.getBarcode(), pbar);
@@ -316,6 +311,7 @@ public class ScanFragment
     public void onPause() {
         super.onPause();
         handler.stop();
+        HistoryManager.writeHistory(getActivity(), getProductHistory());
     }
 
     @Override

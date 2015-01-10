@@ -1,7 +1,13 @@
 package app.subversive.groceryratings.test;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.UUID;
 
+import app.subversive.groceryratings.Core.Rating;
+import app.subversive.groceryratings.Core.TasteTag;
+import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.GroceryRatingsService;
 import retrofit.Callback;
@@ -13,15 +19,25 @@ import retrofit.http.Path;
  */
 public class DebugGroceryService extends DebugService implements GroceryRatingsService {
     static int productCounter;
-
     final static HashMap<String, Variant> datastore = new HashMap<String, Variant>();
 
     public static String addNewProduct() {
         String barcode = String.valueOf(random.nextInt(100000));
-        Variant p = new Variant(String.format("Debug product %d", productCounter++), random.nextInt(5), random.nextInt(50));
-        p.productCode = barcode;
-        p.published = true;
-        datastore.put(barcode, p);
+        Variant variant = new Variant(String.format("Debug product %d", productCounter++), random.nextInt(5), random.nextInt(20));
+        variant.productCode = barcode;
+        variant.published = true;
+        variant.ratings = new ArrayList<>();
+
+        int nTags = random.nextInt(10);
+        TasteTag[] tags = new TasteTag[nTags];
+        for (int i = 0; i < nTags; i ++) {
+            tags[i] = randomTasteTag();
+        }
+        variant.tags = tags;
+        for (int i = 0; i < variant.ratingCount; i++) {
+            variant.ratings.add(randomRating());
+        }
+        datastore.put(barcode, variant);
         return barcode;
     }
 
@@ -33,10 +49,81 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
     @Override
     public void addNewProduct(@Body Variant variant, Callback<Variant> cb) {
         variant.productName = String.format("New variant name %d", productCounter++);
-        variant.stars = random.nextInt(5);
+        variant.stars = random.nextInt(6);
         variant.ratingCount = random.nextInt(20);
         variant.published = true;
+        variant.ratings = new ArrayList<>();
+
+        int nTags = random.nextInt(10);
+        TasteTag[] tags = new TasteTag[nTags];
+        for (int i = 0; i < nTags; i ++) {
+            tags[i] = randomTasteTag();
+        }
+        variant.tags = tags;
+        for (int i = 0; i < variant.ratingCount; i++) {
+            variant.ratings.add(randomRating());
+        }
         datastore.put(variant.productCode, variant);
         successfulRequest(variant, cb);
+    }
+
+    private static TasteTag randomTasteTag() {
+        String[] names = {
+                "allergen",
+                "bitter",
+                "bland",
+                "bold",
+                "chewy",
+                "creamy",
+                "crunchy",
+                "dry",
+                "fresh",
+                "fatty",
+                "greasy"};
+
+        return new TasteTag(names[random.nextInt(names.length)], String.format("%d%%", random.nextInt(101)));
+    }
+
+    private static Rating randomRating() {
+        Rating rating = new Rating();
+        Calendar c = Calendar.getInstance();
+        c.set(2000 + random.nextInt(15), random.nextInt(13), random.nextInt(28));
+        rating.datetime = c.getTimeInMillis();
+        rating.stars = random.nextInt(6);
+        int nTags = random.nextInt(20);
+        TasteTag[] tags = new TasteTag[nTags];
+        for (int i = 0; i < nTags; i++) {
+            tags[i] = randomTasteTag();
+        }
+        rating.tags = tags;
+        rating.published = true;
+        rating.user = randomUser();
+        int[] commentCharCount = new int[10 + random.nextInt(200)];
+        for (int i = 0; i < commentCharCount.length ; i++) {
+            commentCharCount[i] = 3 + random.nextInt(7);
+        }
+        rating.comment = randomString(commentCharCount);
+        return rating;
+    }
+
+    private static User randomUser() {
+        User user = new User();
+        user.name = randomString(new int[]{5,7});
+        user.displayName = randomString(6);
+        return user;
+    }
+
+    private static String randomString(int[] lengths) {
+        StringBuilder b = new StringBuilder();
+        for(int i : lengths) {
+            b.append(randomString(i));
+            b.append(" ");
+        }
+        b.deleteCharAt(b.length()-1);
+        return b.toString();
+    }
+
+    private static String randomString(int length) {
+        return UUID.randomUUID().toString().substring(0, length);
     }
 }

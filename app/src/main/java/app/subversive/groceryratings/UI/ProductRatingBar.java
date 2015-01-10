@@ -110,17 +110,17 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 
     public ProductRatingBar(Context context) {
         super(context);
-        init(context);
+        init();
     }
 
     public ProductRatingBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init();
     }
 
     public ProductRatingBar(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(context);
+        init();
     }
 
     public static ProductRatingBar fromProduct(Variant p, Context c) {
@@ -222,7 +222,8 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 
 
 
-    private void init(Context context) {
+    private void init() {
+        Context context = getContext();
         setBackgroundColor(getResources().getColor(R.color.blackOverlay));
         Utils.setPaddingDP(this, 8, 4, 8, 4);
 

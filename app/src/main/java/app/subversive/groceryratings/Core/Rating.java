@@ -12,24 +12,37 @@ public class Rating {
     public long datetime;
     public String comment;
     public boolean published;
-    public Date date;
-    public List<TasteTag> tags;
+    private Calendar date;
+    public TasteTag[] tags;
     public List<String> images;
+    private String dateString;
+    public User user;
+
 
     public Rating() {}
 
-    public Rating(int stars, long datetime, String comment, List<TasteTag> tags) {
+    public Rating(int stars, long datetime, String comment, TasteTag[] tags) {
         this.stars = stars;
         this.datetime = datetime;
         this.comment = comment;
         this.tags = tags;
     }
 
-    public Date getDate() {
+    public Calendar getDate() {
         if (date == null) {
-            date = new Date();
-            date.setTime(datetime);
+            date = Calendar.getInstance();
+            date.setTimeInMillis(datetime);
         }
         return date;
+    }
+
+    public String getDateString() {
+        Calendar date = getDate();
+        if (dateString == null) {
+            dateString = String.valueOf(date.get(Calendar.MONTH)) + "/" +
+                         String.valueOf(date.get(Calendar.DAY_OF_MONTH)) + "/" +
+                         String.valueOf(date.get(Calendar.YEAR));
+        }
+        return dateString;
     }
 }

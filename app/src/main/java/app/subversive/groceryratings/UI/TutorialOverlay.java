@@ -48,6 +48,12 @@ public class TutorialOverlay implements Overlay {
         root = parent.findViewById(R.id.tutorialRoot);
         tutorial = (TextView) root.findViewById(R.id.tvTutorial);
         root.setVisibility(View.GONE);
+        root.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
 

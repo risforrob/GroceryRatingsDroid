@@ -16,7 +16,7 @@ public class Variant implements Parcelable {
     public boolean published;
     public ArrayList<String> keywords, images;
     public ArrayList<Rating> ratings;
-    public ArrayList<TasteTag> tags;
+    public TasteTag[] tags;
 
 
     public Variant() {
@@ -89,7 +89,7 @@ public class Variant implements Parcelable {
         description = source.readString();
     }
 
-    public ArrayList<TasteTag> getTasteTags() {
+    public TasteTag[] getTasteTags() {
         return tags;
     }
 
