@@ -31,7 +31,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         public void onScanControlsFinishedHide();
         public void onScanControlsFinishedShow();
         public void onTouchUp(float x, float y);
-        public void onLoadVariantDetails(Variant variant);
+        public void onLoadVariantDetails(int index);
     }
 
     private long animDuration = 200;
@@ -74,9 +74,9 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     ProductRatingBar.LoadRatingDetailsCallback ratingDetailsCallback = new ProductRatingBar.LoadRatingDetailsCallback() {
         @Override
-        public void onLoadRatingDetails(Variant variant) {
+        public void onLoadRatingDetails(int index) {
             if (handler != null) {
-                handler.onLoadVariantDetails(variant);
+                handler.onLoadVariantDetails(index);
             }
         }
     };

@@ -11,19 +11,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import app.subversive.groceryratings.Core.Variant;
 import io.fabric.sdk.android.Fabric;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.List;
-import java.util.UUID;
 
-import app.subversive.groceryratings.camera.CameraManager;
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
 import retrofit.RequestInterceptor;
@@ -118,27 +112,22 @@ public class MainWindow extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
-        CameraManager.initializeCamera(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        CameraManager.startPreview();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
-        ManagedTimer.cancelAll();
-        CameraManager.stopPreview();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        CameraManager.closeDriver();
     }
 
     /** Check if this device has a camera */
@@ -223,8 +212,16 @@ public class MainWindow extends Activity {
         }
     }
 
-    void displayVariantData(Variant v) {
-        ProductPageFragment frag = ProductPageFragment.newInstance(v);
+    List<Variant> getVariants() {
+        if (scanFrag != null) {
+            return scanFrag.getProductHistory();
+        } else {
+            return null;
+        }
+    }
+
+    void displayVariantData(int index) {
+        ProductPageFragment frag = ProductPageFragment.newInstance(index);
         getFragmentManager()
                 .beginTransaction()
                 .hide(scanFrag)

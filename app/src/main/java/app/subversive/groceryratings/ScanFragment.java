@@ -285,16 +285,19 @@ public class ScanFragment
     @Override
     public void onStart() {
         super.onStart();
-        Point r = CameraManager.getCameraResolution();
-        surfaceView.setDesiredAspectRatio((float)r.x/(float)r.y);
     }
 
     @Override
     public void onResume() {
         super.onResume();
         ((AOFrameLayout) getView().findViewById(R.id.root)).restartTimer();
-
+        CameraManager.initializeCamera(getActivity());
+        Point r = CameraManager.getCameraResolution();
+        surfaceView.setDesiredAspectRatio((float)r.x/(float)r.y);
+        initCamera(surfaceView.getHolder());
+        CameraManager.startPreview();
         handler.start();
+
         if (currOverlay == cameraControls) {
             setScanMode(false);
         } else if (currOverlay == scanControls) {
@@ -302,15 +305,15 @@ public class ScanFragment
         } else if (currOverlay == tutorial) {
             handler.pause();
         }
-        if (surfaceView != null) {
-            initCamera(surfaceView.getHolder());
-        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        ManagedTimer.cancelAll();
         handler.stop();
+        CameraManager.stopPreview();
+        CameraManager.closeDriver();
         HistoryManager.writeHistory(getActivity(), getProductHistory());
     }
 
@@ -528,7 +531,7 @@ public class ScanFragment
     }
 
     @Override
-    public void onLoadVariantDetails(Variant variant) {
-        ((MainWindow) getActivity()).displayVariantData(variant);
+    public void onLoadVariantDetails(int index) {
+        ((MainWindow) getActivity()).displayVariantData(index);
     }
 }

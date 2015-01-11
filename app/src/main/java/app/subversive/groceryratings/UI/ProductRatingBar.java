@@ -32,7 +32,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     @Override
     public void onClick(View v) {
         if (variant != null && loadRatingsCB != null) {
-            loadRatingsCB.onLoadRatingDetails(variant);
+            loadRatingsCB.onLoadRatingDetails(indexInParent);
         }
     }
 
@@ -52,7 +52,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     }
 
     public interface LoadRatingDetailsCallback {
-        void onLoadRatingDetails(Variant variant);
+        void onLoadRatingDetails(int index);
     }
 
 

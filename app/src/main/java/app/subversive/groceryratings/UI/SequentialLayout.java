@@ -3,6 +3,7 @@ package app.subversive.groceryratings.UI;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -50,7 +51,6 @@ public class SequentialLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        if (changed) {
             int rowLeft = getLeftStart(0);
             int top = getPaddingTop();
             int availWidth = (r - l) - getPaddingLeft() - getPaddingRight();
@@ -72,12 +72,14 @@ public class SequentialLayout extends ViewGroup {
                 child.layout(rowLeft, top, rowLeft + child.getMeasuredWidth(), top + child.getMeasuredHeight());
                 rowLeft = rowLeft + child.getMeasuredWidth() + currRowPadding;
             }
-        }
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-
+        if (getChildCount() == 0) {
+            setMeasuredDimension(0, 0);
+            return;
+        }
         int desiredHeight = 0;
         int availableWidth = View.MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
         int currRowMaxHeight = 0;
