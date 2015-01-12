@@ -28,15 +28,15 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
         variant.published = true;
         variant.ratings = new ArrayList<>();
 
-        int nTags = random.nextInt(10);
-        TasteTag[] tags = new TasteTag[nTags];
-        for (int i = 0; i < nTags; i ++) {
-            tags[i] = randomTasteTag();
-        }
-        variant.tags = tags;
+        HashMap<String, Integer> wordcount = new HashMap<>();
         for (int i = 0; i < variant.ratingCount; i++) {
-            variant.ratings.add(randomRating());
+            final Rating r = randomRating();
+            variant.ratings.add(r);
+            for (TasteTag tag : r.tags) {
+                wordcount.put(tag.value, (wordcount.get(tag.value) == null) ? 0 : wordcount.get(tag.value) + 1);
+            }
         }
+        variant.wordscore = wordcount;
         datastore.put(barcode, variant);
         return barcode;
     }
@@ -54,15 +54,15 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
         variant.published = true;
         variant.ratings = new ArrayList<>();
 
-        int nTags = random.nextInt(10);
-        TasteTag[] tags = new TasteTag[nTags];
-        for (int i = 0; i < nTags; i ++) {
-            tags[i] = randomTasteTag();
-        }
-        variant.tags = tags;
+        HashMap<String, Integer> wordcount = new HashMap<>();
         for (int i = 0; i < variant.ratingCount; i++) {
-            variant.ratings.add(randomRating());
+            final Rating r = randomRating();
+            variant.ratings.add(r);
+            for (TasteTag tag : r.tags) {
+                wordcount.put(tag.value, (wordcount.get(tag.value) == null) ? 0 : wordcount.get(tag.value) + 1);
+            }
         }
+        variant.wordscore = wordcount;
         datastore.put(variant.productCode, variant);
         successfulRequest(variant, cb);
     }
@@ -81,7 +81,7 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
                 "fatty",
                 "greasy"};
 
-        return new TasteTag(names[random.nextInt(names.length)], String.format("%d%%", random.nextInt(101)));
+        return new TasteTag("tasteTag", names[random.nextInt(names.length)]);
     }
 
     private static Rating randomRating() {

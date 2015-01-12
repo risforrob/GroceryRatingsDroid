@@ -2,6 +2,7 @@ package app.subversive.groceryratings.Core;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -17,7 +18,6 @@ public class Rating {
     public List<String> images;
     private String dateString;
     public User user;
-
 
     public Rating() {}
 

@@ -1,6 +1,8 @@
 package app.subversive.groceryratings;
 
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -9,13 +11,14 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import app.subversive.groceryratings.Core.Rating;
 import app.subversive.groceryratings.Core.TasteTag;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.UI.Rater;
-import app.subversive.groceryratings.UI.RatingDisplay;
 import app.subversive.groceryratings.UI.SequentialLayout;
 import app.subversive.groceryratings.UI.TagDisplay;
 
@@ -25,12 +28,17 @@ import app.subversive.groceryratings.UI.TagDisplay;
 public class VariantPagerAdapter extends PagerAdapter {
     View stashedView;
     List<Variant> variants;
+    RatingAdapter[] ratingAdapters;
 
     public VariantPagerAdapter(List<Variant> variants) {
         this.variants = variants;
+        ratingAdapters = new RatingAdapter[variants.size()];
+        for (int i = 0 ; i < variants.size() ; i++) {
+            ratingAdapters[i] = new RatingAdapter(variants.get(i).ratings);
+        }
     }
 
-    private View loadViewFromVariant(Variant variant, View existingView, LayoutInflater inflater) {
+    private View loadViewFromVariant(Variant variant, int position, View existingView, LayoutInflater inflater) {
         View root;
         if (existingView == null) {
             Log.v("pager", "inflating new root");
@@ -45,22 +53,22 @@ public class VariantPagerAdapter extends PagerAdapter {
         ((Rater) root.findViewById(R.id.productStars)).setRating(variant.getNumStars());
 
         SequentialLayout tagLayout = ((SequentialLayout) root.findViewById(R.id.layoutTags));
-        final TasteTag[] tags = variant.getTasteTags();
-        if (tags != null) {
-            for (TasteTag tag : tags) {
+        final HashMap<String, Integer> wordscore = variant.getWordscore();
+
+        if (wordscore != null) {
+            for (Map.Entry<String, Integer> elem :  wordscore.entrySet()) {
                 TagDisplay td = new TagDisplay(tagLayout.getContext());
-                td.setTag(tag);
+                td.setText(elem.getKey());
+                td.setValue(String.valueOf(elem.getValue()));
                 tagLayout.addView(td);
             }
         }
 
-        LinearLayout ratingHolder = (LinearLayout) root.findViewById(R.id.ratingHolder);
-        for (Rating r : variant.ratings) {
-            RatingDisplay rd = new RatingDisplay(root.getContext());
-            rd.setRating(r);
-            Utils.setPaddingDP(rd, 8, 8, 8, 8);
-            ratingHolder.addView(rd);
-        }
+        RecyclerView recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
+        recycler.setHasFixedSize(true);
+        recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+        recycler.setAdapter(ratingAdapters[position]);
+
         return root;
     }
 
@@ -78,7 +86,7 @@ public class VariantPagerAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         Log.v("pager", String.format("Instantiate %d", position));
 
-        View v = loadViewFromVariant(variants.get(position), stashedView, LayoutInflater.from(container.getContext()));
+        View v = loadViewFromVariant(variants.get(position), position, stashedView, LayoutInflater.from(container.getContext()));
         stashedView = null;
         container.addView(v);
         return v;
@@ -92,7 +100,7 @@ public class VariantPagerAdapter extends PagerAdapter {
             Log.v("pager","stashing view for reuse");
             stashedView = (View) object;
             ((SequentialLayout) stashedView.findViewById(R.id.layoutTags)).removeAllViews();
-            ((LinearLayout) stashedView.findViewById(R.id.ratingHolder)).removeAllViews();
+//            ((RecyclerView) stashedView.findViewById(R.id.ratingHolder)).removeAllViews();
         } else {
             Log.v("pager", "I wanted to stash a view, but one already was, oh well");
         }

@@ -4,19 +4,21 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by rob on 8/24/14.
  */
-public class Variant implements Parcelable {
+public class Variant {
     public String parent, brandName, productName, manName, productCode, description;
     public int ratingCount, ratingSum, stars;
     public float ratingScore;
     public boolean published;
     public ArrayList<String> keywords, images;
     public ArrayList<Rating> ratings;
-    public TasteTag[] tags;
+
+    public HashMap<String, Integer> wordscore;
 
 
     public Variant() {
@@ -52,45 +54,8 @@ public class Variant implements Parcelable {
         return ratingCount;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(parent);
-        dest.writeString(brandName);
-        dest.writeString(productName);
-        dest.writeString(manName);
-        dest.writeString(productCode);
-        dest.writeString(description);
-    }
-
-    public static final Creator<Variant> CREATOR = new Creator<Variant>() {
-        @Override
-        public Variant createFromParcel(Parcel source) {
-            return new Variant(source);
-        }
-
-        @Override
-        public Variant[] newArray(int size) {
-            return new Variant[size];
-        }
-    };
-
-    private Variant(Parcel source) {
-        super();
-        parent = source.readString();
-        brandName = source.readString();
-        productName = source.readString();
-        manName = source.readString();
-        productCode = source.readString();
-        description = source.readString();
-    }
-
-    public TasteTag[] getTasteTags() {
-        return tags;
+    public HashMap<String, Integer> getWordscore() {
+        return wordscore;
     }
 
     public String getDescription() {

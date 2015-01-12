@@ -51,27 +51,29 @@ public class SequentialLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-            int rowLeft = getLeftStart(0);
-            int top = getPaddingTop();
-            int availWidth = (r - l) - getPaddingLeft() - getPaddingRight();
-            int rowNum = 0;
-            int currRowPadding = rowInnerPadding.get(0);
-            for (int i = 0 ; i < getChildCount() ; i++ ) {
-                final View child = getChildAt(i);
+        if (getChildCount() == 0) { return; }
 
-                if (rowLeft + child.getMeasuredWidth() > availWidth) {
-                    rowNum += 1;
-                    if (maxRows > 0 && rowNum >= maxRows) {
-                        break;
-                    }
-                    top = top + rowHeights.get(rowNum) + hPadding;
-                    currRowPadding = rowInnerPadding.get(rowNum);
-                    rowLeft = getLeftStart(rowNum);
+        int rowLeft = getLeftStart(0);
+        int top = getPaddingTop();
+        int availWidth = (r - l) - getPaddingLeft() - getPaddingRight();
+        int rowNum = 0;
+        int currRowPadding = rowInnerPadding.get(0);
+        for (int i = 0 ; i < getChildCount() ; i++ ) {
+            final View child = getChildAt(i);
+
+            if (rowLeft + child.getMeasuredWidth() > availWidth) {
+                rowNum += 1;
+                if (maxRows > 0 && rowNum >= maxRows) {
+                    break;
                 }
-
-                child.layout(rowLeft, top, rowLeft + child.getMeasuredWidth(), top + child.getMeasuredHeight());
-                rowLeft = rowLeft + child.getMeasuredWidth() + currRowPadding;
+                top = top + rowHeights.get(rowNum) + hPadding;
+                currRowPadding = rowInnerPadding.get(rowNum);
+                rowLeft = getLeftStart(rowNum);
             }
+
+            child.layout(rowLeft, top, rowLeft + child.getMeasuredWidth(), top + child.getMeasuredHeight());
+            rowLeft = rowLeft + child.getMeasuredWidth() + currRowPadding;
+        }
     }
 
     @Override
