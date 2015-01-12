@@ -130,7 +130,7 @@ public class SequentialLayout extends ViewGroup {
                 }
             }
 
-            currRowWidth += (childWidth + ((rowChildCount == 0) ? wPadding : 0));
+            currRowWidth += (childWidth + ((rowChildCount == 0) ? 0 : wPadding));
             rowMinWidth += childWidth;
             currRowMaxHeight = Math.max(currRowMaxHeight, childHeight);
             rowChildCount += 1;

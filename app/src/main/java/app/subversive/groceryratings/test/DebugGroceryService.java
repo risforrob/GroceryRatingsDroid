@@ -23,13 +23,13 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
 
     public static String addNewProduct() {
         String barcode = String.valueOf(random.nextInt(100000));
-        Variant variant = new Variant(String.format("Debug product %d", productCounter++), random.nextInt(5), random.nextInt(20));
+        Variant variant = new Variant(String.format("Debug product %d", productCounter++), random.nextInt(5));
         variant.productCode = barcode;
         variant.published = true;
         variant.ratings = new ArrayList<>();
-
+        int numRatings = random.nextInt(20);
         HashMap<String, Integer> wordcount = new HashMap<>();
-        for (int i = 0; i < variant.ratingCount; i++) {
+        for (int i = 0; i < numRatings; i++) {
             final Rating r = randomRating();
             variant.ratings.add(r);
             for (TasteTag tag : r.tags) {
@@ -50,12 +50,12 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
     public void addNewProduct(@Body Variant variant, Callback<Variant> cb) {
         variant.productName = String.format("New variant name %d", productCounter++);
         variant.stars = random.nextInt(6);
-        variant.ratingCount = random.nextInt(20);
+        int numRatings = random.nextInt(20);
         variant.published = true;
         variant.ratings = new ArrayList<>();
 
         HashMap<String, Integer> wordcount = new HashMap<>();
-        for (int i = 0; i < variant.ratingCount; i++) {
+        for (int i = 0; i < numRatings; i++) {
             final Rating r = randomRating();
             variant.ratings.add(r);
             for (TasteTag tag : r.tags) {

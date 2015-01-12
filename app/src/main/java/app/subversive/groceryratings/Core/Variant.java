@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class Variant {
     public String parent, brandName, productName, manName, productCode, description;
-    public int ratingCount, ratingSum, stars;
+    public int ratingSum, stars;
     public float ratingScore;
     public boolean published;
     public ArrayList<String> keywords, images;
@@ -41,10 +41,9 @@ public class Variant {
         }
     }
 
-    public Variant(String name, int stars, int ratings) {
+    public Variant(String name, int stars) {
         productName = name;
         this.stars = stars;
-        ratingCount = ratings;
     }
 
     public String getName() {
@@ -56,7 +55,7 @@ public class Variant {
     }
 
     public int getRatingCount() {
-        return ratingCount;
+        return (ratings == null) ? 0 : ratings.size();
     }
 
     public HashMap<String, Integer> getWordscore() {

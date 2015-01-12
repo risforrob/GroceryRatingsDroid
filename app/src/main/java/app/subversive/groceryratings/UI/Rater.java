@@ -20,8 +20,9 @@ public class Rater extends View {
     private int numStars = 5;
     private int paddingStars;
     private int radius;
+    private int actualRadius;
     private int mRating = 3;
-    private int strokeWidth = 4;
+    private int strokeWidth;
 
     private Paint fgPaint, bgPaint;
 
@@ -52,7 +53,9 @@ public class Rater extends View {
         this.paddingStars = paddingStars;
         this.radius = radius;
         this.numStars = numStars;
-        strokeWidth = ringRadius;
+        this.strokeWidth = ringRadius;
+
+        actualRadius = radius + ((strokeWidth  % 2 == 1) ? (strokeWidth-1/2) : (strokeWidth/2));
 
         fgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         fgPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -71,8 +74,8 @@ public class Rater extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int desiredHeight = (radius * 2) + (strokeWidth) + getPaddingTop() + getPaddingBottom();
-        int desiredWidth  = (numStars * (radius + strokeWidth) * 2) + (paddingStars * (numStars - 1)) + getPaddingLeft() + getPaddingRight();
+        int desiredHeight = (actualRadius * 2) + getPaddingTop() + getPaddingBottom();
+        int desiredWidth  = (numStars * actualRadius * 2) + (paddingStars * (numStars - 1)) + getPaddingLeft() + getPaddingRight();
 
         setMeasuredDimension(desiredWidth, desiredHeight);
     }
@@ -81,11 +84,11 @@ public class Rater extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         int cy = ((getBottom() - getPaddingBottom()) - (getTop()+getPaddingTop())) / 2;
-        int cx = getPaddingLeft() + radius + (strokeWidth/2);
+        int cx = getPaddingLeft() + actualRadius;
         for (int i=0 ; i < numStars ; i++) {
             Paint paint = i < mRating ? fgPaint : bgPaint;
             canvas.drawCircle(cx, cy, radius, paint);
-            cx += paddingStars + (radius * 2) + strokeWidth;
+            cx += paddingStars + (actualRadius * 2);
         }
     }
 }

@@ -40,6 +40,16 @@ public class TutorialOverlay implements Overlay {
     public TutorialOverlay(Callbacks handler) {
         mHandler = handler;
     }
+    private boolean clickEnabled = false;
+    final private View.OnClickListener mClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (clickEnabled) {
+                mHandler.onTutorialClicked();
+                clickEnabled = false;
+            }
+        }
+    };
 
     @Override
     public void attachOverlayToParent(FrameLayout parent) {
@@ -48,12 +58,7 @@ public class TutorialOverlay implements Overlay {
         root = parent.findViewById(R.id.tutorialRoot);
         tutorial = (TextView) root.findViewById(R.id.tvTutorial);
         root.setVisibility(View.GONE);
-        root.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        root.setOnClickListener(mClickListener);
     }
 
 
@@ -75,12 +80,13 @@ public class TutorialOverlay implements Overlay {
         anim.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                root.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mHandler.onTutorialClicked();
-                    }
-                });
+                clickEnabled = true;
+//                root.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        mHandler.onTutorialClicked();
+//                    }
+//                });
             }
         });
 
@@ -116,7 +122,14 @@ public class TutorialOverlay implements Overlay {
                             0,
                             0);
                     tutorial.setText(tutorialStages[tutorialStage][1]);
-                    AnimUtils.alphaAnim(tutorial, 0, 1, 200L).start();
+                    ObjectAnimator show = AnimUtils.alphaAnim(tutorial, 0, 1, 200L);
+                    show.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            clickEnabled = true;
+                        }
+                    });
+                    show.start();
                 }
             });
             hide.start();

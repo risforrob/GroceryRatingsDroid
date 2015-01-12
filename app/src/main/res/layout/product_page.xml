@@ -58,11 +58,7 @@
         android:id="@+id/layoutTags"
         custom:minimumHorizontalPadding="8dp"
         custom:verticalPadding="8dp"
-        custom:justifiedSpacing="true"
-        custom:centered="false"
-        custom:numRows="2"
-        />
-
+        custom:numRows="2"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="fill_parent"
