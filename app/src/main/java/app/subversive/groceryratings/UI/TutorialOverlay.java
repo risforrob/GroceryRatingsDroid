@@ -117,7 +117,6 @@ public class TutorialOverlay implements Overlay {
                             0);
                     tutorial.setText(tutorialStages[tutorialStage][1]);
                     AnimUtils.alphaAnim(tutorial, 0, 1, 200L).start();
-
                 }
             });
             hide.start();
@@ -129,7 +128,6 @@ public class TutorialOverlay implements Overlay {
     @Override
     public void hideOverlay(boolean withAnimation) {
         if (withAnimation) {
-
             ObjectAnimator hideAnimation = ObjectAnimator.ofFloat(root, "alpha", 1, 0);
             hideAnimation.setDuration(200L);
             hideAnimation.setInterpolator(new AccelerateInterpolator());

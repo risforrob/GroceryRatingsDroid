@@ -53,10 +53,10 @@ public class VariantPagerAdapter extends PagerAdapter {
         ((Rater) root.findViewById(R.id.productStars)).setRating(variant.getNumStars());
 
         SequentialLayout tagLayout = ((SequentialLayout) root.findViewById(R.id.layoutTags));
-        final HashMap<String, Integer> wordscore = variant.getWordscore();
+        final List<Map.Entry<String, Integer>> wordscore = variant.getSortedWordscore();
 
         if (wordscore != null) {
-            for (Map.Entry<String, Integer> elem :  wordscore.entrySet()) {
+            for (Map.Entry<String, Integer> elem :  wordscore) {
                 TagDisplay td = new TagDisplay(tagLayout.getContext());
                 td.setText(elem.getKey());
                 td.setValue(String.valueOf(elem.getValue()));

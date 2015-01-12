@@ -398,7 +398,7 @@ public class ScanFragment
         final ProductRatingBar pbar = scanControls.getProductBar(0);
         pbar.setState(ProductRatingBar.States.UPLOADING);
         TypedByteArray data =
-                new Utils.TypedFileByteArray("image/jpeg", "foo.jpg", imageData);
+                new Utils.TypedFileByteArray("image/jpeg", String.format("%s.jpg", lastScanned), imageData);
         MainWindow.imageService.uploadImage(data, new Callback<Response>() {
             @Override
             public void success(Response data, Response response) {

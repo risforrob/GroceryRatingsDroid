@@ -77,6 +77,7 @@ final class CameraConfigurationManager {
                     fps[Camera.Parameters.PREVIEW_FPS_MAX_INDEX]);
         }
         parameters.setPreviewSize(cameraResolution.x, cameraResolution.y);
+        parameters.setRotation(rotation);
         camera.setDisplayOrientation(rotation);
         camera.setParameters(parameters);
 
