@@ -25,8 +25,7 @@ import app.subversive.groceryratings.UI.TagDisplay;
 /**
  * Created by rob on 1/10/15.
  */
-public class VariantPagerAdapter extends PagerAdapter {
-    View stashedView;
+public class VariantPagerAdapter extends RecyclingPagerAdapter {
     List<Variant> variants;
     RatingAdapter[] ratingAdapters;
 
@@ -38,15 +37,20 @@ public class VariantPagerAdapter extends PagerAdapter {
         }
     }
 
-    private View loadViewFromVariant(Variant variant, int position, View existingView, LayoutInflater inflater) {
-        View root;
-        if (existingView == null) {
-            Log.v("pager", "inflating new root");
-            root = inflater.inflate(R.layout.product_page, null);
-        } else {
-            Log.v("pager", "recycling view");
-            root = existingView;
-        }
+    @Override
+    View inflateView(LayoutInflater inflater) {
+        Log.v("pager", "inflating new root");
+        View root = inflater.inflate(R.layout.product_page, null);
+        RecyclerView recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
+        recycler.setHasFixedSize(true);
+        recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+        return root;
+    }
+
+    @Override
+    void loadData(int position, View root) {
+        Variant variant = variants.get(position);
+        RecyclerView recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
 
         ((TextView) root.findViewById(R.id.productName)).setText(variant.getName());
         ((TextView) root.findViewById(R.id.productNumRatings)).setText(Variant.formatRatingString(variant.getRatingCount()));
@@ -63,13 +67,7 @@ public class VariantPagerAdapter extends PagerAdapter {
                 tagLayout.addView(td);
             }
         }
-
-        RecyclerView recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
-        recycler.setHasFixedSize(true);
-        recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         recycler.setAdapter(ratingAdapters[position]);
-
-        return root;
     }
 
     @Override
@@ -78,31 +76,14 @@ public class VariantPagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public boolean isViewFromObject(View view, Object object) {
-        return view.equals(object);
+    public void removeAllChildren(View v) {
+        ((SequentialLayout) v.findViewById(R.id.layoutTags)).removeAllViews();
     }
 
-    @Override
-    public Object instantiateItem(ViewGroup container, int position) {
-        Log.v("pager", String.format("Instantiate %d", position));
 
-        View v = loadViewFromVariant(variants.get(position), position, stashedView, LayoutInflater.from(container.getContext()));
-        stashedView = null;
-        container.addView(v);
-        return v;
-    }
-
-    @Override
-    public void destroyItem(ViewGroup container, int position, Object object) {
-        Log.v("pager", String.format("Destroy %d", position));
-        container.removeView((View) object);
-        if (stashedView == null) {
-            Log.v("pager","stashing view for reuse");
-            stashedView = (View) object;
-            ((SequentialLayout) stashedView.findViewById(R.id.layoutTags)).removeAllViews();
-//            ((RecyclerView) stashedView.findViewById(R.id.ratingHolder)).removeAllViews();
-        } else {
-            Log.v("pager", "I wanted to stash a view, but one already was, oh well");
+    public void setOnItemClickedListener(RatingAdapter.ItemClickListener listener) {
+        for (RatingAdapter adapter : ratingAdapters) {
+            adapter.setItemClickListener(listener);
         }
     }
 }

@@ -22,9 +22,9 @@ android {
     defaultConfig {
         applicationId "app.subversive.groceryratings"
         minSdkVersion 15
-        targetSdkVersion 19
-        versionCode 3
-        versionName "1.0.3"
+        targetSdkVersion 21
+        versionCode 4
+        versionName "1.0.4"
     }
 
     compileOptions {

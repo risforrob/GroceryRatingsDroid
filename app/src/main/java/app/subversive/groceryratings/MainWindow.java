@@ -15,6 +15,7 @@ import com.crashlytics.android.Crashlytics;
 import java.util.ArrayList;
 import java.util.List;
 
+import app.subversive.groceryratings.Core.Rating;
 import app.subversive.groceryratings.Core.Variant;
 import io.fabric.sdk.android.Fabric;
 
@@ -220,11 +221,30 @@ public class MainWindow extends Activity {
         }
     }
 
+    List<Rating> getRatings(int variantIndex) {
+        if (scanFrag != null) {
+            return scanFrag.getProductHistory().get(variantIndex).ratings;
+        } else {
+            return null;
+        }
+    }
+
     void displayVariantData(int index) {
         ProductPageFragment frag = ProductPageFragment.newInstance(index);
         getFragmentManager()
                 .beginTransaction()
-                .hide(scanFrag)
+//                .hide(scanFrag)
+                .replace(R.id.container, frag)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    void onRatingSelected(int variantIndex, int ratingIndex) {
+        Log.v(TAG, String.format("%d %d", variantIndex, ratingIndex));
+        ProductRatingsFragment frag = ProductRatingsFragment.newInstance(variantIndex, ratingIndex);
+        getFragmentManager()
+                .beginTransaction()
                 .replace(R.id.container, frag)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)

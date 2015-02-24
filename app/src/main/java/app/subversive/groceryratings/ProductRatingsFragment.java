@@ -9,45 +9,36 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 
-import java.util.List;
-
-import app.subversive.groceryratings.Core.Variant;
-
 /**
- * Created by rob on 1/4/15.
+ * Created by rob on 2/22/15.
  */
-public class ProductPageFragment extends Fragment {
-
-    private static final String ARG_INDEX;
+public class ProductRatingsFragment extends Fragment {
+    private static final String VARIANT_INDEX, RATING_INDEX;
     static {
-        ARG_INDEX = "ARG_INDEX";
+        VARIANT_INDEX = "VARIANT_INDEX";
+        RATING_INDEX = "RATING_INDEX";
     }
 
     final static Gson gson = new Gson();
 
-    public static ProductPageFragment newInstance(int index) {
-        ProductPageFragment newFrag = new ProductPageFragment();
+    public static ProductRatingsFragment newInstance(int variantIndex, int ratingIndex) {
+        ProductRatingsFragment newFrag = new ProductRatingsFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_INDEX, index);
+        args.putInt(VARIANT_INDEX, variantIndex);
+        args.putInt(RATING_INDEX, ratingIndex);
         newFrag.setArguments(args);
         return newFrag;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Bundle args = getArguments();
+
         final ViewPager pager = new ViewPager(inflater.getContext());
         pager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        VariantPagerAdapter adapter = new VariantPagerAdapter(((MainWindow) getActivity()).getVariants());
-        adapter.setOnItemClickedListener(new RatingAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(int ratingIndex) {
-                ((MainWindow) getActivity()).onRatingSelected(pager.getCurrentItem(), ratingIndex);
-            }
-        });
+        ProductReviewsPagerAdapter adapter = new ProductReviewsPagerAdapter(((MainWindow) getActivity()).getRatings(args.getInt(VARIANT_INDEX, 0)));
         pager.setAdapter(adapter);
-
-        Bundle args = getArguments();
-        pager.setCurrentItem(args.getInt(ARG_INDEX, 0));
+        pager.setCurrentItem(args.getInt(RATING_INDEX, 0));
         return pager;
     }
 
