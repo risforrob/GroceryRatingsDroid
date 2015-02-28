@@ -69,7 +69,10 @@ public class Rater extends View {
     }
 
     public void setRating(int rating) {
-        mRating = rating;
+        if (rating != mRating) {
+            mRating = rating;
+            invalidate();
+        }
     }
 
     @Override

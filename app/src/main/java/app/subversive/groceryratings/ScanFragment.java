@@ -249,8 +249,24 @@ public class ScanFragment
         Variant[] variants = HistoryManager.readHistory(getActivity());
         if (variants != null) {
             for (int i = variants.length-1 ; i >= 0 ; i--) {
-                ProductRatingBar pbar = ProductRatingBar.fromProduct(variants[i], v.getContext());
+                final ProductRatingBar pbar = ProductRatingBar.fromProduct(variants[i], v.getContext());
                 scanControls.addNewProductBar(pbar.getBarcode(), pbar);
+                MainWindow.mainService.getProduct(variants[i].productCode, new Callback<Variant>() {
+                    @Override
+                    public void success(Variant variant, Response response) {
+                        if (response.getStatus() == 200) {
+                            Log.i(TAG, String.format("successful refresh of %s", variant.productCode));
+                            pbar.setVariant(variant);
+                        } else {
+                            Log.i(TAG, "Failed to refresh variant");
+                        }
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        Log.i(TAG, "Could not refresh product");
+                    }
+                });
             }
         }
 

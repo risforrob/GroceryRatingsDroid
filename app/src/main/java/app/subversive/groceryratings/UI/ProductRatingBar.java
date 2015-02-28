@@ -127,7 +127,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         ProductRatingBar pbar = new ProductRatingBar(c);
         pbar.setVariant(p);
         pbar.showView(pbar.rating, false);
-
         return pbar;
     }
 

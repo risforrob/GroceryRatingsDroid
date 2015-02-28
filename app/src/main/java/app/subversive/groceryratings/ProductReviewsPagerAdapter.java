@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -43,6 +44,12 @@ public class ProductReviewsPagerAdapter extends RecyclingPagerAdapter {
         ((Rater) view.findViewById(R.id.ratingStars)).setRating(rating.stars);
         ((TextView) view.findViewById(R.id.tvDate)).setText(rating.getDateString());
         ((TextView) view.findViewById(R.id.tvReview)).setText(rating.comment);
+
+        ImageView image = (ImageView) view.findViewById(R.id.ratingImage);
+
+        if (rating.user.pictureURL != null && !rating.user.pictureURL.isEmpty()) {
+            Picasso.with(view.getContext()).load(rating.user.pictureURL).into(image);
+        }
 
         SequentialLayout tagLayout = (SequentialLayout) view.findViewById(R.id.layoutTags);
 

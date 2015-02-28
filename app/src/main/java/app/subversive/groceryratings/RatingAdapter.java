@@ -5,7 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,12 +29,14 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.ViewHolder
         Rater mRater;
         TextView tvDate;
         TextView tvComment;
+        ImageView image;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mRater = (Rater) itemView.findViewById(R.id.ratingStars);
             tvDate = (TextView) itemView.findViewById(R.id.tvDate);
             tvComment = (TextView) itemView.findViewById(R.id.tvReview);
+            image = (ImageView) itemView.findViewById(R.id.ratingImage);
         }
     }
 
@@ -67,6 +72,10 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.ViewHolder
         viewHolder.mRater.setRating(r.stars);
         viewHolder.tvDate.setText(r.getDateString());
         viewHolder.tvComment.setText(r.comment);
+        Log.i("RatingAdapter", String.format("%s", r.user.pictureURL));
+        if (r.user.pictureURL != null && !r.user.pictureURL.isEmpty()) {
+            Picasso.with(viewHolder.image.getContext()).load(r.user.pictureURL).into(viewHolder.image);
+        }
         viewIndicies.put(viewHolder, i);
     }
 
