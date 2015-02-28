@@ -163,6 +163,10 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
                 displayStatus("Uploading Image.", true, false);
                 this.state = state;
                 break;
+            case ERROR:
+                displayStatus("Error Loading Product", false, true);
+                this.state = state;
+                break;
         }
     }
 

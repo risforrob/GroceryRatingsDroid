@@ -2,6 +2,7 @@ package app.subversive.groceryratings.Core;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.Map;
  * Created by rob on 8/24/14.
  */
 public class Variant {
-    public String parent, brandName, productName, manName, productCode, description;
+    public String parent, brandName, productName, manName, productCode, description, firstImageKey;
     public int ratingSum, stars;
     public float ratingScore;
     public boolean published;
@@ -25,9 +26,7 @@ public class Variant {
     public HashMap<String, Integer> wordscore;
     private List<Map.Entry<String, Integer>> sortedWordscore;
 
-
-    public Variant() {
-    }
+    public Variant() {}
 
     public Variant(boolean defaults) {
         if (defaults) {
@@ -82,5 +81,12 @@ public class Variant {
     public static String formatRatingString(int numRatings) {
         return (numRatings == 0) ? "No Reviews" :
             String.format("%d %s", numRatings, (numRatings == 1) ? "Review" : "Reviews");
+    }
+
+    public String getImageURL(int pxSize) {
+        pxSize = pxSize == 0 ? 1 : pxSize;
+        String r =  String.format("http://www.groceryratings.com/groceryratings/image?key=%s&size=%d", firstImageKey, pxSize);
+        Log.i("Variant", r);
+        return r;
     }
 }

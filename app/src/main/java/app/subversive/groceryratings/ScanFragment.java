@@ -405,10 +405,11 @@ public class ScanFragment
                 String id;
                 byte[] bytes = new byte[(int) data.getBody().length()];
                 try {
-                    data.getBody().in().read(bytes, 0, (int) data.getBody().length());
+                    int read = data.getBody().in().read(bytes, 0, (int) data.getBody().length());
                     id = new String(bytes);
                 } catch (IOException e) {
                     Log.i(TAG, "Error reading image ID");
+                    pbar.setState(ProductRatingBar.States.ERROR);
                     return;
                 }
 
@@ -424,14 +425,16 @@ public class ScanFragment
 
                     @Override
                     public void failure(RetrofitError error) {
-
+                        Log.i(TAG, "Error uploading new product");
+                        pbar.setState(ProductRatingBar.States.ERROR);
                     }
                 });
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                Log.i(TAG, "Error uploading image");
+                pbar.setState(ProductRatingBar.States.ERROR);
             }
         });
     }

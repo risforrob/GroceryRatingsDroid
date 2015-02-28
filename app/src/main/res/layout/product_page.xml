@@ -13,10 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp">
 
-        <ImageButton
+        <ImageView
             android:layout_width="72dp"
             android:layout_height="72dp"
-            android:id="@+id/prodImageButton" />
+            android:id="@+id/prodImageButton"
+            android:background="@drawable/tutorial_background"/>
 
         <LinearLayout
             android:orientation="vertical"

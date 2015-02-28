@@ -183,14 +183,14 @@ public final class CameraManager {
      */
 
 
-    static long lastRequest = System.currentTimeMillis();
+//    static long lastRequest = System.currentTimeMillis();
 
     public static synchronized void requestPreviewFrame(Handler handler, int message) {
         Camera theCamera = camera;
         if (theCamera != null && previewing) {
-            Long curr = System.currentTimeMillis();
-            Log.d("FPS", String.valueOf(curr - lastRequest));
-            lastRequest = curr;
+//            Long curr = System.currentTimeMillis();
+//            Log.d("FPS", String.valueOf(curr - lastRequest));
+//            lastRequest = curr;
             previewCallback.setHandler(handler, message);
             theCamera.setOneShotPreviewCallback(previewCallback);
         }
