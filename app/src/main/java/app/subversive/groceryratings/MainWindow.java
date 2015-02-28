@@ -149,6 +149,7 @@ public class MainWindow extends Activity {
         MenuItem m = menu.add(2,4,9,"Debug Service");
         m.setCheckable(true);
 
+        menu.add(3,9,1,"Sign In");
         menu.add(3,8,100,"Send Feedback");
         return true;
     }
@@ -233,7 +234,6 @@ public class MainWindow extends Activity {
         ProductPageFragment frag = ProductPageFragment.newInstance(index);
         getFragmentManager()
                 .beginTransaction()
-//                .hide(scanFrag)
                 .replace(R.id.container, frag)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)

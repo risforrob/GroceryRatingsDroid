@@ -8,5 +8,6 @@
     <string name="tutorial1">Show barcodes to your phone\'s camera to scan them and lookup product ratings.</string>
     <string name="tutorial2">Swipe up to review your history of recently scanned products.</string>
     <string name="tutorial3">If you scan a product we haven\'t discovered, take a photo so we can add it.</string>
+    <string name="facebook_app_id">930407833645876</string>
 
 </resources>
