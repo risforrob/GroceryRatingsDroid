@@ -32,6 +32,7 @@ import app.subversive.groceryratings.UI.TagDisplay;
 public class VariantPagerAdapter extends RecyclingPagerAdapter {
     List<Variant> variants;
     RatingAdapter[] ratingAdapters;
+    RecyclerView recycler;
 
     public VariantPagerAdapter(List<Variant> variants) {
         this.variants = variants;
@@ -54,7 +55,7 @@ public class VariantPagerAdapter extends RecyclingPagerAdapter {
     @Override
     void loadData(int position, View root) {
         Variant variant = variants.get(position);
-        RecyclerView recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
+        recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
 
         ((TextView) root.findViewById(R.id.productName)).setText(variant.getName());
         ((TextView) root.findViewById(R.id.productNumRatings)).setText(Variant.formatRatingString(variant.getRatingCount()));
