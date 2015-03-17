@@ -52,6 +52,13 @@
 
     </LinearLayout>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign in to add a review."
+        android:id="@+id/btnAddReview"
+        style="?android:borderlessButtonStyle"/>
+
     <app.subversive.groceryratings.UI.SequentialLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

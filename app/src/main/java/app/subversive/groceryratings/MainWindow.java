@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -18,6 +19,9 @@ import java.util.List;
 
 import app.subversive.groceryratings.Core.Rating;
 import app.subversive.groceryratings.Core.Variant;
+import app.subversive.groceryratings.SocialConnector.EmptyConnector;
+import app.subversive.groceryratings.SocialConnector.SocialConnector;
+import app.subversive.groceryratings.SocialConnector.SocialFactory;
 import io.fabric.sdk.android.Fabric;
 
 import app.subversive.groceryratings.test.DebugGroceryService;
@@ -35,24 +39,34 @@ public class MainWindow extends Activity {
     public static ImageService imageService, mainImageService, debugImageService;
     private ScanFragment scanFrag;
 
+    public SocialConnector mSocialConn;
+
     private UpNavigation mUpNav;
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
         final private static String TUTORIAL_COMPLETED = "TUTORIAL_COMPLETED";
+        final private static String SOCIAL_CONN = "SOCIAL_CONN";
 
         public static boolean autoscan;
         public static boolean tutorialComplete;
+        public static String socialConn;
 
         static void loadPrefs(SharedPreferences prefs) {
             autoscan = prefs.getBoolean(AUTOSCAN, false);
             tutorialComplete = prefs.getBoolean(TUTORIAL_COMPLETED, false);
+            socialConn = prefs.getString(SOCIAL_CONN, null);
         }
 
         static void writePrefs(SharedPreferences prefs) {
             SharedPreferences.Editor edit = prefs.edit();
             edit.putBoolean(AUTOSCAN, autoscan);
             edit.putBoolean(TUTORIAL_COMPLETED, tutorialComplete);
+            if (socialConn != null) {
+                edit.putString(SOCIAL_CONN, socialConn);
+            } else {
+                edit.remove(SOCIAL_CONN);
+            }
             edit.apply();
         }
     }
@@ -107,6 +121,12 @@ public class MainWindow extends Activity {
             Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
             Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
 
+            if (Preferences.socialConn == null) {
+                mSocialConn = new EmptyConnector();
+            } else {
+                mSocialConn = SocialFactory.buildConnector(Preferences.socialConn, this);
+            }
+            mSocialConn.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main_window);
         }
     }
@@ -114,22 +134,44 @@ public class MainWindow extends Activity {
     @Override
     protected void onStart() {
         super.onStart();
+        mSocialConn.onStart();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mSocialConn.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
+        mSocialConn.onPause();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+        mSocialConn.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSocialConn.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        mSocialConn.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mSocialConn.onActivityResult(requestCode, resultCode, data);
     }
 
     /** Check if this device has a camera */
@@ -253,5 +295,17 @@ public class MainWindow extends Activity {
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void onDeauthorize() {}
+    public void onConnected() {}
+    public void onLogout() {}
+
+    public void onAddReview(int index) {
+        Log.v(TAG, getVariants().get(index).getName());
+    }
+
+    public boolean isSocialConnected() {
+        return false;
     }
 }

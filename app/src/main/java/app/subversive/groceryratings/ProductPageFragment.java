@@ -35,9 +35,18 @@ public class ProductPageFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final MainWindow activity = (MainWindow) getActivity();
+        VariantPagerAdapter.AddReviewCallback reviewCallback = new VariantPagerAdapter.AddReviewCallback() {
+            @Override
+            public void onAddReview() {
+                activity.onAddReview(pager.getCurrentItem());
+            }
+        };
+
         pager = new ViewPager(inflater.getContext());
         pager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        final VariantPagerAdapter adapter = new VariantPagerAdapter(((MainWindow) getActivity()).getVariants());
+
+        final VariantPagerAdapter adapter = new VariantPagerAdapter(activity.getVariants(), reviewCallback, activity.isSocialConnected());
         adapter.setOnItemClickedListener(new RatingAdapter.ItemClickListener() {
             @Override
             public void onItemClick(int ratingIndex) {

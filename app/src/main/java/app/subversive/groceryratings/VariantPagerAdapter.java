@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,16 +31,31 @@ import app.subversive.groceryratings.UI.TagDisplay;
  * Created by rob on 1/10/15.
  */
 public class VariantPagerAdapter extends RecyclingPagerAdapter {
+    public interface AddReviewCallback {
+        public void onAddReview();
+    }
+
     List<Variant> variants;
     RatingAdapter[] ratingAdapters;
     RecyclerView recycler;
+    View.OnClickListener addReviewListener;
+    int currentIndex;
+    boolean loggedIn;
 
-    public VariantPagerAdapter(List<Variant> variants) {
+    public VariantPagerAdapter(List<Variant> variants, final AddReviewCallback callback, boolean loggedIn) {
         this.variants = variants;
+        this.loggedIn = loggedIn;
         ratingAdapters = new RatingAdapter[variants.size()];
         for (int i = 0 ; i < variants.size() ; i++) {
             ratingAdapters[i] = new RatingAdapter(variants.get(i).ratings);
         }
+
+        addReviewListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callback.onAddReview();
+            }
+        };
     }
 
     @Override
@@ -49,11 +65,15 @@ public class VariantPagerAdapter extends RecyclingPagerAdapter {
         RecyclerView recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
         recycler.setHasFixedSize(true);
         recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
+        Button addReview = (Button) root.findViewById(R.id.btnAddReview);
+        addReview.setOnClickListener(addReviewListener);
+        addReview.setText((loggedIn) ? "Add a review." : "Sign in to add a review.");
         return root;
     }
 
     @Override
     void loadData(int position, View root) {
+        currentIndex = position;
         Variant variant = variants.get(position);
         recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
 
