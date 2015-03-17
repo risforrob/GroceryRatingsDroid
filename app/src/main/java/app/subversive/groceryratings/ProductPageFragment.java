@@ -21,8 +21,6 @@ public class ProductPageFragment extends Fragment {
 
     private static final String ARG_INDEX;
     private ViewPager pager;
-    private int lastPage = -1;
-    private int scrollAmount = -1;
     static {
         ARG_INDEX = "ARG_INDEX";
     }
@@ -43,15 +41,13 @@ public class ProductPageFragment extends Fragment {
         adapter.setOnItemClickedListener(new RatingAdapter.ItemClickListener() {
             @Override
             public void onItemClick(int ratingIndex) {
-                lastPage = pager.getCurrentItem();
                 ((MainWindow) getActivity()).onRatingSelected(pager.getCurrentItem(), ratingIndex);
             }
         });
         pager.setAdapter(adapter);
 
         Bundle args = getArguments();
-        pager.setCurrentItem((lastPage > - 1) ? lastPage : args.getInt(ARG_INDEX, 0));
-        lastPage = -1;
+        pager.setCurrentItem(args.getInt(ARG_INDEX));
         return pager;
     }
 }

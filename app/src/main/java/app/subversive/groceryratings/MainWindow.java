@@ -1,6 +1,7 @@
 package app.subversive.groceryratings;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -234,7 +235,7 @@ public class MainWindow extends Activity {
         ProductPageFragment frag = ProductPageFragment.newInstance(index);
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, frag)
+                .replace(R.id.container, frag, "foo")
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
                 .commit();
@@ -243,9 +244,12 @@ public class MainWindow extends Activity {
     void onRatingSelected(int variantIndex, int ratingIndex) {
         Log.v(TAG, String.format("%d %d", variantIndex, ratingIndex));
         ProductRatingsFragment frag = ProductRatingsFragment.newInstance(variantIndex, ratingIndex);
+        Fragment currentFrag = getFragmentManager().findFragmentByTag("foo");
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, frag)
+                .hide(currentFrag)
+                .add(R.id.container, frag)
+//                .replace(R.id.container, frag)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
                 .commit();
