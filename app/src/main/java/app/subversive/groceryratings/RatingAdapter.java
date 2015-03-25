@@ -72,7 +72,7 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.ViewHolder
         viewHolder.mRater.setRating(r.stars);
         viewHolder.tvDate.setText(r.getDateString());
         viewHolder.tvComment.setText(r.comment);
-        if (r.user.pictureURL != null && !r.user.pictureURL.isEmpty()) {
+        if (r.user != null && r.user.pictureURL != null && !r.user.pictureURL.isEmpty()) {
             Picasso.with(viewHolder.image.getContext()).load(r.user.pictureURL).into(viewHolder.image);
         }
         viewIndicies.put(viewHolder, i);

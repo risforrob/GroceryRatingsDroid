@@ -7,55 +7,69 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.twitter.sdk.android.Twitter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import app.subversive.groceryratings.Core.Rating;
+import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.SocialConnector.EmptyConnector;
 import app.subversive.groceryratings.SocialConnector.SocialConnector;
 import app.subversive.groceryratings.SocialConnector.SocialFactory;
+import app.subversive.groceryratings.SocialConnector.TwitterConnector;
 import io.fabric.sdk.android.Fabric;
 
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
+import retrofit.Callback;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
-public class MainWindow extends Activity {
+public class MainWindow
+        extends Activity
+        implements SocialSelectorFragment.OnFragmentInteractionListener, ProductReviewFragment.OnFragmentInteractionListener {
+
     interface UpNavigation { public void onNavigateUp(); }
 
     private final static String TAG = MainWindow.class.getSimpleName();
-    static final String endpoint = "https://groceryratings.appspot.com/_ah/api/variantdaoendpoint/v1";
+    static final String endpoint = "https://groceryratings.appspot.com/_ah/api";
     static final String imageEndpoint = "https://groceryratings.appspot.com";
     public static GroceryRatingsService service, mainService, debugGroceryService;
     public static ImageService imageService, mainImageService, debugImageService;
     private ScanFragment scanFrag;
 
     public SocialConnector mSocialConn;
-
     private UpNavigation mUpNav;
+    private boolean isSocalConnected, shouldDisplayReviewFrag;
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
         final private static String TUTORIAL_COMPLETED = "TUTORIAL_COMPLETED";
         final private static String SOCIAL_CONN = "SOCIAL_CONN";
+        final private static String SOCIAL_ACCOUNT = "SOCIAL_ACCOUNT";
 
         public static boolean autoscan;
         public static boolean tutorialComplete;
         public static String socialConn;
+        public static String socialAccount;
 
         static void loadPrefs(SharedPreferences prefs) {
             autoscan = prefs.getBoolean(AUTOSCAN, false);
             tutorialComplete = prefs.getBoolean(TUTORIAL_COMPLETED, false);
             socialConn = prefs.getString(SOCIAL_CONN, null);
+            socialAccount = prefs.getString(SOCIAL_ACCOUNT, null);
         }
 
         static void writePrefs(SharedPreferences prefs) {
@@ -67,6 +81,12 @@ public class MainWindow extends Activity {
             } else {
                 edit.remove(SOCIAL_CONN);
             }
+
+            if (socialAccount != null) {
+                edit.putString(SOCIAL_ACCOUNT, socialAccount);
+            } else {
+                edit.remove(SOCIAL_ACCOUNT);
+            }
             edit.apply();
         }
     }
@@ -75,60 +95,63 @@ public class MainWindow extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics(), new Twitter(TwitterConnector.authConfig));
 
 
         if (savedInstanceState == null) {
             // todo move this into splash_screen async task
+            setContentView(R.layout.activity_main_window);
+
             scanFrag = ScanFragment.newInstance();
             getFragmentManager()
                     .beginTransaction()
                     .add(R.id.container, scanFrag)
                     .commit();
 
-
-            if (!checkCameraHardware(this)) {
-                throw new RuntimeException("No Camera");
-            }
-
-            final String uuid = Installation.id(this);
-
-            RequestInterceptor ri = new RequestInterceptor() {
-                @Override
-                public void intercept(RequestFacade request) {
-                    request.addQueryParam("deviceId", uuid);
-                }
-            };
-
-            RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint(endpoint)
-                    .setRequestInterceptor(ri)
-                    .setLogLevel(RestAdapter.LogLevel.FULL)
-                    .build();
-
-            service = mainService = restAdapter.create(GroceryRatingsService.class);
-
-            debugGroceryService = new DebugGroceryService();
-
-            RestAdapter imageAdapter = new RestAdapter.Builder()
-                    .setEndpoint(imageEndpoint)
-                    .setLogLevel(RestAdapter.LogLevel.FULL)
-                    .build();
-
-            imageService = mainImageService = imageAdapter.create(ImageService.class);
-            debugImageService = new DebugImageService();
-
-            Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
-            Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
-
-            if (Preferences.socialConn == null) {
-                mSocialConn = new EmptyConnector();
-            } else {
-                mSocialConn = SocialFactory.buildConnector(Preferences.socialConn, this);
-            }
-            mSocialConn.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_main_window);
         }
+        if (!checkCameraHardware(this)) {
+            throw new RuntimeException("No Camera");
+        }
+
+        final String uuid = Installation.id(this);
+
+        RequestInterceptor ri = new RequestInterceptor() {
+            @Override
+            public void intercept(RequestFacade request) {
+                request.addQueryParam("deviceId", uuid);
+            }
+        };
+
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(endpoint)
+                .setRequestInterceptor(ri)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
+
+        service = mainService = restAdapter.create(GroceryRatingsService.class);
+
+        debugGroceryService = new DebugGroceryService();
+
+        RestAdapter imageAdapter = new RestAdapter.Builder()
+                .setEndpoint(imageEndpoint)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
+
+        imageService = mainImageService = imageAdapter.create(ImageService.class);
+        debugImageService = new DebugImageService();
+
+        Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
+        Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
+
+        if (Preferences.socialConn == null) {
+            mSocialConn = new EmptyConnector();
+        } else {
+            mSocialConn = SocialFactory.buildConnector(Preferences.socialConn, this);
+            //todo this must be removed
+            onConnected();
+        }
+
+        mSocialConn.onCreate(savedInstanceState);
     }
 
     @Override
@@ -192,7 +215,7 @@ public class MainWindow extends Activity {
         MenuItem m = menu.add(2,4,9,"Debug Service");
         m.setCheckable(true);
 
-        menu.add(3,9,1,"Sign In");
+        menu.add(3,9,1, (isSocalConnected) ? "Sign Out" : "Sign In");
         menu.add(3,8,100,"Send Feedback");
         return true;
     }
@@ -212,6 +235,13 @@ public class MainWindow extends Activity {
                 } else {
                     return false;
                 }
+            case 9:
+                if (isSocalConnected) {
+                    socialLogout();
+                } else {
+                    showSocialSelector();
+                }
+                return true;
             case 4:
                 Log.i("MainWindow", "debug mode!");
                 item.setChecked(!item.isChecked());
@@ -277,7 +307,7 @@ public class MainWindow extends Activity {
         ProductPageFragment frag = ProductPageFragment.newInstance(index);
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container, frag, "foo")
+                .replace(R.id.container, frag)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
                 .commit();
@@ -286,26 +316,95 @@ public class MainWindow extends Activity {
     void onRatingSelected(int variantIndex, int ratingIndex) {
         Log.v(TAG, String.format("%d %d", variantIndex, ratingIndex));
         ProductRatingsFragment frag = ProductRatingsFragment.newInstance(variantIndex, ratingIndex);
-        Fragment currentFrag = getFragmentManager().findFragmentByTag("foo");
         getFragmentManager()
                 .beginTransaction()
-                .hide(currentFrag)
-                .add(R.id.container, frag)
-//                .replace(R.id.container, frag)
+                .replace(R.id.container, frag)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
                 .commit();
     }
 
-    public void onDeauthorize() {}
-    public void onConnected() {}
-    public void onLogout() {}
+    public void onDeauthorize() {
+        Log.v(TAG, "DEAUTHORIZE");
+    }
+
+    public void onConnected() {
+        Log.v(TAG, "CONNECTED");
+        isSocalConnected = true;
+        invalidateOptionsMenu();
+        Toast.makeText(this, "Connected to " + mSocialConn.getSocialKey(), Toast.LENGTH_SHORT).show();
+    }
+    public void onLogout() {
+        Log.v(TAG, "LOGOUT");
+        Toast.makeText(this, "Disconnected from " + mSocialConn.getSocialKey(), Toast.LENGTH_SHORT).show();
+    }
 
     public void onAddReview(int index) {
         Log.v(TAG, getVariants().get(index).getName());
+        if (isSocalConnected) {
+            showReviewFragment();
+        } else {
+            shouldDisplayReviewFrag = true;
+            showSocialSelector();
+        }
+    }
+
+    public void showReviewFragment() {
+        shouldDisplayReviewFrag = false;
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, ProductReviewFragment.newInstance(), null)
+                .addToBackStack(null)
+                .commit();
+
     }
 
     public boolean isSocialConnected() {
-        return false;
+        return isSocalConnected;
+    }
+
+    public void showSocialSelector() {
+        SocialSelectorFragment.newInstance().show(getFragmentManager(), null);
+    }
+
+    @Override
+    public void onSocialSelected(String social) {
+        Log.v(TAG, social);
+        mSocialConn = SocialFactory.buildConnector(social, this);
+        Preferences.socialConn = social;
+        String loginId = "test_" + String.format("%.0f", ((new Random()).nextFloat() * 10000000));
+
+        User user = DebugGroceryService.randomUser();
+        user.loginId = loginId;
+//        service.addNewUser(user, new Callback<User>() {
+//            @Override
+//            public void success(User user, Response response) {
+//                Preferences.socialAccount = user.loginId;
+//                onConnected();
+//                if (shouldDisplayReviewFrag) {
+//                    showReviewFragment();
+//                }
+//            }
+//
+//            @Override
+//            public void failure(RetrofitError error) {
+//                Preferences.socialAccount = null;
+//                Preferences.socialConn = null;
+//                mSocialConn = new EmptyConnector();
+//            }
+//        });
+
+        onConnected();
+        if (shouldDisplayReviewFrag) {
+            showReviewFragment();
+        }
+        //mSocialConn.login();
+    }
+
+    public void socialLogout() {
+        isSocalConnected = false;
+        Preferences.socialConn = null;
+        invalidateOptionsMenu();
+        onLogout();
     }
 }

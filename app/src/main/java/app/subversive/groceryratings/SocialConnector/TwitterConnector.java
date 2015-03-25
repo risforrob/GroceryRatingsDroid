@@ -23,16 +23,15 @@ public class TwitterConnector implements SocialConnector {
     final String TAG = TwitterConnector.class.getSimpleName();
     MainWindow activity;
     TwitterAuthClient authClient;
-    TwitterAuthConfig authConfig =
-            new TwitterAuthConfig("8QGi7094SfA8p1g2Ry0U4HElT",
+    public final static TwitterAuthConfig authConfig =
+            new TwitterAuthConfig("Y9Lrj94I5eHZvGuRzfJdr4K8E",
                     "***REMOVED***");
 
 
     public TwitterConnector(MainWindow activity) {
         this.activity = activity;
-        Fabric.with(activity, new Twitter(authConfig));
+        //Fabric.with(activity, new Twitter(authConfig));
         authClient = new TwitterAuthClient();
-//        Fabric.getLogger().setLogLevel(0);
     }
 
     @Override

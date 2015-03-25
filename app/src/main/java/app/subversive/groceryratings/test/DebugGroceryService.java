@@ -67,6 +67,11 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
         successfulRequest(variant, cb);
     }
 
+    @Override
+    public void addNewUser(@Body User user, Callback<User> cb) {
+        successfulRequest(user, cb);
+    }
+
     private static TasteTag randomTasteTag() {
         String[] names = {
                 "allergen",
@@ -106,7 +111,7 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
         return rating;
     }
 
-    private static User randomUser() {
+    public static User randomUser() {
         User user = new User();
         user.name = randomString(new int[]{5,7});
         user.displayName = randomString(6);
