@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import app.subversive.groceryratings.R;
@@ -16,6 +17,7 @@ import app.subversive.groceryratings.Utils;
  * Created by rob on 12/25/14.
  */
 public class Rater extends View {
+    private final String TAG = Rater.class.getSimpleName();
 
     private int numStars = 5;
     private int paddingStars;
@@ -23,6 +25,7 @@ public class Rater extends View {
     private int actualRadius;
     private int mRating = 3;
     private int strokeWidth;
+    private boolean editable;
 
     private Paint fgPaint, bgPaint;
 
@@ -44,16 +47,18 @@ public class Rater extends View {
                 arr.getInt(R.styleable.rater_numStars, numStars),
                 arr.getDimensionPixelSize(R.styleable.rater_radius, Utils.dp2px(6)),
                 arr.getDimensionPixelSize(R.styleable.rater_paddingStars, Utils.dp2px(2)),
-                arr.getDimensionPixelSize(R.styleable.rater_ringWidth, Utils.dp2px(1))
+                arr.getDimensionPixelSize(R.styleable.rater_ringWidth, Utils.dp2px(1)),
+                arr.getBoolean(R.styleable.rater_editable, false)
             );
         arr.recycle();
     }
 
-    private void init(Context context, int fg, int bg, int numStars, int radius, int paddingStars, int ringRadius) {
+    private void init(Context context, int fg, int bg, int numStars, int radius, int paddingStars, int ringRadius, boolean editable) {
         this.paddingStars = paddingStars;
         this.radius = radius;
         this.numStars = numStars;
         this.strokeWidth = ringRadius;
+        this.editable = editable;
 
         actualRadius = radius + ((strokeWidth  % 2 == 1) ? (strokeWidth-1/2) : (strokeWidth/2));
 
@@ -93,5 +98,24 @@ public class Rater extends View {
             canvas.drawCircle(cx, cy, radius, paint);
             cx += paddingStars + (actualRadius * 2);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (editable &&
+                (event.getAction() == MotionEvent.ACTION_DOWN) ||
+                (event.getAction() == MotionEvent.ACTION_MOVE)) {
+            float pos = event.getX();
+            if ((pos > getPaddingLeft()) && (pos < (getWidth() - getPaddingRight()))) {
+                float bucketSize = (getWidth() - getPaddingLeft() - getPaddingRight()) / ((float) numStars);
+                int x = (int) Math.floor((pos - getPaddingLeft()) / bucketSize) + 1;
+                if (x != mRating) {
+                    mRating = x;
+                    invalidate();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

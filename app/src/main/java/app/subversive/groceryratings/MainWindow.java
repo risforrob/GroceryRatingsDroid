@@ -38,8 +38,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 public class MainWindow
-        extends Activity
-        implements SocialSelectorFragment.OnFragmentInteractionListener, ProductReviewFragment.OnFragmentInteractionListener {
+        extends Activity {
 
     interface UpNavigation { public void onNavigateUp(); }
 
@@ -367,7 +366,6 @@ public class MainWindow
         SocialSelectorFragment.newInstance().show(getFragmentManager(), null);
     }
 
-    @Override
     public void onSocialSelected(String social) {
         Log.v(TAG, social);
         mSocialConn = SocialFactory.buildConnector(social, this);
