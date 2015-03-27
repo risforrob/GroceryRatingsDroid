@@ -13,16 +13,19 @@
             custom:ringWidth="3dp"
             custom:editable="true"
             android:layout_gravity="center"
-            android:layout_margin="8dp" />
+            android:layout_margin="8dp"
+            android:id="@+id/ratingRater"
+            />
 
     <EditText
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:inputType="textMultiLine"
         android:ems="10"
-        android:id="@+id/editText"
+        android:id="@+id/etRating"
         android:layout_weight="1"
-        android:gravity="left|top" />
+        android:hint="Select a rating above.\nAdd your review here."
+        android:gravity="center|top" />
 
     <Button
         android:layout_width="fill_parent"
@@ -30,5 +33,6 @@
         android:layout_gravity="center"
         android:text="Submit Review"
         android:id="@+id/btnSubmitReview"
+        android:enabled="false"
         style="?android:borderlessButtonStyle"/>
 </LinearLayout>

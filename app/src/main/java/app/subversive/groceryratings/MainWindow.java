@@ -405,4 +405,11 @@ public class MainWindow
         invalidateOptionsMenu();
         onLogout();
     }
+
+    public void addRating(int numStars, String ratingText, boolean closeCurrentFragment) {
+        Log.v(TAG, String.format("%d %s", numStars, ratingText));
+        if (closeCurrentFragment) {
+            getFragmentManager().popBackStack();
+        }
+    }
 }

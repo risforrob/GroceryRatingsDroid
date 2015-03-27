@@ -80,6 +80,10 @@ public class Rater extends View {
         }
     }
 
+    public int getRating() { return mRating; }
+
+
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int desiredHeight = (actualRadius * 2) + getPaddingTop() + getPaddingBottom();
@@ -108,11 +112,7 @@ public class Rater extends View {
             float pos = event.getX();
             if ((pos > getPaddingLeft()) && (pos < (getWidth() - getPaddingRight()))) {
                 float bucketSize = (getWidth() - getPaddingLeft() - getPaddingRight()) / ((float) numStars);
-                int x = (int) Math.floor((pos - getPaddingLeft()) / bucketSize) + 1;
-                if (x != mRating) {
-                    mRating = x;
-                    invalidate();
-                }
+                setRating((int) Math.floor((pos - getPaddingLeft()) / bucketSize) + 1);
             }
             return true;
         }

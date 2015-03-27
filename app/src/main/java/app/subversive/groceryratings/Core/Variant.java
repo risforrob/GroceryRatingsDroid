@@ -22,6 +22,7 @@ public class Variant {
     public boolean published;
     public ArrayList<String> keywords, images;
     public ArrayList<Rating> ratings;
+    public Key key;
 
     public HashMap<String, Integer> wordscore;
     private List<Map.Entry<String, Integer>> sortedWordscore;
