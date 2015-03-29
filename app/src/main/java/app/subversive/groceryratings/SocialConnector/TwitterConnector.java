@@ -23,6 +23,7 @@ public class TwitterConnector implements SocialConnector {
     final String TAG = TwitterConnector.class.getSimpleName();
     MainWindow activity;
     TwitterAuthClient authClient;
+    long mID;
     public final static TwitterAuthConfig authConfig =
             new TwitterAuthConfig("Y9Lrj94I5eHZvGuRzfJdr4K8E",
                     "***REMOVED***");
@@ -30,7 +31,7 @@ public class TwitterConnector implements SocialConnector {
 
     public TwitterConnector(MainWindow activity) {
         this.activity = activity;
-        //Fabric.with(activity, new Twitter(authConfig));
+        Fabric.with(activity, new Twitter(authConfig));
         authClient = new TwitterAuthClient();
     }
 
@@ -82,7 +83,8 @@ public class TwitterConnector implements SocialConnector {
         authClient.authorize(activity, new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> twitterSessionResult) {
-                activity.onConnected();
+                mID = twitterSessionResult.data.getUserId();
+                onConnected();
             }
 
             @Override
@@ -94,13 +96,15 @@ public class TwitterConnector implements SocialConnector {
 
     @Override
     public void logout() {
+        mID = 0;
         Twitter.logOut();
         activity.onLogout();
     }
 
     @Override
     public void onConnected() {
-        activity.onConnected();
+        Log.d(TAG, Twitter.getSessionManager().getActiveSession().getAuthToken().toString());
+        activity.onConnected(getServiceId());
     }
 
     @Override
@@ -108,10 +112,9 @@ public class TwitterConnector implements SocialConnector {
         authClient.onActivityResult(requestCode, resultCode, data);
     }
 
-
     @Override
-    public void requestId(IdCallback callback) {
-        callback.idResponse(String.valueOf(TwitterCore.getInstance().getSessionManager().getActiveSession().getUserId()));
+    public String getServiceId() {
+        return (mID == 0) ? null : String.format("TW%d", mID);
     }
 
     @Override

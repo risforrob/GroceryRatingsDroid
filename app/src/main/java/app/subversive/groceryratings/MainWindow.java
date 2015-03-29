@@ -40,6 +40,8 @@ import retrofit.client.Response;
 public class MainWindow
         extends Activity {
 
+    private interface ConnectionCallback { void onConnected(); }
+
     interface UpNavigation { public void onNavigateUp(); }
 
     private final static String TAG = MainWindow.class.getSimpleName();
@@ -48,6 +50,8 @@ public class MainWindow
     public static GroceryRatingsService service, mainService, debugGroceryService;
     public static ImageService imageService, mainImageService, debugImageService;
     private ScanFragment scanFrag;
+
+    private ConnectionCallback mConnectionCallback;
 
     public SocialConnector mSocialConn;
     private UpNavigation mUpNav;
@@ -94,7 +98,7 @@ public class MainWindow
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Fabric.with(this, new Crashlytics(), new Twitter(TwitterConnector.authConfig));
+//        Fabric.with(this, new Crashlytics(), new Twitter(TwitterConnector.authConfig));
 
 
         if (savedInstanceState == null) {
@@ -146,8 +150,6 @@ public class MainWindow
             mSocialConn = new EmptyConnector();
         } else {
             mSocialConn = SocialFactory.buildConnector(Preferences.socialConn, this);
-            //todo this must be removed
-            onConnected();
         }
 
         mSocialConn.onCreate(savedInstanceState);
@@ -327,11 +329,17 @@ public class MainWindow
         Log.v(TAG, "DEAUTHORIZE");
     }
 
-    public void onConnected() {
+    public void onConnected(String userId) {
         Log.v(TAG, "CONNECTED");
         isSocalConnected = true;
+        Preferences.socialConn = mSocialConn.getSocialKey();
+        Preferences.socialAccount = userId;
         invalidateOptionsMenu();
         Toast.makeText(this, "Connected to " + mSocialConn.getSocialKey(), Toast.LENGTH_SHORT).show();
+        if (mConnectionCallback != null) {
+            mConnectionCallback.onConnected();
+            mConnectionCallback = null;
+        }
     }
     public void onLogout() {
         Log.v(TAG, "LOGOUT");
@@ -369,11 +377,19 @@ public class MainWindow
     public void onSocialSelected(String social) {
         Log.v(TAG, social);
         mSocialConn = SocialFactory.buildConnector(social, this);
-        Preferences.socialConn = social;
-        String loginId = "test_" + String.format("%.0f", ((new Random()).nextFloat() * 10000000));
+        mConnectionCallback = new ConnectionCallback() {
+            @Override
+            public void onConnected() {
+                if (shouldDisplayReviewFrag) {
+                    showReviewFragment();
+                }
+            }
+        };
 
-        User user = DebugGroceryService.randomUser();
-        user.loginId = loginId;
+        mSocialConn.login();
+
+//        User user = DebugGroceryService.randomUser();
+//        user.loginId = loginId;
 //        service.addNewUser(user, new Callback<User>() {
 //            @Override
 //            public void success(User user, Response response) {
@@ -392,16 +408,14 @@ public class MainWindow
 //            }
 //        });
 
-        onConnected();
-        if (shouldDisplayReviewFrag) {
-            showReviewFragment();
-        }
-        //mSocialConn.login();
     }
 
     public void socialLogout() {
         isSocalConnected = false;
         Preferences.socialConn = null;
+        Preferences.socialAccount = null;
+        mSocialConn.logout();
+        mSocialConn = new EmptyConnector();
         invalidateOptionsMenu();
         onLogout();
     }

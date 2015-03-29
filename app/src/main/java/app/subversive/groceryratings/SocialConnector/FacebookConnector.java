@@ -22,6 +22,7 @@ import app.subversive.groceryratings.MainWindow;
 public class FacebookConnector implements SocialConnector {
     private final String TAG = FacebookConnector.class.getSimpleName();
     private MainWindow activity;
+    private String mID;
 //    private Session session;
     private UiLifecycleHelper uiLifecycleHelper;
 
@@ -40,7 +41,13 @@ public class FacebookConnector implements SocialConnector {
         }
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
-            onConnected();
+            Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
+                @Override
+                public void onCompleted(GraphUser graphUser, Response response) {
+                    mID = graphUser.getId();
+                    onConnected();
+                }
+            }).executeAsync();
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
 
@@ -121,7 +128,7 @@ public class FacebookConnector implements SocialConnector {
 
     @Override
     public void onConnected() {
-        activity.onConnected();
+        activity.onConnected(getServiceId());
     }
 
     @Override
@@ -140,13 +147,8 @@ public class FacebookConnector implements SocialConnector {
     }
 
     @Override
-    public void requestId(final IdCallback callback) {
-        Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser graphUser, Response response) {
-                callback.idResponse(graphUser.getId());
-            }
-        }).executeAsync();
+    public String getServiceId() {
+        return (mID == null) ? null : "FB" + mID;
     }
 
     @Override

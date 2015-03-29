@@ -11,13 +11,14 @@ import java.util.List;
 public class Rating {
     public int stars, like;
     public long datetime;
-    public String comment, parent, userKey;
+    public String comment, userKey;
     public boolean published;
     private Calendar date;
     public TasteTag[] tags;
     public String[] images;
     private String dateString;
     public User user;
+//    public Parent parent;
 
     public Rating() {}
 

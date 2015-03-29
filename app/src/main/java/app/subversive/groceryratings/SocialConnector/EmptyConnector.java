@@ -68,8 +68,8 @@ public class EmptyConnector implements SocialConnector {
     }
 
     @Override
-    public void requestId(IdCallback callback) {
-
+    public String getServiceId() {
+        return null;
     }
 
     @Override

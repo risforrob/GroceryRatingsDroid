@@ -19,7 +19,7 @@ import app.subversive.groceryratings.MainWindow;
 public class GoogleConnector implements SocialConnector {
 
     private final static String TAG = GoogleConnector.class.getSimpleName();
-
+    private String mID;
     private boolean mSignInClicked;
     private ConnectionResult mConnectionResult;
 
@@ -28,6 +28,7 @@ public class GoogleConnector implements SocialConnector {
         public void onConnected(Bundle bundle) {
             Log.v(TAG, "g+ connected!");
             mSignInClicked = false;
+            mID = Plus.AccountApi.getAccountName(mGoogleApiClient);
             GoogleConnector.this.onConnected();
         }
 
@@ -163,7 +164,7 @@ public class GoogleConnector implements SocialConnector {
 
     @Override
     public void onConnected() {
-        activity.onConnected();
+        activity.onConnected(getServiceId());
     }
 
     @Override
@@ -183,8 +184,8 @@ public class GoogleConnector implements SocialConnector {
     }
 
     @Override
-    public void requestId(IdCallback callback) {
-        callback.idResponse(Plus.AccountApi.getAccountName(mGoogleApiClient));
+    public String getServiceId() {
+        return (mID == null) ? null : mID;
     }
 
     @Override

@@ -189,7 +189,7 @@ public final class CameraManager {
         Camera theCamera = camera;
         if (theCamera != null && previewing) {
             Long curr = System.currentTimeMillis();
-            Log.d("FPS", String.valueOf(curr - lastRequest));
+            Log.v("FPS", String.valueOf(curr - lastRequest));
             lastRequest = curr;
             previewCallback.setHandler(handler, message);
             theCamera.setOneShotPreviewCallback(previewCallback);

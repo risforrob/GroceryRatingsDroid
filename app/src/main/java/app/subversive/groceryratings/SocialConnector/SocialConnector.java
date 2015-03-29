@@ -29,7 +29,7 @@ public interface SocialConnector {
     public void logout();
     public void onConnected();
     public void onActivityResult(int requestCode, int resultCode, Intent data);
-    public void requestId(IdCallback callback);
+    public String getServiceId();
 
     public String getSocialKey();
 }

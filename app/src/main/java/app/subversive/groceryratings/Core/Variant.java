@@ -16,13 +16,12 @@ import java.util.Map;
  * Created by rob on 8/24/14.
  */
 public class Variant {
-    public String parent, brandName, productName, manName, productCode, description, firstImageKey;
+    public String brandName, productName, manName, productCode, description, firstImageKey;
     public int ratingSum, stars;
     public float ratingScore;
     public boolean published;
     public ArrayList<String> keywords, images;
     public ArrayList<Rating> ratings;
-    public Key key;
 
     public HashMap<String, Integer> wordscore;
     private List<Map.Entry<String, Integer>> sortedWordscore;
