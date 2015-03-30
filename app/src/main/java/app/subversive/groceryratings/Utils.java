@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 
 import retrofit.mime.TypedByteArray;
 import retrofit.mime.TypedInput;
@@ -82,5 +83,14 @@ public class Utils {
     public static void hideKeyboard(Context context, View v) {
         ((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE))
             .hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    public static String[] userArgs(HashMap<String, String> args) {
+        String[] argsOrder = {"token","secret"};
+        String[] result = new String[argsOrder.length];
+        for (int x = 0; x < argsOrder.length; x++) {
+            result[x] = args.get(argsOrder[x]);
+        }
+        return result;
     }
 }

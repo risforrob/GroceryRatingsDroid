@@ -3,6 +3,8 @@ package app.subversive.groceryratings.SocialConnector;
 import android.content.Intent;
 import android.os.Bundle;
 
+import java.util.HashMap;
+
 /**
  * Created by rob on 3/14/15.
  */
@@ -68,12 +70,12 @@ public class EmptyConnector implements SocialConnector {
     }
 
     @Override
-    public String getServiceId() {
+    public String getSocialKey() {
         return null;
     }
 
     @Override
-    public String getSocialKey() {
+    public HashMap<String, String> getServiceHeader() {
         return null;
     }
 }

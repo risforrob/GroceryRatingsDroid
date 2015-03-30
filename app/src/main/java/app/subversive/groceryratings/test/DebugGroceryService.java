@@ -12,6 +12,7 @@ import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.GroceryRatingsService;
 import retrofit.Callback;
 import retrofit.http.Body;
+import retrofit.http.Header;
 import retrofit.http.Path;
 
 /**
@@ -68,8 +69,8 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
     }
 
     @Override
-    public void addNewUser(@Body User user, Callback<User> cb) {
-        successfulRequest(user, cb);
+    public void getUser(@Header("service") String service, @Header("token") String token, @Header("secret") String secret, Callback<User> callback) {
+        successfulRequest(randomUser(), callback);
     }
 
     private static TasteTag randomTasteTag() {

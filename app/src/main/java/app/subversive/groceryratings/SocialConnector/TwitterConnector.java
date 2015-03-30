@@ -13,6 +13,8 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
+import java.util.HashMap;
+
 import app.subversive.groceryratings.MainWindow;
 import io.fabric.sdk.android.Fabric;
 
@@ -21,6 +23,7 @@ import io.fabric.sdk.android.Fabric;
  */
 public class TwitterConnector implements SocialConnector {
     final String TAG = TwitterConnector.class.getSimpleName();
+    private final String mSocialKey = "twitter";
     MainWindow activity;
     TwitterAuthClient authClient;
     long mID;
@@ -104,7 +107,7 @@ public class TwitterConnector implements SocialConnector {
     @Override
     public void onConnected() {
         Log.d(TAG, Twitter.getSessionManager().getActiveSession().getAuthToken().toString());
-        activity.onConnected(getServiceId());
+        activity.onConnected();
     }
 
     @Override
@@ -113,12 +116,16 @@ public class TwitterConnector implements SocialConnector {
     }
 
     @Override
-    public String getServiceId() {
-        return (mID == 0) ? null : String.format("TW%d", mID);
+    public String getSocialKey() {
+        return mSocialKey;
     }
 
     @Override
-    public String getSocialKey() {
-        return "twitter";
+    public HashMap<String, String> getServiceHeader() {
+        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
+        HashMap<String, String> header = new HashMap<>();
+        header.put("token", session.getAuthToken().token);
+        header.put("secret", session.getAuthToken().secret);
+        return header;
     }
 }

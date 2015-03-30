@@ -13,6 +13,7 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import app.subversive.groceryratings.MainWindow;
 
@@ -128,7 +129,7 @@ public class FacebookConnector implements SocialConnector {
 
     @Override
     public void onConnected() {
-        activity.onConnected(getServiceId());
+        activity.onConnected();
     }
 
     @Override
@@ -147,12 +148,12 @@ public class FacebookConnector implements SocialConnector {
     }
 
     @Override
-    public String getServiceId() {
-        return (mID == null) ? null : "FB" + mID;
+    public String getSocialKey() {
+        return "facebook";
     }
 
     @Override
-    public String getSocialKey() {
-        return "facebook";
+    public HashMap<String, String> getServiceHeader() {
+        return null;
     }
 }

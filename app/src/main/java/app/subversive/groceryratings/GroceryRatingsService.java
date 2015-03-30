@@ -5,6 +5,7 @@ import app.subversive.groceryratings.Core.Variant;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.GET;
+import retrofit.http.Header;
 import retrofit.http.POST;
 import retrofit.http.Path;
 
@@ -14,11 +15,15 @@ import retrofit.http.Path;
 public interface GroceryRatingsService {
 
     @GET("/variantdaoendpoint/v1/variant/{productID}")
-    void getProduct(@Path("productID") String productID, Callback<Variant> cb);
+    void getProduct(@Path("productID") String productID, Callback<Variant> callback);
 
     @POST("/variantdaoendpoint/v1/variantdao")
-    void addNewProduct(@Body Variant variant, Callback<Variant> cb);
+    void addNewProduct(@Body Variant variant, Callback<Variant> callback);
 
-    @POST("/userdaoendpoint/v1/userdao")
-    void addNewUser(@Body User user, Callback<User> cb);
+    @GET("/userdaoendpoint/v1/userdao")
+    void getUser(
+            @Header("service") String service,
+            @Header("token") String token,
+            @Header("secret") String secret,
+            Callback<User> callback);
 }

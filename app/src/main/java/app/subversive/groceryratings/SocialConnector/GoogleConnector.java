@@ -11,6 +11,8 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 
+import java.util.HashMap;
+
 import app.subversive.groceryratings.MainWindow;
 
 /**
@@ -164,7 +166,7 @@ public class GoogleConnector implements SocialConnector {
 
     @Override
     public void onConnected() {
-        activity.onConnected(getServiceId());
+        activity.onConnected();
     }
 
     @Override
@@ -184,12 +186,12 @@ public class GoogleConnector implements SocialConnector {
     }
 
     @Override
-    public String getServiceId() {
-        return (mID == null) ? null : mID;
+    public String getSocialKey() {
+        return "google";
     }
 
     @Override
-    public String getSocialKey() {
-        return "google";
+    public HashMap<String, String> getServiceHeader() {
+        return null;
     }
 }

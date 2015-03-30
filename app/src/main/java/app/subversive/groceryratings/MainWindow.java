@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.twitter.sdk.android.Twitter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -57,22 +58,21 @@ public class MainWindow
     private UpNavigation mUpNav;
     private boolean isSocalConnected, shouldDisplayReviewFrag;
 
+    private User mUser;
+
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
         final private static String TUTORIAL_COMPLETED = "TUTORIAL_COMPLETED";
         final private static String SOCIAL_CONN = "SOCIAL_CONN";
-        final private static String SOCIAL_ACCOUNT = "SOCIAL_ACCOUNT";
 
         public static boolean autoscan;
         public static boolean tutorialComplete;
         public static String socialConn;
-        public static String socialAccount;
 
         static void loadPrefs(SharedPreferences prefs) {
             autoscan = prefs.getBoolean(AUTOSCAN, false);
             tutorialComplete = prefs.getBoolean(TUTORIAL_COMPLETED, false);
             socialConn = prefs.getString(SOCIAL_CONN, null);
-            socialAccount = prefs.getString(SOCIAL_ACCOUNT, null);
         }
 
         static void writePrefs(SharedPreferences prefs) {
@@ -83,12 +83,6 @@ public class MainWindow
                 edit.putString(SOCIAL_CONN, socialConn);
             } else {
                 edit.remove(SOCIAL_CONN);
-            }
-
-            if (socialAccount != null) {
-                edit.putString(SOCIAL_ACCOUNT, socialAccount);
-            } else {
-                edit.remove(SOCIAL_ACCOUNT);
             }
             edit.apply();
         }
@@ -329,17 +323,30 @@ public class MainWindow
         Log.v(TAG, "DEAUTHORIZE");
     }
 
-    public void onConnected(String userId) {
-        Log.v(TAG, "CONNECTED");
+    public void onConnected() {
         isSocalConnected = true;
         Preferences.socialConn = mSocialConn.getSocialKey();
-        Preferences.socialAccount = userId;
-        invalidateOptionsMenu();
         Toast.makeText(this, "Connected to " + mSocialConn.getSocialKey(), Toast.LENGTH_SHORT).show();
+
+        String[] args = Utils.userArgs(mSocialConn.getServiceHeader());
+        service.getUser(mSocialConn.getSocialKey(), args[0], args[1], new Callback<User>() {
+            @Override
+            public void success(User user, Response response) {
+                mUser = user;
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
+
         if (mConnectionCallback != null) {
             mConnectionCallback.onConnected();
             mConnectionCallback = null;
         }
+
+        invalidateOptionsMenu();
     }
     public void onLogout() {
         Log.v(TAG, "LOGOUT");
@@ -377,14 +384,14 @@ public class MainWindow
     public void onSocialSelected(String social) {
         Log.v(TAG, social);
         mSocialConn = SocialFactory.buildConnector(social, this);
-        mConnectionCallback = new ConnectionCallback() {
-            @Override
-            public void onConnected() {
-                if (shouldDisplayReviewFrag) {
+        if (shouldDisplayReviewFrag) {
+            mConnectionCallback = new ConnectionCallback() {
+                @Override
+                public void onConnected() {
                     showReviewFragment();
                 }
-            }
-        };
+            };
+        }
 
         mSocialConn.login();
 
@@ -413,7 +420,7 @@ public class MainWindow
     public void socialLogout() {
         isSocalConnected = false;
         Preferences.socialConn = null;
-        Preferences.socialAccount = null;
+        mUser = null;
         mSocialConn.logout();
         mSocialConn = new EmptyConnector();
         invalidateOptionsMenu();
