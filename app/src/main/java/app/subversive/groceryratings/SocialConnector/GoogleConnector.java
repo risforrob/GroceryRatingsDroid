@@ -23,6 +23,7 @@ import java.util.HashMap;
 
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
+import app.subversive.groceryratings.UI.GRClient;
 import retrofit.Callback;
 
 /**
@@ -224,7 +225,7 @@ public class GoogleConnector implements SocialConnector {
             @Override
             protected void onPostExecute(String token) {
                 if (token != null) {
-                    MainWindow.service.getUser(getSocialKey(), token, null, userCallback);
+                    GRClient.getService().getUser(getSocialKey(), token, null, userCallback);
                 }
             }
         }).execute();

@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
+import app.subversive.groceryratings.UI.GRClient;
 import retrofit.Callback;
 
 /**
@@ -149,6 +150,6 @@ public class FacebookConnector implements SocialConnector {
 
     @Override
     public void getUser(MainWindow activity, Callback<User> userCallback) {
-        MainWindow.service.getUser(getSocialKey(), com.facebook.Session.getActiveSession().getAccessToken(), null, userCallback);
+        GRClient.getService().getUser(getSocialKey(), com.facebook.Session.getActiveSession().getAccessToken(), null, userCallback);
     }
 }

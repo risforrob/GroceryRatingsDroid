@@ -25,6 +25,7 @@ import com.google.zxing.client.android.CaptureActivityHandler;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.UI.AOFrameLayout;
 import app.subversive.groceryratings.UI.FocusableSurfaceView;
+import app.subversive.groceryratings.UI.GRClient;
 import app.subversive.groceryratings.UI.TutorialOverlay;
 import app.subversive.groceryratings.camera.CameraManager;
 
@@ -251,9 +252,11 @@ public class ScanFragment
             for (int i = variants.length-1 ; i >= 0 ; i--) {
                 final ProductRatingBar pbar = ProductRatingBar.fromProduct(variants[i], v.getContext());
                 scanControls.addNewProductBar(pbar.getBarcode(), pbar);
-                MainWindow.mainService.getProduct(variants[i].productCode, new Callback<Variant>() {
+                GRClient.getService().getProduct(variants[i].productCode, new Callback<Variant>() {
                     @Override
                     public void success(Variant variant, Response response) {
+                        if (response == null) { return; }
+
                         if (response.getStatus() == 200) {
                             Log.i(TAG, String.format("successful refresh of %s", variant.productCode));
                             pbar.setVariant(variant);
@@ -415,7 +418,7 @@ public class ScanFragment
         pbar.setState(ProductRatingBar.States.UPLOADING);
         TypedByteArray data =
                 new Utils.TypedFileByteArray("image/jpeg", String.format("%s.jpg", lastScanned), imageData);
-        MainWindow.imageService.uploadImage(data, new Callback<Response>() {
+        GRClient.getImageService().uploadImage(data, new Callback<Response>() {
             @Override
             public void success(Response data, Response response) {
                 String id;
@@ -433,7 +436,7 @@ public class ScanFragment
                 p.productCode = lastScanned;
                 p.images.add(id);
 
-                MainWindow.service.addNewProduct(p, new Callback<Variant>() {
+                GRClient.getService().addNewProduct(p, new Callback<Variant>() {
                     @Override
                     public void success(Variant variant, Response response) {
                         pbar.setState(ProductRatingBar.States.THANKS);

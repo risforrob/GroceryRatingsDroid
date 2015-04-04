@@ -21,11 +21,8 @@ import app.subversive.groceryratings.SocialConnector.EmptyConnector;
 import app.subversive.groceryratings.SocialConnector.SocialConnector;
 import app.subversive.groceryratings.SocialConnector.SocialFactory;
 
-import app.subversive.groceryratings.test.DebugGroceryService;
-import app.subversive.groceryratings.test.DebugImageService;
+import app.subversive.groceryratings.UI.GRClient;
 import retrofit.Callback;
-import retrofit.RequestInterceptor;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
@@ -37,10 +34,9 @@ public class MainWindow
     interface UpNavigation { public void onNavigateUp(); }
 
     private final static String TAG = MainWindow.class.getSimpleName();
-    static final String endpoint = "https://groceryratings.appspot.com/_ah/api";
-    static final String imageEndpoint = "https://groceryratings.appspot.com";
-    public static GroceryRatingsService service, mainService, debugGroceryService;
-    public static ImageService imageService, mainImageService, debugImageService;
+
+//    public
+
     private ScanFragment scanFrag;
 
     private ConnectionCallback mConnectionCallback;
@@ -102,32 +98,7 @@ public class MainWindow
             throw new RuntimeException("No Camera");
         }
 
-        final String uuid = Installation.id(this);
-
-        RequestInterceptor ri = new RequestInterceptor() {
-            @Override
-            public void intercept(RequestFacade request) {
-                request.addQueryParam("deviceId", uuid);
-            }
-        };
-
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(endpoint)
-                .setRequestInterceptor(ri)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .build();
-
-        service = mainService = restAdapter.create(GroceryRatingsService.class);
-
-        debugGroceryService = new DebugGroceryService();
-
-        RestAdapter imageAdapter = new RestAdapter.Builder()
-                .setEndpoint(imageEndpoint)
-                .setLogLevel(RestAdapter.LogLevel.FULL)
-                .build();
-
-        imageService = mainImageService = imageAdapter.create(ImageService.class);
-        debugImageService = new DebugImageService();
+        GRClient.initialize(Installation.id(this));
 
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
         Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
@@ -232,13 +203,7 @@ public class MainWindow
             case 4:
                 Log.i("MainWindow", "debug mode!");
                 item.setChecked(!item.isChecked());
-                if (item.isChecked()) {
-                    service = debugGroceryService;
-                    imageService = debugImageService;
-                } else {
-                    service = mainService;
-                    imageService = mainImageService;
-                }
+                GRClient.getInstance().setDebug(item.isChecked());
                 return false;
 
             case 8:
@@ -414,7 +379,7 @@ public class MainWindow
         rating.stars = numStars;
         rating.parent = mVariant;
         rating.user = mUser;
-        service.addNewRating(rating, new Callback<Rating>() {
+        GRClient.getService().addNewRating(rating, new Callback<Rating>() {
             @Override
             public void success(Rating rating, Response response) {
                 Toast.makeText(MainWindow.this, "Thank you for your rating.", Toast.LENGTH_SHORT).show();

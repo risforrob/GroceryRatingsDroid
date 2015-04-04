@@ -200,7 +200,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         this.barcode = barcode;
         state = States.FETCHING;
         displayStatus("Loading Product", true, false);
-        MainWindow.service.getProduct(barcode, new Callback<Variant>() {
+        GRClient.getService().getProduct(barcode, new Callback<Variant>() {
             @Override
             public void success(Variant variant, Response response) {
                 if (variant != null && variant.published) {

@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
+import app.subversive.groceryratings.UI.GRClient;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -124,7 +125,7 @@ public class TwitterConnector implements SocialConnector {
     @Override
     public void getUser(MainWindow activity, retrofit.Callback<User> userCallback) {
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-        MainWindow.service.getUser(
+        GRClient.getService().getUser(
                 getSocialKey(),
                 session.getAuthToken().token,
                 session.getAuthToken().secret,
