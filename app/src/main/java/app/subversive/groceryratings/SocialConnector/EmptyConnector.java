@@ -5,6 +5,10 @@ import android.os.Bundle;
 
 import java.util.HashMap;
 
+import app.subversive.groceryratings.Core.User;
+import app.subversive.groceryratings.MainWindow;
+import retrofit.Callback;
+
 /**
  * Created by rob on 3/14/15.
  */
@@ -75,7 +79,7 @@ public class EmptyConnector implements SocialConnector {
     }
 
     @Override
-    public HashMap<String, String> getServiceHeader() {
-        return null;
+    public void getUser(MainWindow activity, Callback<User> userCallback) {
+
     }
 }

@@ -9,6 +9,7 @@
     <string name="tutorial2">Swipe up to review your history of recently scanned products.</string>
     <string name="tutorial3">If you scan a product we haven\'t discovered, take a photo so we can add it.</string>
     <string name="facebook_app_id">378083392305084</string>
+    <!--<string name="facebook_app_id">930407833645876</string>-->
     <string name="title_facebook_login">A title</string>
 
 

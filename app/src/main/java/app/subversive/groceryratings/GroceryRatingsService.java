@@ -1,5 +1,6 @@
 package app.subversive.groceryratings;
 
+import app.subversive.groceryratings.Core.Rating;
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.Core.Variant;
 import retrofit.Callback;
@@ -17,13 +18,16 @@ public interface GroceryRatingsService {
     @GET("/variantdaoendpoint/v1/variant/{productID}")
     void getProduct(@Path("productID") String productID, Callback<Variant> callback);
 
-    @POST("/variantdaoendpoint/v1/variantdao")
+    @POST("/variantdaoendpoint/v1/variant")
     void addNewProduct(@Body Variant variant, Callback<Variant> callback);
 
-    @GET("/userdaoendpoint/v1/userdao")
+    @GET("/userdaoendpoint/v1/user")
     void getUser(
             @Header("service") String service,
             @Header("token") String token,
             @Header("secret") String secret,
             Callback<User> callback);
+
+    @POST("/ratingdaoendpoint/v1/rating")
+    void addNewRating(@Body Rating rating, Callback<Rating> callback);
 }

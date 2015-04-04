@@ -18,7 +18,7 @@ public class Rating {
     public String[] images;
     private String dateString;
     public User user;
-//    public Parent parent;
+    public Variant parent;
 
     public Rating() {}
 

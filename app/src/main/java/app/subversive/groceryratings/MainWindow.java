@@ -1,25 +1,18 @@
 package app.subversive.groceryratings;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-import com.twitter.sdk.android.Twitter;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import app.subversive.groceryratings.Core.Rating;
 import app.subversive.groceryratings.Core.User;
@@ -27,8 +20,6 @@ import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.SocialConnector.EmptyConnector;
 import app.subversive.groceryratings.SocialConnector.SocialConnector;
 import app.subversive.groceryratings.SocialConnector.SocialFactory;
-import app.subversive.groceryratings.SocialConnector.TwitterConnector;
-import io.fabric.sdk.android.Fabric;
 
 import app.subversive.groceryratings.test.DebugGroceryService;
 import app.subversive.groceryratings.test.DebugImageService;
@@ -59,6 +50,7 @@ public class MainWindow
     private boolean isSocalConnected, shouldDisplayReviewFrag;
 
     private User mUser;
+    private Variant mVariant;
 
     public static class Preferences {
         final private static String AUTOSCAN = "AUTOSCAN";
@@ -328,16 +320,20 @@ public class MainWindow
         Preferences.socialConn = mSocialConn.getSocialKey();
         Toast.makeText(this, "Connected to " + mSocialConn.getSocialKey(), Toast.LENGTH_SHORT).show();
 
-        String[] args = Utils.userArgs(mSocialConn.getServiceHeader());
-        service.getUser(mSocialConn.getSocialKey(), args[0], args[1], new Callback<User>() {
+        mSocialConn.getUser(this, new Callback<User>() {
             @Override
             public void success(User user, Response response) {
-                mUser = user;
+                if (response.getStatus() == 200) {
+                    mUser = user;
+                } else {
+                    failure(null);
+                }
             }
 
             @Override
             public void failure(RetrofitError error) {
-
+                mUser = null;
+                Toast.makeText(MainWindow.this, "Failed to log into Grocery Ratings", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -354,7 +350,7 @@ public class MainWindow
     }
 
     public void onAddReview(int index) {
-        Log.v(TAG, getVariants().get(index).getName());
+        mVariant = getVariants().get(index);
         if (isSocalConnected) {
             showReviewFragment();
         } else {
@@ -392,29 +388,7 @@ public class MainWindow
                 }
             };
         }
-
         mSocialConn.login();
-
-//        User user = DebugGroceryService.randomUser();
-//        user.loginId = loginId;
-//        service.addNewUser(user, new Callback<User>() {
-//            @Override
-//            public void success(User user, Response response) {
-//                Preferences.socialAccount = user.loginId;
-//                onConnected();
-//                if (shouldDisplayReviewFrag) {
-//                    showReviewFragment();
-//                }
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//                Preferences.socialAccount = null;
-//                Preferences.socialConn = null;
-//                mSocialConn = new EmptyConnector();
-//            }
-//        });
-
     }
 
     public void socialLogout() {
@@ -424,7 +398,6 @@ public class MainWindow
         mSocialConn.logout();
         mSocialConn = new EmptyConnector();
         invalidateOptionsMenu();
-        onLogout();
     }
 
     public void addRating(int numStars, String ratingText, boolean closeCurrentFragment) {
@@ -432,5 +405,26 @@ public class MainWindow
         if (closeCurrentFragment) {
             getFragmentManager().popBackStack();
         }
+        if ((mUser == null) || (mVariant == null)) {
+            throw new RuntimeException("Trying to add a rating with no user or variant");
+        }
+
+        Rating rating = new Rating();
+        rating.comment = ratingText;
+        rating.stars = numStars;
+        rating.parent = mVariant;
+        rating.user = mUser;
+        service.addNewRating(rating, new Callback<Rating>() {
+            @Override
+            public void success(Rating rating, Response response) {
+                Toast.makeText(MainWindow.this, "Thank you for your rating.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Toast.makeText(MainWindow.this, "Unable to connect to Grocery Ratings", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 }

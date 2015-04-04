@@ -1,19 +1,29 @@
 package app.subversive.groceryratings.SocialConnector;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
+import retrofit.Callback;
 
 /**
  * Created by rob on 3/15/15.
@@ -21,7 +31,7 @@ import app.subversive.groceryratings.MainWindow;
 public class GoogleConnector implements SocialConnector {
 
     private final static String TAG = GoogleConnector.class.getSimpleName();
-    private String mID;
+    private final static String mSocialKey = "google";
     private boolean mSignInClicked;
     private ConnectionResult mConnectionResult;
 
@@ -30,7 +40,6 @@ public class GoogleConnector implements SocialConnector {
         public void onConnected(Bundle bundle) {
             Log.v(TAG, "g+ connected!");
             mSignInClicked = false;
-            mID = Plus.AccountApi.getAccountName(mGoogleApiClient);
             GoogleConnector.this.onConnected();
         }
 
@@ -187,11 +196,37 @@ public class GoogleConnector implements SocialConnector {
 
     @Override
     public String getSocialKey() {
-        return "google";
+        return mSocialKey;
     }
 
     @Override
-    public HashMap<String, String> getServiceHeader() {
-        return null;
+    public void getUser(final MainWindow activity, final Callback<User> userCallback) {
+        (new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                String token = null;
+                try {
+                    token = GoogleAuthUtil.getToken(
+                            activity,
+                            Plus.AccountApi.getAccountName(mGoogleApiClient),
+                            "oauth2:" + Scopes.PLUS_ME);
+                } catch (UserRecoverableAuthException exception) {
+                    // do something about old
+                    Log.d(TAG, exception.toString());
+                } catch (GoogleAuthException exception) {
+                    Log.d(TAG, exception.toString());
+                } catch (IOException exception) {
+                    Log.d(TAG, exception.toString());
+                }
+                return token;
+            }
+
+            @Override
+            protected void onPostExecute(String token) {
+                if (token != null) {
+                    MainWindow.service.getUser(getSocialKey(), token, null, userCallback);
+                }
+            }
+        }).execute();
     }
 }

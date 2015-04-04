@@ -15,16 +15,17 @@ import com.facebook.model.GraphUser;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
+import retrofit.Callback;
 
 /**
  * Created by rob on 2/27/15.
  */
 public class FacebookConnector implements SocialConnector {
     private final String TAG = FacebookConnector.class.getSimpleName();
+    private final String mSocialKey = "facebook";
     private MainWindow activity;
-    private String mID;
-//    private Session session;
     private UiLifecycleHelper uiLifecycleHelper;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
@@ -42,13 +43,7 @@ public class FacebookConnector implements SocialConnector {
         }
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
-            Request.newMeRequest(Session.getActiveSession(), new Request.GraphUserCallback() {
-                @Override
-                public void onCompleted(GraphUser graphUser, Response response) {
-                    mID = graphUser.getId();
-                    onConnected();
-                }
-            }).executeAsync();
+            onConnected();
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
 
@@ -149,11 +144,11 @@ public class FacebookConnector implements SocialConnector {
 
     @Override
     public String getSocialKey() {
-        return "facebook";
+        return mSocialKey;
     }
 
     @Override
-    public HashMap<String, String> getServiceHeader() {
-        return null;
+    public void getUser(MainWindow activity, Callback<User> userCallback) {
+        MainWindow.service.getUser(getSocialKey(), com.facebook.Session.getActiveSession().getAccessToken(), null, userCallback);
     }
 }

@@ -15,6 +15,7 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
 import java.util.HashMap;
 
+import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
 import io.fabric.sdk.android.Fabric;
 
@@ -121,11 +122,12 @@ public class TwitterConnector implements SocialConnector {
     }
 
     @Override
-    public HashMap<String, String> getServiceHeader() {
+    public void getUser(MainWindow activity, retrofit.Callback<User> userCallback) {
         TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-        HashMap<String, String> header = new HashMap<>();
-        header.put("token", session.getAuthToken().token);
-        header.put("secret", session.getAuthToken().secret);
-        return header;
+        MainWindow.service.getUser(
+                getSocialKey(),
+                session.getAuthToken().token,
+                session.getAuthToken().secret,
+                userCallback);
     }
 }
