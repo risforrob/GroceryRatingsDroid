@@ -10,14 +10,12 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.model.GraphUser;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
-import app.subversive.groceryratings.UI.GRClient;
+import app.subversive.groceryratings.Core.GRClient;
 import retrofit.Callback;
 
 /**

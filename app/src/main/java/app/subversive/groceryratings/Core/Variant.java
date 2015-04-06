@@ -26,18 +26,14 @@ public class Variant {
     public HashMap<String, Integer> wordscore;
     private List<Map.Entry<String, Integer>> sortedWordscore;
 
-    public Variant() {}
-
-    public Variant(boolean defaults) {
-        if (defaults) {
-            productName = "";
-            description = "";
-            manName = "";
-            brandName = "";
-            keywords = new ArrayList<>();
-            images = new ArrayList<>();
-            ratings = new ArrayList<>();
-        }
+    public Variant() {
+        productName = "";
+        description = "";
+        manName = "";
+        brandName = "";
+        keywords = new ArrayList<>();
+        images = new ArrayList<>();
+        ratings = new ArrayList<>();
     }
 
     public Variant(String name, int stars) {
@@ -84,7 +80,7 @@ public class Variant {
     }
 
     public String getImageURL(int pxSize) {
-        pxSize = pxSize == 0 ? 1 : pxSize;
+        pxSize = (pxSize == 0) ? 1 : pxSize;
         String r =  String.format("http://www.groceryratings.com/groceryratings/image?key=%s&size=%d", firstImageKey, pxSize);
         Log.i("Variant", r);
         return r;

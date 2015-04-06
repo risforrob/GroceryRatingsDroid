@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import app.subversive.groceryratings.Core.GRData;
 import app.subversive.groceryratings.Core.Rating;
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.Core.Variant;
@@ -21,7 +22,7 @@ import app.subversive.groceryratings.SocialConnector.EmptyConnector;
 import app.subversive.groceryratings.SocialConnector.SocialConnector;
 import app.subversive.groceryratings.SocialConnector.SocialFactory;
 
-import app.subversive.groceryratings.UI.GRClient;
+import app.subversive.groceryratings.Core.GRClient;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -31,7 +32,7 @@ public class MainWindow
 
     private interface ConnectionCallback { void onConnected(); }
 
-    interface UpNavigation { public void onNavigateUp(); }
+    interface UpNavigation { void onNavigateUp(); }
 
     private final static String TAG = MainWindow.class.getSimpleName();
 
@@ -99,6 +100,8 @@ public class MainWindow
         }
 
         GRClient.initialize(Installation.id(this));
+        GRData.getInstance().loadHistory(this);
+        GRData.getInstance().reloadAllVariants();
 
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
         Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
@@ -129,6 +132,7 @@ public class MainWindow
         super.onPause();
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
         mSocialConn.onPause();
+        GRData.getInstance().writeHistory(this);
     }
 
     @Override

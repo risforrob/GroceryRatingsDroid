@@ -13,11 +13,9 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 
-import java.util.HashMap;
-
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
-import app.subversive.groceryratings.UI.GRClient;
+import app.subversive.groceryratings.Core.GRClient;
 import io.fabric.sdk.android.Fabric;
 
 /**

@@ -1,4 +1,4 @@
-package app.subversive.groceryratings.UI;
+package app.subversive.groceryratings.Core;
 
 import app.subversive.groceryratings.GroceryRatingsService;
 import app.subversive.groceryratings.ImageService;

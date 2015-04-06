@@ -17,7 +17,6 @@ import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.ResultPointCallback;
 import com.google.zxing.client.android.CaptureActivityHandler;
@@ -25,7 +24,7 @@ import com.google.zxing.client.android.CaptureActivityHandler;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.UI.AOFrameLayout;
 import app.subversive.groceryratings.UI.FocusableSurfaceView;
-import app.subversive.groceryratings.UI.GRClient;
+import app.subversive.groceryratings.Core.GRClient;
 import app.subversive.groceryratings.UI.TutorialOverlay;
 import app.subversive.groceryratings.camera.CameraManager;
 
@@ -247,32 +246,6 @@ public class ScanFragment
             currOverlay = tutorial;
         }
 
-        Variant[] variants = HistoryManager.readHistory(getActivity());
-        if (variants != null) {
-            for (int i = variants.length-1 ; i >= 0 ; i--) {
-                final ProductRatingBar pbar = ProductRatingBar.fromProduct(variants[i], v.getContext());
-                scanControls.addNewProductBar(pbar.getBarcode(), pbar);
-                GRClient.getService().getProduct(variants[i].productCode, new Callback<Variant>() {
-                    @Override
-                    public void success(Variant variant, Response response) {
-                        if (response == null) { return; }
-
-                        if (response.getStatus() == 200) {
-                            Log.i(TAG, String.format("successful refresh of %s", variant.productCode));
-                            pbar.setVariant(variant);
-                        } else {
-                            Log.i(TAG, "Failed to refresh variant");
-                        }
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Log.i(TAG, "Could not refresh product");
-                    }
-                });
-            }
-        }
-
         final GestureDetector gd = new GestureDetector(getActivity(), touchListener);
 
         surfaceView = (FocusableSurfaceView) v.findViewById(R.id.svScan);
@@ -333,7 +306,6 @@ public class ScanFragment
         handler.stop();
         CameraManager.stopPreview();
         CameraManager.closeDriver();
-        HistoryManager.writeHistory(getActivity(), getProductHistory());
     }
 
     @Override
@@ -432,7 +404,7 @@ public class ScanFragment
                     return;
                 }
 
-                Variant p = new Variant(true);
+                Variant p = new Variant();
                 p.productCode = lastScanned;
                 p.images.add(id);
 

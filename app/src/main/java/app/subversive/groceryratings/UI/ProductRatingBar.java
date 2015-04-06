@@ -16,8 +16,8 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import app.subversive.groceryratings.Core.GRClient;
 import app.subversive.groceryratings.Core.Variant;
-import app.subversive.groceryratings.MainWindow;
 import app.subversive.groceryratings.R;
 import app.subversive.groceryratings.Utils;
 import retrofit.Callback;

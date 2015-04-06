@@ -27,11 +27,11 @@ import app.subversive.groceryratings.R;
 public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callbacks {
     private final static String TAG = ScanControlsOverlay.class.getSimpleName();
     public interface Callbacks {
-        public void onCaptureNewProductPhoto();
-        public void onScanControlsFinishedHide();
-        public void onScanControlsFinishedShow();
-        public void onTouchUp(float x, float y);
-        public void onLoadVariantDetails(int index);
+        void onCaptureNewProductPhoto();
+        void onScanControlsFinishedHide();
+        void onScanControlsFinishedShow();
+        void onTouchUp(float x, float y);
+        void onLoadVariantDetails(int index);
     }
 
     private long animDuration = 200;
@@ -102,7 +102,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     @Override
     public void onParentLayoutComplete() {
         ratingHistory.setMinimumHeight(parent.getHeight());
-//        ratingHistory.invalidate();
         setupAnimation();
     }
 
@@ -256,7 +255,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         cancelTimer();
 
         AnimatorSet anim = new AnimatorSet();
-//        ObjectAnimator[] animators = addProductHideAnimation();
         anim.setInterpolator(new AccelerateInterpolator());
         anim.addListener(new AnimatorListenerAdapter() {
             @Override

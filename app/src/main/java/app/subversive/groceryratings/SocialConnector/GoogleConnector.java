@@ -1,6 +1,5 @@
 package app.subversive.groceryratings.SocialConnector;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.AsyncTask;
@@ -11,7 +10,6 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -19,11 +17,10 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.plus.Plus;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
-import app.subversive.groceryratings.UI.GRClient;
+import app.subversive.groceryratings.Core.GRClient;
 import retrofit.Callback;
 
 /**
