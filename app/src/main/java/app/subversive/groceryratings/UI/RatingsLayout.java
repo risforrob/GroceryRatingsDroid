@@ -1,6 +1,7 @@
 package app.subversive.groceryratings.UI;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,15 +10,27 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.ListView;
 import android.widget.RemoteViews;
+
+import app.subversive.groceryratings.Adapters.TemplateAdapter;
+import app.subversive.groceryratings.Core.GRData;
+import app.subversive.groceryratings.Core.VariantLoader;
 
 /**
  * Created by rob on 9/1/14.
  */
 public class RatingsLayout extends ViewGroup {
+    private final static String TAG = RatingsLayout.class.getSimpleName();
     final int rowSpacing = 2;
     final int maxChildren = 7;
     final int visibleChildren = 2;
+
+    private final ViewGroup.LayoutParams defaultLP =
+            new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+    TemplateAdapter mAdapter;
 
     public RatingsLayout(Context context) {
         super(context);
@@ -34,9 +47,7 @@ public class RatingsLayout extends ViewGroup {
         init(context);
     }
 
-    private void init(Context context) {
-//        setWillNotDraw(false);
-    }
+    private void init(Context context) { }
 
     @Override
     public boolean shouldDelayChildPressedState() {
@@ -77,5 +88,37 @@ public class RatingsLayout extends ViewGroup {
             child.layout(left, lastBottom - rowSpacing - childHeight, right, lastBottom-rowSpacing);
             lastBottom = lastBottom - rowSpacing - childHeight;
         }
+    }
+
+    private void onAdapterChanged() {
+        Log.d(TAG, "Adapter Updated");
+        removeAllViews();
+        for (int x = 0 ; x < mAdapter.getCount() ; x++ ) {
+            addView(mAdapter.getView(x, null, this), 0, defaultLP);
+        }
+
+//        invalidate();
+    }
+
+    private void onAdapterInvalid() {
+        removeAllViews();
+    }
+
+    public void setAdapter(TemplateAdapter adapter) {
+        mAdapter = adapter;
+        adapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                onAdapterChanged();
+            }
+
+            @Override
+            public void onInvalidated() {
+                super.onInvalidated();
+                onAdapterInvalid();
+            }
+        });
+        onAdapterChanged();
     }
 }

@@ -32,7 +32,7 @@ import app.subversive.groceryratings.UI.TagDisplay;
  */
 public class VariantPagerAdapter extends RecyclingPagerAdapter {
     public interface AddReviewCallback {
-        public void onAddReview();
+        void onAddReview();
     }
 
     List<Variant> variants;

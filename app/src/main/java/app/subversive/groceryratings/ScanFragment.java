@@ -21,6 +21,7 @@ import com.google.zxing.ResultPoint;
 import com.google.zxing.ResultPointCallback;
 import com.google.zxing.client.android.CaptureActivityHandler;
 
+import app.subversive.groceryratings.Core.GRData;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.UI.AOFrameLayout;
 import app.subversive.groceryratings.UI.FocusableSurfaceView;
@@ -148,14 +149,11 @@ public class ScanFragment
                 break;
 
             case 6:
-                ProductRatingBar pbar = scanControls.getProductBar(0);
-                if (pbar != null) {
-                    pbar.flash();
-                }
+                scanControls.flashTop();
                 handled = true;
                 break;
             case 7:
-                scanControls.flushHistory();
+                GRData.getInstance().flushHistory();
                 MainWindow.Preferences.tutorialComplete = false;
                 getActivity().finish();
                 handled = true;
@@ -180,7 +178,7 @@ public class ScanFragment
         m.setChecked(MainWindow.Preferences.autoscan);
 
         menu.add(4,6,40, "Flash");
-        menu.add(5,7,50, "Flush(Exit)");
+        menu.add(5, 7, 50, "Flush(Exit)");
     }
 
 
@@ -285,7 +283,7 @@ public class ScanFragment
         ((AOFrameLayout) getView().findViewById(R.id.root)).restartTimer();
         CameraManager.initializeCamera(getActivity());
         Point r = CameraManager.getCameraResolution();
-        surfaceView.setDesiredAspectRatio((float)r.x/(float)r.y);
+        surfaceView.setDesiredAspectRatio((float) r.x / (float) r.y);
         initCamera(surfaceView.getHolder());
         CameraManager.startPreview();
         handler.start();
@@ -352,7 +350,7 @@ public class ScanFragment
     }
 
     private void loadProduct(String barcode) {
-        scanControls.addNewRating(barcode, this);
+        GRData.getInstance().loadVariant(barcode);
     }
 
     private void restartScanner() {
@@ -387,7 +385,7 @@ public class ScanFragment
 
     private void uploadImage(byte[] imageData) {
         final ProductRatingBar pbar = scanControls.getProductBar(0);
-        pbar.setState(ProductRatingBar.States.UPLOADING);
+        pbar.setState(ProductRatingBar.States.UPLOADING, true);
         TypedByteArray data =
                 new Utils.TypedFileByteArray("image/jpeg", String.format("%s.jpg", lastScanned), imageData);
         GRClient.getImageService().uploadImage(data, new Callback<Response>() {
@@ -400,7 +398,7 @@ public class ScanFragment
                     id = new String(bytes);
                 } catch (IOException e) {
                     Log.i(TAG, "Error reading image ID");
-                    pbar.setState(ProductRatingBar.States.ERROR);
+                    pbar.setState(ProductRatingBar.States.ERROR, true);
                     return;
                 }
 
@@ -411,13 +409,13 @@ public class ScanFragment
                 GRClient.getService().addNewProduct(p, new Callback<Variant>() {
                     @Override
                     public void success(Variant variant, Response response) {
-                        pbar.setState(ProductRatingBar.States.THANKS);
+                        pbar.setState(ProductRatingBar.States.THANKS, true);
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
                         Log.i(TAG, "Error uploading new product");
-                        pbar.setState(ProductRatingBar.States.ERROR);
+                        pbar.setState(ProductRatingBar.States.ERROR, true);
                     }
                 });
             }
@@ -425,7 +423,7 @@ public class ScanFragment
             @Override
             public void failure(RetrofitError error) {
                 Log.i(TAG, "Error uploading image");
-                pbar.setState(ProductRatingBar.States.ERROR);
+                pbar.setState(ProductRatingBar.States.ERROR, true);
             }
         });
     }
@@ -487,10 +485,12 @@ public class ScanFragment
 
     @Override
     public void onUnknownBarcode(String barcode) {
-        if (MainWindow.Preferences.autoscan) {
-            setCapturePhotoMode();
-        } else {
-            scanControls.showUnknownBarcode(true);
+        if (barcode.equals(lastScanned)) {
+            if (MainWindow.Preferences.autoscan) {
+                setCapturePhotoMode();
+            } else {
+                scanControls.showUnknownBarcode(true);
+            }
         }
     }
 
@@ -502,10 +502,6 @@ public class ScanFragment
         } else {
             return false;
         }
-    }
-
-    public List<Variant> getProductHistory() {
-        return scanControls.getAllProducts();
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 
+import app.subversive.groceryratings.Core.GRData;
+
 /**
  * Created by rob on 2/22/15.
  */
@@ -36,7 +38,7 @@ public class ProductRatingsFragment extends Fragment {
 
         final ViewPager pager = new ViewPager(inflater.getContext());
         pager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        ProductReviewsPagerAdapter adapter = new ProductReviewsPagerAdapter(((MainWindow) getActivity()).getRatings(args.getInt(VARIANT_INDEX, 0)));
+        ProductReviewsPagerAdapter adapter = new ProductReviewsPagerAdapter(GRData.getInstance().getVariants().get(args.getInt(VARIANT_INDEX, 0)).ratings);
         pager.setAdapter(adapter);
         pager.setCurrentItem(args.getInt(RATING_INDEX, 0));
         return pager;

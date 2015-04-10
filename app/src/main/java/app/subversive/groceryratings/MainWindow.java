@@ -101,7 +101,7 @@ public class MainWindow
 
         GRClient.initialize(Installation.id(this));
         GRData.getInstance().loadHistory(this);
-        GRData.getInstance().reloadAllVariants();
+//        GRData.getInstance().reloadAllVariants();
 
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
         Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
@@ -243,22 +243,6 @@ public class MainWindow
         }
     }
 
-    List<Variant> getVariants() {
-        if (scanFrag != null) {
-            return scanFrag.getProductHistory();
-        } else {
-            return null;
-        }
-    }
-
-    List<Rating> getRatings(int variantIndex) {
-        if (scanFrag != null) {
-            return scanFrag.getProductHistory().get(variantIndex).ratings;
-        } else {
-            return null;
-        }
-    }
-
     void displayVariantData(int index) {
         ProductPageFragment frag = ProductPageFragment.newInstance(index);
         getFragmentManager()
@@ -319,7 +303,7 @@ public class MainWindow
     }
 
     public void onAddReview(int index) {
-        mVariant = getVariants().get(index);
+        mVariant = GRData.getInstance().getVariants().get(index);
         if (isSocalConnected) {
             showReviewFragment();
         } else {

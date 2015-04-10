@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import app.subversive.groceryratings.Core.GRData;
 import app.subversive.groceryratings.Core.Variant;
 
 /**
@@ -46,7 +47,7 @@ public class ProductPageFragment extends Fragment {
         pager = new ViewPager(inflater.getContext());
         pager.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        final VariantPagerAdapter adapter = new VariantPagerAdapter(activity.getVariants(), reviewCallback, activity.isSocialConnected());
+        final VariantPagerAdapter adapter = new VariantPagerAdapter(GRData.getInstance().getVariants(), reviewCallback, activity.isSocialConnected());
         adapter.setOnItemClickedListener(new RatingAdapter.ItemClickListener() {
             @Override
             public void onItemClick(int ratingIndex) {

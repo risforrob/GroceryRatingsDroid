@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +11,11 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import app.subversive.groceryratings.Adapters.TemplateAdapter;
 
@@ -37,25 +38,22 @@ public class GRData {
 
     private ArrayList<VariantLoader> mVariantLoaders;
 
-    private TemplateAdapter<VariantLoader> activeVLAdapter;
+    private Set<TemplateAdapter<VariantLoader>> mVLAdapters;
 
     private GRData() {
         mVariantLoaders = new ArrayList<>();
+        mVLAdapters = new HashSet<>();
     }
 
     public void loadVariant(String barcode) {
         VariantLoader loader = new VariantLoader(barcode);
         mVariantLoaders.add(loader);
         loader.load();
-        if (activeVLAdapter != null) { activeVLAdapter.notifyDataSetChanged(); }
-    }
-
-    public void setActiveVariantLoaderAdapter(TemplateAdapter<VariantLoader> adapter) {
-        activeVLAdapter = adapter;
+        onVariantLoadersChanged();
     }
 
     public void loadHistory(Activity activity) {
-        mVariantLoaders = new ArrayList<>();
+        mVariantLoaders.clear();
         try {
             FileReader fr = new FileReader(new File(activity.getFilesDir(), HISTORY_FILE));
             for (Variant variant : gson.fromJson(fr, Variant[].class)) {
@@ -94,9 +92,39 @@ public class GRData {
         }
     }
 
+    private void onVariantLoadersChanged() {
+        for (TemplateAdapter adapter : mVLAdapters) {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     public void reloadAllVariants() {
         for (VariantLoader loader : mVariantLoaders) {
             loader.load();
         }
+    }
+
+    public TemplateAdapter<VariantLoader> getVariantLoaderAdapter(TemplateAdapter.ViewBinder<VariantLoader> binder) {
+        TemplateAdapter<VariantLoader> adapter = new TemplateAdapter<>(mVariantLoaders, binder);
+        mVLAdapters.add(adapter);
+        return adapter;
+    }
+
+    public void flushHistory() {
+        for (TemplateAdapter adapter : mVLAdapters) {
+            adapter.notifyDataSetInvalid();
+        }
+        mVLAdapters.clear();
+        mVariantLoaders.clear();
+    }
+
+    public List<Variant> getVariants() {
+        LinkedList<Variant> variants = new LinkedList<>();
+        for (VariantLoader loader : mVariantLoaders) {
+            if (loader.getVariant() != null) {
+                variants.add(loader.getVariant());
+            }
+        }
+        return variants;
     }
 }
