@@ -45,10 +45,10 @@ public class GRData {
         mVLAdapters = new HashSet<>();
     }
 
-    public void loadVariant(String barcode) {
+    public void loadVariant(String barcode, VariantLoader.UnknownBarcodeCallback callback) {
         VariantLoader loader = new VariantLoader(barcode);
         mVariantLoaders.add(loader);
-        loader.load();
+        loader.load(callback);
         onVariantLoadersChanged();
     }
 
@@ -100,7 +100,7 @@ public class GRData {
 
     public void reloadAllVariants() {
         for (VariantLoader loader : mVariantLoaders) {
-            loader.load();
+            loader.load(null);
         }
     }
 

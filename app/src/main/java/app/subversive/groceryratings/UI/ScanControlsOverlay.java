@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
+import java.security.UnrecoverableKeyException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         void onScanControlsFinishedShow();
         void onTouchUp(float x, float y);
         void onLoadVariantDetails(int index);
+        void onUnknownBarcode(String barcode);
     }
 
     private long animDuration = 200;
@@ -304,51 +306,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         statusUnknown.hide(withAnimation);
     }
 
-//    private void moveProductBarToTop(ProductRatingBar pbar) {
-//        ratingHistory.removeView(pbar);
-//        ratingHistory.addView(pbar, 0);
-//        updateIndicies();
-//    }
-
-//    private void addNewProductBar(String barcode, ProductRatingBar pbar) {
-//        cache.put(barcode, pbar);
-//
-//        pbar.setRatingDetailsCallback(ratingDetailsCallback);
-//
-//        int numChildren = ratingHistory.getChildCount();
-//        int maxChildren = ratingHistory.maxChildren;
-//
-//        for (int i = maxChildren-1 ; i < numChildren ; i++ ) {
-//            ProductRatingBar child = (ProductRatingBar) ratingHistory.getChildAt(i);
-//            child.setIndex(-1);
-//            ratingHistory.removeView(child);
-//            cache.remove(child.getBarcode());
-//        }
-//
-//        ratingHistory.addView(pbar, 0, defaultLP);
-//        updateIndicies();
-//    }
-
-//    private void updateIndicies() {
-//        int numChildren = ratingHistory.getChildCount();
-//
-//        for (int i = 0; i < numChildren ; i++) {
-//            ((ProductRatingBar) ratingHistory.getChildAt(i)).setIndex(i);
-//        }
-//    }
-
-//    private void addNewRating(String barcode, ProductRatingBar.BarcodeCallbacks callback) {
-//        ProductRatingBar pbar = cache.get(barcode);
-//        if (pbar != null) {
-//            moveProductBarToTop(pbar);
-//        } else {
-//            pbar = new ProductRatingBar(parent.getContext());
-//            pbar.setBarcodeCallback(callback);
-//            pbar.loadBarcode(barcode);
-//            addNewProductBar(barcode, pbar);
-//        }
-//    }
-
     @Override
     public void onScrollChanged(int deltaX, int deltaY) {
         hideUnknownBarcode(true);
@@ -367,22 +324,10 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         }
     }
 
-//    public List<Variant> getAllProducts() {
-//        LinkedList<Variant> variants = new LinkedList<Variant>();
-//        int numChildren = ratingHistory.getChildCount();
-//        Variant p;
-//        for (int i = 0 ; i < numChildren ; i++) {
-//            p = ((ProductRatingBar) ratingHistory.getChildAt(i)).getVariant();
-//            if (p != null) {
-//                variants.add(p);
-//            }
-//        }
-//        return variants;
-//    }
-
     public void flashTop() {
         if (!unknownBarcode.isShown()) {
             ProductRatingBar pbar = getProductBar(0);
+            Log.d("FLASH", String.valueOf(pbar != null));
             if (pbar != null) {
                 pbar.flash();
             }

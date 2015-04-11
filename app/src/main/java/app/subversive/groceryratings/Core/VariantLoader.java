@@ -13,6 +13,10 @@ import retrofit.client.Response;
  * Created by rob on 4/5/15.
  */
 public class VariantLoader extends DataSetObservable {
+    public interface UnknownBarcodeCallback {
+        void onUnknownBarcode(String barcode);
+    }
+
     private Variant mVariant;
     private String mBarcode;
     private State mState;
@@ -41,13 +45,16 @@ public class VariantLoader extends DataSetObservable {
 
     public State getState() { return mState; }
 
-    public void load() {
+    public void load(final UnknownBarcodeCallback callback) {
         setState(State.FETCHING);
         GRClient.getService().getProduct(mBarcode, new Callback<Variant>() {
             @Override
             public void success(Variant variant, Response response) {
                 mVariant = variant;
                 setState(State.LOADED);
+                if (variant == null && callback != null) {
+                    callback.onUnknownBarcode(mBarcode);
+                }
             }
 
             @Override

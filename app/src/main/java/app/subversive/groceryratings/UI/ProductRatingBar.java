@@ -9,6 +9,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         public View inflateView(ViewGroup parent) {
             return new ProductRatingBar(parent.getContext());
         }
+
 
         @Override
         public void bindView(View view, VariantLoader loader) {
@@ -70,7 +72,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
             switch (mLoader.getState()) {
                 case LOADED:
                     setState(States.UNKNOWN, true);
-                    showUnknown();
                     break;
                 case FETCHING:
                     setState(States.FETCHING, false);
@@ -99,10 +100,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
             v.setVisibility(INVISIBLE);
             v.setAlpha(1f);
         }
-    }
-
-    public interface BarcodeCallbacks {
-        void onUnknownBarcode(String barcode);
     }
 
     public interface LoadRatingDetailsCallback {
@@ -157,7 +154,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         flashAnim.playSequentially(flash, fade);
     }
 
-    private BarcodeCallbacks barcodeCallbacks;
     private LoadRatingDetailsCallback loadRatingsCB;
 
 //    public void setIndex(int index) {indexInParent = index; }
@@ -184,7 +180,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 //        return pbar;
 //    }
 
-//    public void setBarcodeCallback(BarcodeCallbacks callback) { barcodeCallbacks = callback; }
     public void setRatingDetailsCallback(LoadRatingDetailsCallback callback) { loadRatingsCB = callback; }
 
     public void setLoader(VariantLoader loader) {
@@ -235,12 +230,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         }
     }
 
-    private void showUnknown() {
-        if (barcodeCallbacks != null) {
-            barcodeCallbacks.onUnknownBarcode(mLoader.getBarcode());
-        }
-    }
-
     private void displayStatus(String statusString, boolean showProgress, boolean animated) {
         statusText.setText(statusString);
         progress.setVisibility(showProgress ? VISIBLE : GONE);
@@ -268,34 +257,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         displayedView = newView;
     }
 
-//    private void loadBarcode(final String barcode) {
-//        this.barcode = barcode;
-//        state = States.FETCHING;
-//        displayStatus("Loading Product", true, false);
-//        GRClient.getService().getProduct(barcode, new Callback<Variant>() {
-//            @Override
-//            public void success(Variant variant, Response response) {
-//                if (variant != null && variant.published) {
-//                    setVariant(variant);
-//                    showView(rating, true);
-//                } else {
-//                    state = States.UNKNOWN;
-//                    displayStatus("Unknown Product", false, true);
-//                    if (indexInParent == 0 && barcodeCallbacks != null) {
-//                        barcodeCallbacks.onUnknownBarcode(barcode);
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void failure(RetrofitError error) {
-//                state = States.ERROR;
-//                displayStatus("Error Loading Product", false, true);
-//            }
-//        });
-//    }
-
-
 
     private void init(Context context) {
         setBackgroundColor(getResources().getColor(R.color.blackOverlay));
@@ -320,12 +281,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         addView(view, defaultLayout);
         return view;
     }
-
-//    public final Variant getVariant() {
-//        return variant;
-//    }
-
-//    public String getBarcode() { return barcode; }
 
     public void flash() {
         if (    shouldFlash &&

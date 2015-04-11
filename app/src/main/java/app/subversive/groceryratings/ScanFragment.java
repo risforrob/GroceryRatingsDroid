@@ -23,6 +23,7 @@ import com.google.zxing.client.android.CaptureActivityHandler;
 
 import app.subversive.groceryratings.Core.GRData;
 import app.subversive.groceryratings.Core.Variant;
+import app.subversive.groceryratings.Core.VariantLoader;
 import app.subversive.groceryratings.UI.AOFrameLayout;
 import app.subversive.groceryratings.UI.FocusableSurfaceView;
 import app.subversive.groceryratings.Core.GRClient;
@@ -52,7 +53,7 @@ public class ScanFragment
             CameraControlsOverlay.Callbacks,
             ScanControlsOverlay.Callbacks,
             TutorialOverlay.Callbacks,
-            ProductRatingBar.BarcodeCallbacks,
+            VariantLoader.UnknownBarcodeCallback,
             BackFragment        {
 
 
@@ -350,7 +351,7 @@ public class ScanFragment
     }
 
     private void loadProduct(String barcode) {
-        GRData.getInstance().loadVariant(barcode);
+        GRData.getInstance().loadVariant(barcode, this);
     }
 
     private void restartScanner() {

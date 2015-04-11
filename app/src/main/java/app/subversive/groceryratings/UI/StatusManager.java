@@ -61,13 +61,9 @@ public class StatusManager {
         if (status == currentStatus) {
         } else if (animated) {
             AnimatorSet anim = new AnimatorSet();
-//            anim.setDuration(AnimUtils.StatusSwapDuration);
-//            anim.setInterpolator(adinterp);
             if (currentStatus != null) {
-                currentStatus.animator.setFloatValues(currentStatus.view.getY(), -currentStatus.view.getHeight());
                 status.animator.setFloatValues(-status.view.getHeight(), 0);
-//                anim.playSequentially(currentStatus.hideAnim, status.showAnim);
-                anim.playSequentially(currentStatus.animator, status.animator);
+                anim.playSequentially(getStatusHideAnimator(), status.animator);
                 anim.addListener(new AnimUtils.HideOnEnd(currentStatus.view));
             } else {
                 status.animator.setFloatValues(-status.view.getHeight(), 0);
@@ -100,9 +96,9 @@ public class StatusManager {
         }
     }
 
-    public void hideStatus(boolean animated) {
-        hideStatus(currentStatus, animated);
-    }
+//    public void hideStatus(boolean animated) {
+//        hideStatus(currentStatus, animated);
+//    }
 
     public ObjectAnimator getStatusHideAnimator() {
         if (currentStatus == null) {
