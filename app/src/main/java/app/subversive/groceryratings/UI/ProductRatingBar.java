@@ -32,6 +32,12 @@ import app.subversive.groceryratings.Utils;
 public class ProductRatingBar extends FrameLayout implements View.OnClickListener {
 
     public static class Binder implements TemplateAdapter.ViewBinder<VariantLoader> {
+        LoadRatingDetailsCallback mDetailsCallback;
+
+        public Binder (LoadRatingDetailsCallback callback) {
+            mDetailsCallback = callback;
+        }
+
 
         @Override
         public View inflateView(ViewGroup parent) {
@@ -43,51 +49,10 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         public void bindView(View view, VariantLoader loader) {
             ProductRatingBar pbar = (ProductRatingBar) view;
             pbar.setLoader(loader);
+            pbar.setRatingDetailsCallback(mDetailsCallback);
             if (loader.getVariant() != null) {
                 pbar.setVariant(loader.getVariant());
             }
-        }
-    }
-
-    VariantLoader mLoader;
-    DataSetObserver mObserver = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            super.onChanged();
-            onLoaderUpdated();
-        }
-
-        @Override
-        public void onInvalidated() {
-            super.onInvalidated();
-        }
-    };
-
-    private void onLoaderUpdated() {
-        if (mLoader.getVariant() != null) {
-            // valid product
-            setVariant(mLoader.getVariant());
-        } else {
-            // no product
-            switch (mLoader.getState()) {
-                case LOADED:
-                    setState(States.UNKNOWN, true);
-                    break;
-                case FETCHING:
-                    setState(States.FETCHING, false);
-                    break;
-                case ERROR:
-                    setState(States.ERROR, true);
-                    break;
-
-            }
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        if (mLoader.getVariant() != null && loadRatingsCB != null) {
-//            loadRatingsCB.onLoadRatingDetails(indexInParent);
         }
     }
 
@@ -103,26 +68,33 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     }
 
     public interface LoadRatingDetailsCallback {
-        void onLoadRatingDetails(int index);
+        void onLoadRatingDetails(Variant variant);
     }
 
 
-    public enum States {FETCHING, UNKNOWN, SUCCESS, PHOTO, ERROR, THANKS, UPLOADING}
+    public enum States {FETCHING, UNKNOWN, SUCCESS, PHOTO, ERROR, THANKS, UPLOADING, CREATED}
     private States state;
 
     final long duration = 200;
-//    private Variant variant;
-//    private String barcode;
-
 
     TextView productName, productNumReviews, statusText;
     Rater productStars;
     ProgressBar progress;
 
     View rating, status, displayedView;
+    VariantLoader mLoader;
+    DataSetObserver mObserver = new DataSetObserver() {
+        @Override
+        public void onChanged() {
+            super.onChanged();
+            onLoaderUpdated();
+        }
 
-//    int indexInParent;
-
+        @Override
+        public void onInvalidated() {
+            super.onInvalidated();
+        }
+    };
 
     private boolean shouldFlash = true;
     private long flashInterval = 2000L;
@@ -156,7 +128,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
 
     private LoadRatingDetailsCallback loadRatingsCB;
 
-//    public void setIndex(int index) {indexInParent = index; }
 
     public ProductRatingBar(Context context) {
         super(context);
@@ -172,13 +143,6 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         super(context, attrs, defStyle);
         init(context);
     }
-
-//    public static ProductRatingBar fromProduct(Variant p, Context c) {
-//        ProductRatingBar pbar = new ProductRatingBar(c);
-//        pbar.setVariant(p);
-//        pbar.showView(pbar.rating, false);
-//        return pbar;
-//    }
 
     public void setRatingDetailsCallback(LoadRatingDetailsCallback callback) { loadRatingsCB = callback; }
 
@@ -272,6 +236,8 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
         statusText = ((TextView) status.findViewById(R.id.tvStatus));
         progress = ((ProgressBar) status.findViewById(R.id.pbLoading));
 
+        state = States.CREATED;
+
         setOnClickListener(this);
     }
 
@@ -285,11 +251,40 @@ public class ProductRatingBar extends FrameLayout implements View.OnClickListene
     public void flash() {
         if (    shouldFlash &&
                 !flashAnim.isRunning() &&
-                !(state == States.FETCHING) &&
-                !(state == States.UPLOADING)) {
+                (state != States.FETCHING) &&
+                (state != States.UPLOADING) &&
+                (state != States.CREATED)) {
             shouldFlash = false;
             flashAnim.start();
             this.postDelayed(flashDelay, flashInterval);
+        }
+    }
+
+    private void onLoaderUpdated() {
+        if (mLoader.getVariant() != null) {
+            // valid product
+            setVariant(mLoader.getVariant());
+        } else {
+            // no product
+            switch (mLoader.getState()) {
+                case LOADED:
+                    setState(States.UNKNOWN, true);
+                    break;
+                case FETCHING:
+                    setState(States.FETCHING, false);
+                    break;
+                case ERROR:
+                    setState(States.ERROR, true);
+                    break;
+
+            }
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (mLoader.getVariant() != null && loadRatingsCB != null) {
+            loadRatingsCB.onLoadRatingDetails(mLoader.getVariant());
         }
     }
 }

@@ -22,6 +22,7 @@ public class AnimUtils {
         public void onAnimationEnd(Animator animation) {
             super.onAnimationEnd(animation);
             view.setVisibility(View.GONE);
+            view = null;
         }
     }
     public static class ShowOnStart extends AnimatorListenerAdapter {
@@ -36,6 +37,7 @@ public class AnimUtils {
         public void onAnimationStart(Animator animation) {
             super.onAnimationStart(animation);
             view.setVisibility(View.VISIBLE);
+            view = null;
         }
     }
 

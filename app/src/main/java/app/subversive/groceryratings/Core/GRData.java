@@ -47,7 +47,8 @@ public class GRData {
 
     public void loadVariant(String barcode, VariantLoader.UnknownBarcodeCallback callback) {
         VariantLoader loader = new VariantLoader(barcode);
-        mVariantLoaders.add(loader);
+        mVariantLoaders.add(0, loader);
+//        mVariantLoaders.add(loader);
         loader.load(callback);
         onVariantLoadersChanged();
     }

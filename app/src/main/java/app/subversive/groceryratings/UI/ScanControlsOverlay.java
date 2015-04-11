@@ -7,19 +7,17 @@ import android.animation.ObjectAnimator;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import java.security.UnrecoverableKeyException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import app.subversive.groceryratings.Core.GRData;
+import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.ManagedTimer;
 import app.subversive.groceryratings.R;
 
@@ -33,8 +31,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         void onScanControlsFinishedHide();
         void onScanControlsFinishedShow();
         void onTouchUp(float x, float y);
-        void onLoadVariantDetails(int index);
-        void onUnknownBarcode(String barcode);
+        void onLoadVariantDetails(Variant variant);
     }
 
     private long animDuration = 200;
@@ -71,15 +68,6 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         touchOffsetX = x;
         touchOffsetY = y;
     }
-
-    ProductRatingBar.LoadRatingDetailsCallback ratingDetailsCallback = new ProductRatingBar.LoadRatingDetailsCallback() {
-        @Override
-        public void onLoadRatingDetails(int index) {
-            if (handler != null) {
-                handler.onLoadVariantDetails(index);
-            }
-        }
-    };
 
     @Override
     public void attachOverlayToParent(FrameLayout parent) {
@@ -131,7 +119,12 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_barcode_overlay, parent, true);
         historyScrollView = (ObservableScrollView) parent.findViewById(R.id.scrollView);
         ratingHistory = (RatingsLayout) parent.findViewById(R.id.RatingHolder);
-        ratingHistory.setAdapter(GRData.getInstance().getVariantLoaderAdapter(new ProductRatingBar.Binder()));
+        ratingHistory.setAdapter(GRData.getInstance().getVariantLoaderAdapter(new ProductRatingBar.Binder(new ProductRatingBar.LoadRatingDetailsCallback() {
+            @Override
+            public void onLoadRatingDetails(Variant variant) {
+                handler.onLoadVariantDetails(variant);
+            }
+        })));
         historyScrollView.addCallbacks(this);
         historyScrollView.setVisibility(View.INVISIBLE);
 
@@ -316,6 +309,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0, 0); }
 
+    //todo remove this (or make it private)
     public final ProductRatingBar getProductBar(int index) {
         if (index < ratingHistory.getChildCount()) {
             return ((ProductRatingBar) ratingHistory.getChildAt(index));

@@ -32,7 +32,6 @@ import app.subversive.groceryratings.camera.CameraManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
@@ -522,7 +521,7 @@ public class ScanFragment
     }
 
     @Override
-    public void onLoadVariantDetails(int index) {
-        ((MainWindow) getActivity()).displayVariantData(index);
+    public void onLoadVariantDetails(Variant variant) {
+        ((MainWindow) getActivity()).displayVariantData(variant);
     }
 }

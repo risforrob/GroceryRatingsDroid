@@ -22,7 +22,7 @@ import app.subversive.groceryratings.UI.Rater;
  */
 public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.ViewHolder> {
     public interface ItemClickListener {
-        public void onItemClick(int i);
+        void onItemClick(int i);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

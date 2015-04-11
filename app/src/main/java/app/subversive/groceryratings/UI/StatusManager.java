@@ -87,8 +87,10 @@ public class StatusManager {
     private void hideStatus(Status status, boolean animated) {
         if (status == currentStatus) {
             if (animated) {
-                status.animator.setFloatValues(status.view.getY(), -status.view.getHeight());
-                status.animator.start();
+                AnimatorSet anim = new AnimatorSet();
+                anim.play(getStatusHideAnimator());
+                anim.addListener(new AnimUtils.HideOnEnd(currentStatus.view));
+                anim.start();
             } else {
                 status.view.setVisibility(View.GONE);
             }
@@ -96,9 +98,9 @@ public class StatusManager {
         }
     }
 
-//    public void hideStatus(boolean animated) {
-//        hideStatus(currentStatus, animated);
-//    }
+    public void hideStatus(boolean animated) {
+        hideStatus(currentStatus, animated);
+    }
 
     public ObjectAnimator getStatusHideAnimator() {
         if (currentStatus == null) {

@@ -94,10 +94,8 @@ public class RatingsLayout extends ViewGroup {
         Log.d(TAG, "Adapter Updated");
         removeAllViews();
         for (int x = 0 ; x < mAdapter.getCount() ; x++ ) {
-            addView(mAdapter.getView(x, null, this), 0, defaultLP);
+            addView(mAdapter.getView(x, null, this), defaultLP);
         }
-
-//        invalidate();
     }
 
     private void onAdapterInvalid() {

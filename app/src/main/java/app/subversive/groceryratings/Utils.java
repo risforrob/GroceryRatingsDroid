@@ -21,8 +21,8 @@ import retrofit.mime.TypedOutput;
 public class Utils {
     final static int IMAGE_LONGEST_EDGE = 1024;
 
-    public static interface OnFormattedImage {
-        public void Callback(byte[] imageData);
+    public interface OnFormattedImage {
+        void Callback(byte[] imageData);
     }
 
     public static class TypedFileByteArray extends TypedByteArray {
