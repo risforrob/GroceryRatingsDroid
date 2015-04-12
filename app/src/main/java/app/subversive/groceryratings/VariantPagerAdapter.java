@@ -31,6 +31,7 @@ import app.subversive.groceryratings.UI.TagDisplay;
  * Created by rob on 1/10/15.
  */
 public class VariantPagerAdapter extends RecyclingPagerAdapter {
+    private final String TAG = VariantPagerAdapter.class.getSimpleName();
     public interface AddReviewCallback {
         void onAddReview();
     }
@@ -90,7 +91,7 @@ public class VariantPagerAdapter extends RecyclingPagerAdapter {
 
         if (wordscore != null) {
             for (Map.Entry<String, Integer> elem :  wordscore) {
-                TagDisplay td = new TagDisplay(tagLayout.getContext());
+                TagDisplay td = new TagDisplay(root.getContext());
                 td.setText(elem.getKey());
                 td.setValue(String.valueOf(elem.getValue()));
                 tagLayout.addView(td);

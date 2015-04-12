@@ -3,17 +3,11 @@ package app.subversive.groceryratings;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.Gson;
-
-import java.util.List;
-
 import app.subversive.groceryratings.Core.GRData;
-import app.subversive.groceryratings.Core.Variant;
 
 /**
  * Created by rob on 1/4/15.

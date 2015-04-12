@@ -5,10 +5,17 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.util.Pair;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +63,8 @@ public class Variant {
     public HashMap<String, Integer> getWordscore() {
         return wordscore;
     }
+
+    public void resetSortedWordscore() { sortedWordscore = null; }
 
     public List<Map.Entry<String, Integer>> getSortedWordscore() {
         if ((sortedWordscore == null) && (wordscore != null)) {

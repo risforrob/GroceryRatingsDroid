@@ -12,7 +12,9 @@ import android.view.SurfaceView;
 
 import com.google.zxing.ResultPoint;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Queue;
 
 import app.subversive.groceryratings.R;
 import app.subversive.groceryratings.Utils;

@@ -243,8 +243,7 @@ public class MainWindow
         }
     }
 
-    void displayVariantData(Variant variant) {
-        int index = GRData.getInstance().getVariants().indexOf(variant);
+    void displayVariantData(int index) {
         ProductPageFragment frag = ProductPageFragment.newInstance(index);
         getFragmentManager()
                 .beginTransaction()

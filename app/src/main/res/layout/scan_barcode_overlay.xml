@@ -18,6 +18,13 @@
             android:id="@+id/RatingHolder"
             android:animateLayoutChanges="true">
         </app.subversive.groceryratings.UI.RatingsLayout>
+        <!-- -->
+        <!--<RecyclerView-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:id="@+id/RatingHolder"-->
+            <!--android:animateLayoutChanges="true"-->
+            <!--/>-->
 
     </app.subversive.groceryratings.UI.ObservableScrollView>
 </merge>

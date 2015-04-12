@@ -13,13 +13,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import app.subversive.groceryratings.Core.GRData;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.ManagedTimer;
 import app.subversive.groceryratings.R;
+import app.subversive.groceryratings.RatingAdapter;
 
 /**
  * Created by rob on 9/10/14.
@@ -31,7 +32,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         void onScanControlsFinishedHide();
         void onScanControlsFinishedShow();
         void onTouchUp(float x, float y);
-        void onLoadVariantDetails(Variant variant);
+        void onLoadVariantDetails(int index);
     }
 
     private long animDuration = 200;
@@ -119,12 +120,13 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_barcode_overlay, parent, true);
         historyScrollView = (ObservableScrollView) parent.findViewById(R.id.scrollView);
         ratingHistory = (RatingsLayout) parent.findViewById(R.id.RatingHolder);
-        ratingHistory.setAdapter(GRData.getInstance().getVariantLoaderAdapter(new ProductRatingBar.Binder(new ProductRatingBar.LoadRatingDetailsCallback() {
+        ratingHistory.setAdapter(GRData.getInstance().getVariantLoaderAdapter(new RatingAdapter.ItemClickListener() {
             @Override
-            public void onLoadRatingDetails(Variant variant) {
-                handler.onLoadVariantDetails(variant);
+            public void onItemClick(int i) {
+                handler.onLoadVariantDetails(i);
             }
-        })));
+        }));
+
         historyScrollView.addCallbacks(this);
         historyScrollView.setVisibility(View.INVISIBLE);
 
@@ -178,7 +180,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     private List<Animator> addProductShowAnimation() {
-        LinkedList<Animator> animators = new LinkedList<Animator>();
+        ArrayList<Animator> animators = new ArrayList<>();
 
         if (hiddenRatings == null || hiddenRatings.length == 0) {
             return animators;
@@ -199,7 +201,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     }
 
     private List<Animator> addProductHideAnimation() {
-        LinkedList<Animator> animators = new LinkedList<Animator>();
+        ArrayList<Animator> animators = new ArrayList<>();
         int nChildren = ratingHistory.getChildCount()-1;
         if (nChildren < 0) { return animators; }
 
@@ -255,7 +257,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
             }
         });
 
-        LinkedList<Animator> animators = new LinkedList<Animator>();
+        ArrayList<Animator> animators = new ArrayList<>();
         Animator mStatusAnim = mStatusManager.getStatusHideAnimator();
         if (mStatusAnim != null) {
             animators.add(mStatusAnim);

@@ -30,7 +30,7 @@ import android.view.SurfaceHolder;
 import com.google.zxing.PlanarYUVLuminanceSource;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -96,11 +96,11 @@ public final class CameraManager {
         isMeteringSupported = parameters.getMaxNumMeteringAreas() > 0;
 
         if (isFocusSupported) {
-            focusAreas = new LinkedList<Camera.Area>();
+            focusAreas = new ArrayList<Camera.Area>();
             focusAreas.add(new Camera.Area(new Rect(), 1));
         }
         if (isMeteringSupported) {
-            meteringAreas = new LinkedList<Camera.Area>();
+            meteringAreas = new ArrayList<Camera.Area>();
             meteringAreas.add(new Camera.Area(new Rect(), 1));
         }
     }

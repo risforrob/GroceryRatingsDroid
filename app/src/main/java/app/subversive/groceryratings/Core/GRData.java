@@ -12,12 +12,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import app.subversive.groceryratings.Adapters.TemplateAdapter;
+import app.subversive.groceryratings.RatingAdapter;
+import app.subversive.groceryratings.VariantLoaderAdapter;
 
 /**
  * Created by rob on 4/3/15.
@@ -26,6 +25,8 @@ public class GRData {
     private final static String HISTORY_FILE = "HISTORY_FILE";
     private final static String TAG = "HistoryManager";
     private static final Gson gson = new Gson();
+
+    private static final int maxLoaders = 7;
 
     private static GRData instance;
 
@@ -38,7 +39,7 @@ public class GRData {
 
     private ArrayList<VariantLoader> mVariantLoaders;
 
-    private Set<TemplateAdapter<VariantLoader>> mVLAdapters;
+    private Set<VariantLoaderAdapter> mVLAdapters;
 
     private GRData() {
         mVariantLoaders = new ArrayList<>();
@@ -46,11 +47,32 @@ public class GRData {
     }
 
     public void loadVariant(String barcode, VariantLoader.UnknownBarcodeCallback callback) {
+        for (int i = 0 ; i < mVariantLoaders.size(); i++) {
+            VariantLoader loader = mVariantLoaders.get(i);
+            if (loader.getBarcode().equals(barcode)) {
+                mVariantLoaders.remove(i);
+                mVariantLoaders.add(0, loader);
+                for (VariantLoaderAdapter adapter : mVLAdapters) {
+                    adapter.notifyItemMoved(i, 0);
+                }
+                return;
+            }
+        }
+
+        // barcode not in cache
         VariantLoader loader = new VariantLoader(barcode);
         mVariantLoaders.add(0, loader);
-//        mVariantLoaders.add(loader);
         loader.load(callback);
-        onVariantLoadersChanged();
+        for (VariantLoaderAdapter adapter : mVLAdapters) {
+            adapter.notifyItemInserted(0);
+        }
+
+        if (mVariantLoaders.size() > maxLoaders) {
+            mVariantLoaders.remove(maxLoaders);
+            for (VariantLoaderAdapter adapter : mVLAdapters) {
+                adapter.notifyItemRemoved(maxLoaders);
+            }
+        }
     }
 
     public void loadHistory(Activity activity) {
@@ -58,6 +80,7 @@ public class GRData {
         try {
             FileReader fr = new FileReader(new File(activity.getFilesDir(), HISTORY_FILE));
             for (Variant variant : gson.fromJson(fr, Variant[].class)) {
+                variant.resetSortedWordscore();
                 mVariantLoaders.add(new VariantLoader(variant));
             }
             fr.close();
@@ -71,7 +94,7 @@ public class GRData {
     }
 
     public void writeHistory(Activity activity) {
-        LinkedList<Variant> variants = new LinkedList<>();
+        ArrayList<Variant> variants = new ArrayList<>();
         for (VariantLoader loader : mVariantLoaders) {
             Variant variant = loader.getVariant();
             if (variant != null) {
@@ -93,11 +116,11 @@ public class GRData {
         }
     }
 
-    private void onVariantLoadersChanged() {
-        for (TemplateAdapter adapter : mVLAdapters) {
-            adapter.notifyDataSetChanged();
-        }
-    }
+//    private void onVariantLoadersChanged() {
+//        for (VariantLoader adapter : mVLAdapters) {
+//            //adapter.notifyDataSetChanged();
+//        }
+//    }
 
     public void reloadAllVariants() {
         for (VariantLoader loader : mVariantLoaders) {
@@ -105,22 +128,27 @@ public class GRData {
         }
     }
 
-    public TemplateAdapter<VariantLoader> getVariantLoaderAdapter(TemplateAdapter.ViewBinder<VariantLoader> binder) {
-        TemplateAdapter<VariantLoader> adapter = new TemplateAdapter<>(mVariantLoaders, binder);
+//    public TemplateAdapter<VariantLoader> getVariantLoaderAdapter(TemplateAdapter.ViewBinder<VariantLoader> binder) {
+//        TemplateAdapter<VariantLoader> adapter = new TemplateAdapter<>(mVariantLoaders, binder);
+//        mVLAdapters.add(adapter);
+//        return adapter;
+//    }
+
+    public VariantLoaderAdapter getVariantLoaderAdapter(RatingAdapter.ItemClickListener listener) {
+        VariantLoaderAdapter adapter = new VariantLoaderAdapter(mVariantLoaders, listener);
         mVLAdapters.add(adapter);
         return adapter;
     }
 
     public void flushHistory() {
-        for (TemplateAdapter adapter : mVLAdapters) {
-            adapter.notifyDataSetInvalid();
-        }
-        mVLAdapters.clear();
         mVariantLoaders.clear();
+        for (VariantLoaderAdapter adapter : mVLAdapters) {
+            adapter.notifyItemRangeRemoved(0, mVariantLoaders.size());
+        }
     }
 
     public List<Variant> getVariants() {
-        LinkedList<Variant> variants = new LinkedList<>();
+        ArrayList<Variant> variants = new ArrayList<>();
         for (VariantLoader loader : mVariantLoaders) {
             if (loader.getVariant() != null) {
                 variants.add(loader.getVariant());

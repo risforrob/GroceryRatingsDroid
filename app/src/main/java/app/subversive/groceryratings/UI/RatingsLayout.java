@@ -6,17 +6,20 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 
 import app.subversive.groceryratings.Adapters.TemplateAdapter;
 import app.subversive.groceryratings.Core.GRData;
 import app.subversive.groceryratings.Core.VariantLoader;
+import app.subversive.groceryratings.VariantLoaderAdapter;
 
 /**
  * Created by rob on 9/1/14.
@@ -24,13 +27,13 @@ import app.subversive.groceryratings.Core.VariantLoader;
 public class RatingsLayout extends ViewGroup {
     private final static String TAG = RatingsLayout.class.getSimpleName();
     final int rowSpacing = 2;
-    final int maxChildren = 7;
+//    final int maxChildren = 7;
     final int visibleChildren = 2;
 
     private final ViewGroup.LayoutParams defaultLP =
             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
-    TemplateAdapter mAdapter;
+    VariantLoaderAdapter mAdapter;
 
     public RatingsLayout(Context context) {
         super(context);
@@ -90,11 +93,15 @@ public class RatingsLayout extends ViewGroup {
         }
     }
 
+
+
     private void onAdapterChanged() {
         Log.d(TAG, "Adapter Updated");
         removeAllViews();
-        for (int x = 0 ; x < mAdapter.getCount() ; x++ ) {
-            addView(mAdapter.getView(x, null, this), defaultLP);
+        for (int x = 0 ; x < mAdapter.getItemCount() ; x++ ) {
+            VariantLoaderAdapter.ViewHolder vh = mAdapter.createViewHolder(this, 0);
+            mAdapter.bindViewHolder(vh, x);
+            addView(vh.itemView, defaultLP);
         }
     }
 
@@ -102,9 +109,9 @@ public class RatingsLayout extends ViewGroup {
         removeAllViews();
     }
 
-    public void setAdapter(TemplateAdapter adapter) {
+    public void setAdapter(VariantLoaderAdapter adapter) {
         mAdapter = adapter;
-        adapter.registerDataSetObserver(new DataSetObserver() {
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
@@ -112,9 +119,27 @@ public class RatingsLayout extends ViewGroup {
             }
 
             @Override
-            public void onInvalidated() {
-                super.onInvalidated();
-                onAdapterInvalid();
+            public void onItemRangeChanged(int positionStart, int itemCount) {
+                super.onItemRangeChanged(positionStart, itemCount);
+                onAdapterChanged();
+            }
+
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                onAdapterChanged();
+            }
+
+            @Override
+            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                onAdapterChanged();
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                onAdapterChanged();
             }
         });
         onAdapterChanged();

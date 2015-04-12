@@ -521,7 +521,7 @@ public class ScanFragment
     }
 
     @Override
-    public void onLoadVariantDetails(Variant variant) {
-        ((MainWindow) getActivity()).displayVariantData(variant);
+    public void onLoadVariantDetails(int i) {
+        ((MainWindow) getActivity()).displayVariantData(i);
     }
 }
