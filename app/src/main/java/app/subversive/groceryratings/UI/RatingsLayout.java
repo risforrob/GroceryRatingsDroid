@@ -7,6 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Queue;
+
 import app.subversive.groceryratings.VariantLoaderAdapter;
 
 /**
@@ -15,13 +21,15 @@ import app.subversive.groceryratings.VariantLoaderAdapter;
 public class RatingsLayout extends ViewGroup {
     private final static String TAG = RatingsLayout.class.getSimpleName();
     final int rowSpacing = 2;
-//    final int maxChildren = 7;
-    final int visibleChildren = 2;
+    final int visibleChildren = 8;
 
     private final ViewGroup.LayoutParams defaultLP =
             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
     VariantLoaderAdapter mAdapter;
+    HashMap<View, VariantLoaderAdapter.ViewHolder> mHolders = new HashMap<>();
+    ArrayDeque<VariantLoaderAdapter.ViewHolder> mExtraHolders = new ArrayDeque<>();
+
 
     public RatingsLayout(Context context) {
         super(context);
@@ -87,14 +95,22 @@ public class RatingsLayout extends ViewGroup {
         Log.d(TAG, "Adapter Updated");
         removeAllViews();
         for (int x = 0 ; x < mAdapter.getItemCount() ; x++ ) {
-            VariantLoaderAdapter.ViewHolder vh = mAdapter.createViewHolder(this, 0);
-            mAdapter.bindViewHolder(vh, x);
-            addView(vh.itemView, defaultLP);
+            addView(x);
         }
     }
 
     private void onAdapterInvalid() {
         removeAllViews();
+    }
+
+    private void addView(int position) {
+        VariantLoaderAdapter.ViewHolder holder = mExtraHolders.poll();
+        if (holder == null) {
+            holder = mAdapter.createViewHolder(this, 0);
+            mHolders.put(holder.itemView, holder);
+        }
+        mAdapter.bindViewHolder(holder, position);
+        addView(holder.itemView, position, defaultLP);
     }
 
     public void setAdapter(VariantLoaderAdapter adapter) {
@@ -109,25 +125,39 @@ public class RatingsLayout extends ViewGroup {
             @Override
             public void onItemRangeChanged(int positionStart, int itemCount) {
                 super.onItemRangeChanged(positionStart, itemCount);
-                onAdapterChanged();
             }
 
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                onAdapterChanged();
+                for (int x = 0; x < itemCount ; x++) {
+                    addView(positionStart + x);
+                }
             }
 
             @Override
             public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
                 super.onItemRangeMoved(fromPosition, toPosition, itemCount);
-                onAdapterChanged();
+                if (itemCount != 1) {
+                    throw new RuntimeException("Moving more than one item is not allowed");
+                }
+                if (fromPosition != toPosition) {
+                    View v = getChildAt(fromPosition);
+                    removeView(v);
+                    if (toPosition > fromPosition) {
+                        toPosition--;
+                    }
+                    addView(v, toPosition, defaultLP);
+                }
             }
 
             @Override
             public void onItemRangeRemoved(int positionStart, int itemCount) {
                 super.onItemRangeRemoved(positionStart, itemCount);
-                onAdapterChanged();
+                for (int x = 0 ; x < itemCount; x++) {
+                    mExtraHolders.push(mHolders.get(getChildAt(positionStart + x)));
+                }
+                removeViews(positionStart, itemCount);
             }
         });
         onAdapterChanged();

@@ -60,18 +60,21 @@ public class GRData {
         }
 
         // barcode not in cache
+
+        if (mVariantLoaders.size() >= maxLoaders) {
+            int position = mVariantLoaders.size()-1;
+            mVariantLoaders.remove(position);
+            for (VariantLoaderAdapter adapter : mVLAdapters) {
+                adapter.notifyItemRemoved(position);
+            }
+        }
+
+
         VariantLoader loader = new VariantLoader(barcode);
         mVariantLoaders.add(0, loader);
         loader.load(callback);
         for (VariantLoaderAdapter adapter : mVLAdapters) {
             adapter.notifyItemInserted(0);
-        }
-
-        if (mVariantLoaders.size() > maxLoaders) {
-            mVariantLoaders.remove(maxLoaders);
-            for (VariantLoaderAdapter adapter : mVLAdapters) {
-                adapter.notifyItemRemoved(maxLoaders);
-            }
         }
     }
 
@@ -116,23 +119,11 @@ public class GRData {
         }
     }
 
-//    private void onVariantLoadersChanged() {
-//        for (VariantLoader adapter : mVLAdapters) {
-//            //adapter.notifyDataSetChanged();
-//        }
-//    }
-
     public void reloadAllVariants() {
         for (VariantLoader loader : mVariantLoaders) {
             loader.load(null);
         }
     }
-
-//    public TemplateAdapter<VariantLoader> getVariantLoaderAdapter(TemplateAdapter.ViewBinder<VariantLoader> binder) {
-//        TemplateAdapter<VariantLoader> adapter = new TemplateAdapter<>(mVariantLoaders, binder);
-//        mVLAdapters.add(adapter);
-//        return adapter;
-//    }
 
     public VariantLoaderAdapter getVariantLoaderAdapter(RatingAdapter.ItemClickListener listener) {
         VariantLoaderAdapter adapter = new VariantLoaderAdapter(mVariantLoaders, listener);
