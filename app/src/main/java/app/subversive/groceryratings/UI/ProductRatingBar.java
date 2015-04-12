@@ -9,17 +9,14 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import app.subversive.groceryratings.Adapters.TemplateAdapter;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.Core.VariantLoader;
 import app.subversive.groceryratings.R;

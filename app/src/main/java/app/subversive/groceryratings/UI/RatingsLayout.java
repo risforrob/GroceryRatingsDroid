@@ -1,24 +1,12 @@
 package app.subversive.groceryratings.UI;
 
 import android.content.Context;
-import android.database.DataSetObserver;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.RemoteViews;
 
-import app.subversive.groceryratings.Adapters.TemplateAdapter;
-import app.subversive.groceryratings.Core.GRData;
-import app.subversive.groceryratings.Core.VariantLoader;
 import app.subversive.groceryratings.VariantLoaderAdapter;
 
 /**
