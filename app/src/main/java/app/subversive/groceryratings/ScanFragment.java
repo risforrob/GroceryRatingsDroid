@@ -384,48 +384,9 @@ public class ScanFragment
     }
 
     private void uploadImage(byte[] imageData) {
-        final ProductRatingBar pbar = scanControls.getProductBar(0);
-        pbar.setState(ProductRatingBar.States.UPLOADING, true);
         TypedByteArray data =
                 new Utils.TypedFileByteArray("image/jpeg", String.format("%s.jpg", lastScanned), imageData);
-        GRClient.getImageService().uploadImage(data, new Callback<Response>() {
-            @Override
-            public void success(Response data, Response response) {
-                String id;
-                byte[] bytes = new byte[(int) data.getBody().length()];
-                try {
-                    int read = data.getBody().in().read(bytes, 0, (int) data.getBody().length());
-                    id = new String(bytes);
-                } catch (IOException e) {
-                    Log.i(TAG, "Error reading image ID");
-                    pbar.setState(ProductRatingBar.States.ERROR, true);
-                    return;
-                }
-
-                Variant p = new Variant();
-                p.productCode = lastScanned;
-                p.images.add(id);
-
-                GRClient.getService().addNewProduct(p, new Callback<Variant>() {
-                    @Override
-                    public void success(Variant variant, Response response) {
-                        pbar.setState(ProductRatingBar.States.THANKS, true);
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Log.i(TAG, "Error uploading new product");
-                        pbar.setState(ProductRatingBar.States.ERROR, true);
-                    }
-                });
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.i(TAG, "Error uploading image");
-                pbar.setState(ProductRatingBar.States.ERROR, true);
-            }
-        });
+        GRData.getInstance().addNewVariant(lastScanned, data);
     }
 
     @Override

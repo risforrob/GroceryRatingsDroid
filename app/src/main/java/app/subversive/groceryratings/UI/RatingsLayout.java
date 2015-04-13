@@ -21,7 +21,7 @@ import app.subversive.groceryratings.VariantLoaderAdapter;
 public class RatingsLayout extends ViewGroup {
     private final static String TAG = RatingsLayout.class.getSimpleName();
     final int rowSpacing = 2;
-    final int visibleChildren = 8;
+    final int visibleChildren = 2;
 
     private final ViewGroup.LayoutParams defaultLP =
             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -130,7 +130,7 @@ public class RatingsLayout extends ViewGroup {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-                for (int x = 0; x < itemCount ; x++) {
+                for (int x = 0; x < itemCount; x++) {
                     addView(positionStart + x);
                 }
             }
@@ -154,12 +154,18 @@ public class RatingsLayout extends ViewGroup {
             @Override
             public void onItemRangeRemoved(int positionStart, int itemCount) {
                 super.onItemRangeRemoved(positionStart, itemCount);
-                for (int x = 0 ; x < itemCount; x++) {
+                for (int x = 0; x < itemCount; x++) {
                     mExtraHolders.push(mHolders.get(getChildAt(positionStart + x)));
                 }
                 removeViews(positionStart, itemCount);
             }
         });
         onAdapterChanged();
+    }
+
+    public void flashTop() {
+        if (getChildCount() > 0) {
+            ((ProductRatingBar) getChildAt(0)).flash();
+        }
     }
 }

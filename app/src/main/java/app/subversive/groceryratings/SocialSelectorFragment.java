@@ -24,7 +24,6 @@ public class SocialSelectorFragment extends DialogFragment {
      *
      * @return A new instance of fragment SocialSelectorFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static SocialSelectorFragment newInstance() {
         SocialSelectorFragment fragment = new SocialSelectorFragment();
         Bundle args = new Bundle();
@@ -74,21 +73,4 @@ public class SocialSelectorFragment extends DialogFragment {
         });
         return root;
     }
-
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        mListener = null;
-//    }
 }

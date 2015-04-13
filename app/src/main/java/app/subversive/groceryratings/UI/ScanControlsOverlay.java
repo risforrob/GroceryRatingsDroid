@@ -311,22 +311,9 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
 
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0, 0); }
 
-    //todo remove this (or make it private)
-    public final ProductRatingBar getProductBar(int index) {
-        if (index < ratingHistory.getChildCount()) {
-            return ((ProductRatingBar) ratingHistory.getChildAt(index));
-        } else {
-            return null;
-        }
-    }
-
     public void flashTop() {
         if (!unknownBarcode.isShown()) {
-            ProductRatingBar pbar = getProductBar(0);
-            Log.d("FLASH", String.valueOf(pbar != null));
-            if (pbar != null) {
-                pbar.flash();
-            }
+            ratingHistory.flashTop();
         }
     }
 }

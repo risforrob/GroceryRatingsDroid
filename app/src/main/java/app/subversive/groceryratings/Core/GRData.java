@@ -17,6 +17,7 @@ import java.util.Set;
 
 import app.subversive.groceryratings.RatingAdapter;
 import app.subversive.groceryratings.VariantLoaderAdapter;
+import retrofit.mime.TypedByteArray;
 
 /**
  * Created by rob on 4/3/15.
@@ -146,5 +147,20 @@ public class GRData {
             }
         }
         return variants;
+    }
+
+    public void addNewVariant(String barcode, TypedByteArray imageData) {
+        VariantLoader newLoader = null;
+        for (VariantLoader loader : mVariantLoaders) {
+            if (loader.getBarcode().equals(barcode)) {
+                newLoader = loader;
+                break;
+            }
+        }
+        if (newLoader == null) {
+            newLoader = new VariantLoader(barcode);
+        }
+        newLoader.insertNewVariant(imageData);
+
     }
 }

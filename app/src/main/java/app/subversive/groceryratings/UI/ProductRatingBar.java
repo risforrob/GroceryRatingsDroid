@@ -29,17 +29,23 @@ import app.subversive.groceryratings.Utils;
 public class ProductRatingBar extends FrameLayout {
     static class hideOnEnd extends AnimatorListenerAdapter {
         View v;
-        public hideOnEnd (View v) { this.v = v;  }
+
+        public hideOnEnd(View v) {
+            this.v = v;
+        }
+
         @Override
         public void onAnimationEnd(Animator animation) {
             super.onAnimationEnd(animation);
-            v.setVisibility(INVISIBLE);
-            v.setAlpha(1f);
-            v = null;
+                v.setVisibility(INVISIBLE);
+                v.setAlpha(1f);
+//                v = null;
+                animation.removeAllListeners();
         }
     }
 
     public enum States {FETCHING, UNKNOWN, SUCCESS, PHOTO, ERROR, THANKS, UPLOADING, CREATED}
+
     private States state;
 
     final long duration = 200;
@@ -73,9 +79,13 @@ public class ProductRatingBar extends FrameLayout {
     };
 
     final static LayoutParams defaultLayout = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-    static { defaultLayout.gravity = Gravity.CENTER; }
+
+    static {
+        defaultLayout.gravity = Gravity.CENTER;
+    }
 
     private final AnimatorSet flashAnim;
+
     {
         ArgbEvaluator eval = new ArgbEvaluator();
         ValueAnimator flash, fade;
@@ -134,8 +144,8 @@ public class ProductRatingBar extends FrameLayout {
         showView(rating, true);
     }
 
-    public void setState(States state, boolean animateToState) {
-        switch(state) {
+    private void setState(States state, boolean animateToState) {
+        switch (state) {
             case UNKNOWN:
                 displayStatus("Unknown Product", false, animateToState);
                 break;
@@ -210,7 +220,7 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     public void flash() {
-        if (    shouldFlash &&
+        if (shouldFlash &&
                 !flashAnim.isRunning() &&
                 (state != States.FETCHING) &&
                 (state != States.UPLOADING) &&
@@ -222,23 +232,27 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     private void onLoaderUpdated() {
-        if (mLoader.getVariant() != null) {
-            // valid product
-            setVariant(mLoader.getVariant());
-        } else {
-            // no product
-            switch (mLoader.getState()) {
-                case LOADED:
+        switch (mLoader.getState()) {
+            case LOADED:
+                if (mLoader.getVariant() == null) {
                     setState(States.UNKNOWN, true);
-                    break;
-                case FETCHING:
-                    setState(States.FETCHING, false);
-                    break;
-                case ERROR:
-                    setState(States.ERROR, true);
-                    break;
-
-            }
+                } else {
+                    setVariant(mLoader.getVariant());
+                }
+                break;
+            case FETCHING:
+                setState(States.FETCHING, false);
+                break;
+            case ERROR:
+                setState(States.ERROR, true);
+                break;
+            case PROGRESS_IMAGE:
+                setState(States.UPLOADING, true);
+                break;
+            case SUCCESS_ADD:
+                setState(States.THANKS, true);
+                break;
         }
     }
 }
+

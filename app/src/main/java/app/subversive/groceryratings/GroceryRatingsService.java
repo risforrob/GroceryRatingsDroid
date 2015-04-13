@@ -18,7 +18,7 @@ public interface GroceryRatingsService {
     @GET("/variantdaoendpoint/v1/variant/{productID}")
     void getProduct(@Path("productID") String productID, Callback<Variant> callback);
 
-    @POST("/variantdaoendpoint/v1/variant")
+    @POST("/variantdaoendpoint/v1/variantdao")
     void addNewProduct(@Body Variant variant, Callback<Variant> callback);
 
     @GET("/userdaoendpoint/v1/user")
