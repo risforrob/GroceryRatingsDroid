@@ -8,5 +8,11 @@
     <style name="TutorialFont" parent="AppTheme">
         <item name="android:textColor">#ffffff</item>
     </style>
+    <style name="SocialButton" parent="Base.TextAppearance.AppCompat.Button">
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
 </resources>

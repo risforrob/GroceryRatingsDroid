@@ -16,7 +16,7 @@ import android.view.ViewGroup;
  * Use the {@link SocialSelectorFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SocialSelectorFragment extends DialogFragment {
+public class SocialSelectorFragment extends Fragment {
 
     /**
      * Use this factory method to create a new instance of
@@ -48,10 +48,15 @@ public class SocialSelectorFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_social_selector, container, false);
         final MainWindow activity = (MainWindow) getActivity();
+        root.findViewById(R.id.social_background).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager().popBackStack();
+            }
+        });
         root.findViewById(R.id.btnFacebook).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
                 activity.onSocialSelected("facebook");
             }
         });
@@ -59,7 +64,6 @@ public class SocialSelectorFragment extends DialogFragment {
         root.findViewById(R.id.btnTwitter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
                 activity.onSocialSelected("twitter");
             }
         });
@@ -67,7 +71,6 @@ public class SocialSelectorFragment extends DialogFragment {
         root.findViewById(R.id.btnGoogle).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dismiss();
                 activity.onSocialSelected("google");
             }
         });

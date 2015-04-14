@@ -198,7 +198,7 @@ public class ScanFragment
     }
 
     private void setScanMode(boolean animated) {
-        ((MainWindow) getActivity()).setUpNav(null);
+//        ((MainWindow) getActivity()).setUpNav(null);
         CameraManager.startPreview();
         restartScanner();
         currOverlay = scanControls;
@@ -396,12 +396,12 @@ public class ScanFragment
 
     @Override
     public void onCameraControlsFinishedShow() {
-        ((MainWindow) getActivity()).setUpNav(new MainWindow.UpNavigation() {
-            @Override
-            public void onNavigateUp() {
-                onBackPressed();
-            }
-        });
+//        ((MainWindow) getActivity()).setUpNav(new MainWindow.UpNavigation() {
+//            @Override
+//            public void onNavigateUp() {
+//                onBackPressed();
+//            }
+//        });
     }
 
 

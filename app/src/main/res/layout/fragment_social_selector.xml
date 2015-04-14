@@ -1,26 +1,45 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    tools:context="app.subversive.groceryratings.SocialSelectorFragment"
-    android:orientation="vertical">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#D000"
+    android:id="@+id/social_background">
+    <LinearLayout
 
-    <Button
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Facebook"
-        android:id="@+id/btnFacebook" />
+        tools:context="app.subversive.groceryratings.SocialSelectorFragment"
+        android:orientation="vertical"
+        android:background="#0000"
+        android:layout_gravity="center"
+        >
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Twitter"
-        android:id="@+id/btnTwitter" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Facebook"
+            android:id="@+id/btnFacebook"
+            android:background="@drawable/facebook_btn_background_state"
+            android:layout_margin="4dp"
+            style="@style/SocialButton"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Google"
-        android:id="@+id/btnGoogle" />
-</LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Twitter"
+            android:id="@+id/btnTwitter"
+            android:background="@drawable/twitter_btn_background_state"
+            android:layout_margin="4dp"
+            style="@style/SocialButton"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Google"
+            android:id="@+id/btnGoogle"
+            android:background="@drawable/google_btn_background_state"
+            android:layout_margin="4dp"
+            style="@style/SocialButton"/>
+    </LinearLayout>
+</FrameLayout>

@@ -312,6 +312,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
     public void scrollHistoryToBeginning() { historyScrollView.smoothScrollTo(0, 0); }
 
     public void flashTop() {
+        Log.d(TAG, "1 " + String.valueOf(!unknownBarcode.isShown()));
         if (!unknownBarcode.isShown()) {
             ratingHistory.flashTop();
         }

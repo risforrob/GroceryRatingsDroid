@@ -190,13 +190,13 @@ public class MainWindow
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
-            case android.R.id.home:
-                if (mUpNav != null) {
-                    mUpNav.onNavigateUp();
-                    return true;
-                } else {
-                    return false;
-                }
+//            case android.R.id.home:
+//                if (mUpNav != null) {
+//                    mUpNav.onNavigateUp();
+//                    return true;
+//                } else {
+//                    return false;
+//                }
             case 9:
                 if (isSocalConnected) {
                     socialLogout();
@@ -232,25 +232,28 @@ public class MainWindow
         }
     }
 
-    void setUpNav(UpNavigation nav) {
-        if (nav != null) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            mUpNav = nav;
-        } else {
-            getActionBar().setDisplayHomeAsUpEnabled(false);
-            getActionBar().setHomeButtonEnabled(false);
-            mUpNav = null;
-        }
-    }
+//    void setUpNav(UpNavigation nav) {
+//        if (nav != null) {
+//            getActionBar().setDisplayHomeAsUpEnabled(true);
+//            mUpNav = nav;
+//        } else {
+//            getActionBar().setDisplayHomeAsUpEnabled(false);
+//            getActionBar().setHomeButtonEnabled(false);
+//            mUpNav = null;
+//        }
+//    }
 
     void displayVariantData(int index) {
-        ProductPageFragment frag = ProductPageFragment.newInstance(index);
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, frag)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .addToBackStack(null)
-                .commit();
+        int variantIndex = GRData.getInstance().getVariantIndexFromLoaderIndex(index);
+        if (variantIndex >= 0) {
+            ProductPageFragment frag = ProductPageFragment.newInstance(variantIndex);
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, frag)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     void onRatingSelected(int variantIndex, int ratingIndex) {
@@ -327,11 +330,16 @@ public class MainWindow
     }
 
     public void showSocialSelector() {
-        SocialSelectorFragment.newInstance().show(getFragmentManager(), null);
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.container, SocialSelectorFragment.newInstance(), null)
+                .addToBackStack(null)
+                .commit();
     }
 
     public void onSocialSelected(String social) {
         Log.v(TAG, social);
+        getFragmentManager().popBackStack();
         mSocialConn = SocialFactory.buildConnector(social, this);
         if (shouldDisplayReviewFrag) {
             mConnectionCallback = new ConnectionCallback() {

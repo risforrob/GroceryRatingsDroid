@@ -18,9 +18,9 @@ import java.util.ArrayList;
  */
 
 public class ObservableScrollView extends ScrollView {
-    public static interface Callbacks {
-        public void onScrollChanged(int deltaX, int deltaY);
-        public void onTouchUp(float x, float y);
+    public interface Callbacks {
+        void onScrollChanged(int deltaX, int deltaY);
+        void onTouchUp(float x, float y);
     }
     GestureDetector.SimpleOnGestureListener gestureListener = new GestureDetector.SimpleOnGestureListener() {
         @Override

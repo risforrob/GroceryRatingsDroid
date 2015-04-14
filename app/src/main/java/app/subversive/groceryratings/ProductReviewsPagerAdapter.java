@@ -1,5 +1,6 @@
 package app.subversive.groceryratings;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayDeque;
 import java.util.List;
 
 import app.subversive.groceryratings.Core.Rating;
@@ -23,13 +25,19 @@ import app.subversive.groceryratings.UI.TagDisplay;
  */
 public class ProductReviewsPagerAdapter extends RecyclingPagerAdapter {
     List<Rating> ratings;
+    ArrayDeque<TagDisplay> unusedTags = new ArrayDeque<>();
+
     public ProductReviewsPagerAdapter(List<Rating> ratings) {
         this.ratings = ratings;
     }
 
     @Override
     public void removeAllChildren(View v) {
-        ((SequentialLayout) v.findViewById(R.id.layoutTags)).removeAllViews();
+        SequentialLayout tagLayout = ((SequentialLayout) v.findViewById(R.id.layoutTags));
+        for (int x = tagLayout.getChildCount() -1 ; x >= 0 ; x-- ) {
+            unusedTags.push((TagDisplay) tagLayout.getChildAt(x));
+            tagLayout.removeViewAt(x);
+        }
     }
 
     @Override
@@ -54,7 +62,10 @@ public class ProductReviewsPagerAdapter extends RecyclingPagerAdapter {
 
         if (rating.tags != null) {
             for(TasteTag tag : rating.tags) {
-                TagDisplay td = new TagDisplay(tagLayout.getContext());
+                TagDisplay td = unusedTags.poll();
+                if (td == null) {
+                    td = new TagDisplay(tagLayout.getContext());
+                }
                 td.setText(tag.value);
                 td.setValue(null);
                 tagLayout.addView(td);

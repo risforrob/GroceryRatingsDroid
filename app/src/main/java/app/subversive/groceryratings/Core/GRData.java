@@ -161,6 +161,16 @@ public class GRData {
             newLoader = new VariantLoader(barcode);
         }
         newLoader.insertNewVariant(imageData);
+    }
 
+    public int getVariantIndexFromLoaderIndex(int index) {
+        if (mVariantLoaders.get(index).getVariant() == null) {
+            return -1;
+        }
+        int retIndex = 0;
+        for (int i = 0; i <= index; i++) {
+            if (mVariantLoaders.get(i).getVariant() != null) { retIndex++; }
+        }
+        return retIndex-1;
     }
 }

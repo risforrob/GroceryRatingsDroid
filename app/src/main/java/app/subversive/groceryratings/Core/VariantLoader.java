@@ -52,12 +52,12 @@ public class VariantLoader extends DataSetObservable {
         GRClient.getService().getProduct(mBarcode, new Callback<Variant>() {
             @Override
             public void success(Variant variant, Response response) {
-                setState(State.LOADED);
                 if (variant != null && variant.published) {
                     mVariant = variant;
                 } else {
                     callback.onUnknownBarcode(mBarcode);
                 }
+                setState(State.LOADED);
             }
 
             @Override

@@ -164,6 +164,7 @@ public class RatingsLayout extends ViewGroup {
     }
 
     public void flashTop() {
+        Log.d(TAG, "2 " + String.valueOf(getChildCount()));
         if (getChildCount() > 0) {
             ((ProductRatingBar) getChildAt(0)).flash();
         }

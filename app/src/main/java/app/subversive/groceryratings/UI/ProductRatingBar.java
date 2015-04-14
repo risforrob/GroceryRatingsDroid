@@ -9,6 +9,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -126,7 +127,7 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     public void setVariant(Variant variant) {
-        state = States.SUCCESS;
+        setState(States.SUCCESS, false);
 
         productName.setText(variant.getName());
         productStars.setRating(variant.getNumStars());
@@ -145,6 +146,7 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     private void setState(States state, boolean animateToState) {
+        this.state = state;
         switch (state) {
             case UNKNOWN:
                 displayStatus("Unknown Product", false, animateToState);
@@ -154,15 +156,12 @@ public class ProductRatingBar extends FrameLayout {
                 break;
             case THANKS:
                 displayStatus("Thanks for your help!", false, animateToState);
-                this.state = state;
                 break;
             case UPLOADING:
                 displayStatus("Uploading Image.", true, animateToState);
-                this.state = state;
                 break;
             case ERROR:
                 displayStatus("Error Loading Product", false, animateToState);
-                this.state = state;
                 break;
         }
     }
@@ -220,6 +219,12 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     public void flash() {
+        Log.d("FLASH", String.valueOf(shouldFlash));
+        Log.d("FLASH", String.valueOf(flashAnim.isRunning()));
+        Log.d("FLASH", String.valueOf(state == States.FETCHING));
+        Log.d("FLASH", String.valueOf(state == States.UPLOADING));
+        Log.d("FLASH", String.valueOf(state == States.CREATED));
+
         if (shouldFlash &&
                 !flashAnim.isRunning() &&
                 (state != States.FETCHING) &&
