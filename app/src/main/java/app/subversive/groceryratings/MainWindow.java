@@ -32,18 +32,17 @@ public class MainWindow
 
     private interface ConnectionCallback { void onConnected(); }
 
-    interface UpNavigation { void onNavigateUp(); }
+//    interface UpNavigation { void onNavigateUp(); }
 
     private final static String TAG = MainWindow.class.getSimpleName();
 
-//    public
 
     private ScanFragment scanFrag;
 
     private ConnectionCallback mConnectionCallback;
 
     public SocialConnector mSocialConn;
-    private UpNavigation mUpNav;
+//    private UpNavigation mUpNav;
     private boolean isSocalConnected, shouldDisplayReviewFrag;
 
     private User mUser;
@@ -213,9 +212,8 @@ public class MainWindow
             case 8:
                 getFragmentManager()
                         .beginTransaction()
-                        .hide(scanFrag)
-                        .replace(R.id.container, FeedbackFragment.newInstance())
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                        .replace(R.id.container, FeedbackFragment.newInstance())
                         .addToBackStack(null)
                         .commit();
                 return true;
@@ -246,10 +244,10 @@ public class MainWindow
     void displayVariantData(int index) {
         int variantIndex = GRData.getInstance().getVariantIndexFromLoaderIndex(index);
         if (variantIndex >= 0) {
-            ProductPageFragment frag = ProductPageFragment.newInstance(variantIndex);
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.container, frag)
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                    .replace(R.id.container, ProductPageFragment.newInstance(variantIndex))
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .addToBackStack(null)
                     .commit();
@@ -261,6 +259,7 @@ public class MainWindow
         ProductRatingsFragment frag = ProductRatingsFragment.newInstance(variantIndex, ratingIndex);
         getFragmentManager()
                 .beginTransaction()
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.container, frag)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
@@ -332,6 +331,7 @@ public class MainWindow
     public void showSocialSelector() {
         getFragmentManager()
                 .beginTransaction()
+                .setCustomAnimations(R.animator.fragment_fade_in, R.animator.fragment_fade_out, R.animator.fragment_fade_in, R.animator.fragment_fade_out)
                 .add(R.id.container, SocialSelectorFragment.newInstance(), null)
                 .addToBackStack(null)
                 .commit();

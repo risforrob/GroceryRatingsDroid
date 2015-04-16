@@ -75,5 +75,6 @@ public class SocialSelectorFragment extends Fragment {
             }
         });
         return root;
+
     }
 }
