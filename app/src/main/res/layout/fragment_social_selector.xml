@@ -1,22 +1,17 @@
-<FrameLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="#D000"
-    android:id="@+id/social_background">
-    <LinearLayout
-
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    android:layout_width="20dp"
+    android:layout_height="20dp"
+    android:id="@+id/social_background"
         tools:context="app.subversive.groceryratings.SocialSelectorFragment"
         android:orientation="vertical"
         android:background="#0000"
         android:layout_gravity="center"
-        >
+        android:gravity="center">
 
         <TextView
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Sign In With:"
@@ -24,7 +19,7 @@
             android:layout_marginBottom="20dp"
             android:textSize="22sp"
             android:textColor="#fff"
-            />
+            android:layout_gravity="center" />
 
         <Button
             android:layout_width="match_parent"
@@ -33,7 +28,8 @@
             android:id="@+id/btnFacebook"
             android:background="@drawable/facebook_btn_background_state"
             android:layout_margin="8dp"
-            style="@style/SocialButton"/>
+            style="@style/SocialButton"
+            android:layout_gravity="center" />
 
         <Button
             android:layout_width="match_parent"
@@ -42,7 +38,8 @@
             android:id="@+id/btnTwitter"
             android:background="@drawable/twitter_btn_background_state"
             android:layout_margin="8dp"
-            style="@style/SocialButton"/>
+            style="@style/SocialButton"
+            android:layout_gravity="center" />
 
         <Button
             android:layout_width="match_parent"
@@ -51,7 +48,6 @@
             android:id="@+id/btnGoogle"
             android:background="@drawable/google_btn_background_state"
             android:layout_margin="8dp"
-            style="@style/SocialButton"/>
+            style="@style/SocialButton"
+            android:layout_gravity="center" />
     </LinearLayout>
-
-</FrameLayout>

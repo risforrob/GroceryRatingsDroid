@@ -329,17 +329,12 @@ public class MainWindow
     }
 
     public void showSocialSelector() {
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.fragment_fade_in, R.animator.fragment_fade_out, R.animator.fragment_fade_in, R.animator.fragment_fade_out)
-                .add(R.id.container, SocialSelectorFragment.newInstance(), null)
-                .addToBackStack(null)
-                .commit();
+        SocialSelectorFragment.newInstance().show(getFragmentManager(), null);
     }
 
     public void onSocialSelected(String social) {
         Log.v(TAG, social);
-        getFragmentManager().popBackStack();
+//        getFragmentManager().popBackStack();
         mSocialConn = SocialFactory.buildConnector(social, this);
         if (shouldDisplayReviewFrag) {
             mConnectionCallback = new ConnectionCallback() {

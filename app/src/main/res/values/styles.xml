@@ -14,5 +14,9 @@
         <item name="android:textAllCaps">true</item>
         <item name="android:textStyle">bold</item>
     </style>
+    <!--<style name="CustomDialog" parent="Base.Theme.AppCompat.Dialog">-->
+        <!--<item name="android:background">#00ffffff</item>-->
+        <!--<item name="android:windowIsTranslucent">true</item>-->
+    <!--</style>-->
 
 </resources>
