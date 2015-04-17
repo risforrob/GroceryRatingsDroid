@@ -1,14 +1,18 @@
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="app.subversive.groceryratings.SocialSelectorFragment"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/social_background"
-    android:orientation="vertical"
-    android:background="#0000"
-    android:layout_gravity="center"
-    android:gravity="center">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+        tools:context="app.subversive.groceryratings.SocialSelectorFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/social_background"
+        android:orientation="vertical"
+        android:background="#0000"
+        android:layout_gravity="center"
+        android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
@@ -51,3 +55,4 @@
             style="@style/SocialButton"
             android:layout_gravity="center" />
     </LinearLayout>
+</FrameLayout>
