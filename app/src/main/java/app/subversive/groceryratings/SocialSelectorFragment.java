@@ -84,6 +84,12 @@ public class SocialSelectorFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_social_selector, container, false);
         final MainWindow activity = (MainWindow) getActivity();
+        root.findViewById(R.id.social_background).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // do nothing, so user can't accidentally pass through a click to the bg an cancel
+            }
+        });
         root.findViewById(R.id.btnFacebook).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
