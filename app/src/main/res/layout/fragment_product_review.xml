@@ -6,16 +6,15 @@
     tools:context="app.subversive.groceryratings.ProductReviewFragment"
     android:orientation="vertical">
 
-        <app.subversive.groceryratings.UI.Rater
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            custom:radius="12dp"
-            custom:ringWidth="3dp"
-            custom:editable="true"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:id="@+id/ratingRater"
-            />
+    <app.subversive.groceryratings.UI.Rater
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        custom:radius="12dp"
+        custom:ringWidth="3dp"
+        custom:editable="true"
+        android:layout_gravity="center"
+        android:layout_margin="8dp"
+        android:id="@+id/ratingRater"/>
 
     <EditText
         android:layout_width="match_parent"
@@ -25,7 +24,8 @@
         android:id="@+id/etRating"
         android:layout_weight="1"
         android:hint="Select a rating above.\nAdd your review here."
-        android:gravity="center|top" />
+        android:gravity="center|top"
+        />
 
     <Button
         android:layout_width="fill_parent"

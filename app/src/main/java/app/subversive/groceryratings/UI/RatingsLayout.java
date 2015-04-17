@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Queue;
 
+import app.subversive.groceryratings.Utils;
 import app.subversive.groceryratings.VariantLoaderAdapter;
 
 /**
@@ -20,7 +21,7 @@ import app.subversive.groceryratings.VariantLoaderAdapter;
  */
 public class RatingsLayout extends ViewGroup {
     private final static String TAG = RatingsLayout.class.getSimpleName();
-    final int rowSpacing = 2;
+    int rowSpacing;
     final int visibleChildren = 2;
 
     private final ViewGroup.LayoutParams defaultLP =
@@ -46,7 +47,9 @@ public class RatingsLayout extends ViewGroup {
         init(context);
     }
 
-    private void init(Context context) { }
+    private void init(Context context) {
+        rowSpacing = Utils.dp2px(3);
+    }
 
     @Override
     public boolean shouldDelayChildPressedState() {

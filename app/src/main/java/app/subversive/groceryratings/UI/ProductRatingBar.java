@@ -195,7 +195,7 @@ public class ProductRatingBar extends FrameLayout {
 
 
     private void init(Context context) {
-        setBackgroundColor(getResources().getColor(R.color.blackOverlay));
+        setBackgroundResource(R.drawable.pbar_background);
         Utils.setPaddingDP(this, 8, 4, 8, 4);
 
         rating = defaultInflate(context, R.layout.rating_bar_contents);

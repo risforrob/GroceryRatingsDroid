@@ -126,7 +126,7 @@ public class GRData {
         }
     }
 
-    public VariantLoaderAdapter getVariantLoaderAdapter(RatingAdapter.ItemClickListener listener) {
+    public VariantLoaderAdapter getVariantLoaderAdapter(VariantLoaderAdapter.VariantSelector listener) {
         VariantLoaderAdapter adapter = new VariantLoaderAdapter(mVariantLoaders, listener);
         mVLAdapters.add(adapter);
         return adapter;
@@ -163,14 +163,18 @@ public class GRData {
         newLoader.insertNewVariant(imageData);
     }
 
-    public int getVariantIndexFromLoaderIndex(int index) {
-        if (mVariantLoaders.get(index).getVariant() == null) {
-            return -1;
+    public int getVariantIndexFromLoaderIndex(Variant variant) {
+        int index = 0;
+        for (int i = 0; i < mVariantLoaders.size(); i++) {
+            Variant _variant = mVariantLoaders.get(i).getVariant();
+            if (_variant != null) {
+                if (_variant == variant) {
+                    return index;
+                } else {
+                    index++;
+                }
+            }
         }
-        int retIndex = 0;
-        for (int i = 0; i <= index; i++) {
-            if (mVariantLoaders.get(i).getVariant() != null) { retIndex++; }
-        }
-        return retIndex-1;
+        return -1;
     }
 }

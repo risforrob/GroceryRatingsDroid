@@ -175,6 +175,7 @@ public class MainWindow
         getMenuInflater().inflate(R.menu.main_window, menu);
         MenuItem m = menu.add(2,4,9,"Debug Service");
         m.setCheckable(true);
+        m.setChecked(GRClient.getInstance().isDebug());
 
         menu.add(3,9,1, (isSocalConnected) ? "Sign Out" : "Sign In");
         menu.add(3,8,100,"Send Feedback");
@@ -241,8 +242,8 @@ public class MainWindow
 //        }
 //    }
 
-    void displayVariantData(int index) {
-        int variantIndex = GRData.getInstance().getVariantIndexFromLoaderIndex(index);
+    void displayVariantData(Variant variant) {
+        int variantIndex = GRData.getInstance().getVariantIndexFromLoaderIndex(variant);
         if (variantIndex >= 0) {
             getFragmentManager()
                     .beginTransaction()
@@ -261,7 +262,6 @@ public class MainWindow
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.container, frag)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(null)
                 .commit();
     }
@@ -334,7 +334,6 @@ public class MainWindow
 
     public void onSocialSelected(String social) {
         Log.v(TAG, social);
-//        getFragmentManager().popBackStack();
         mSocialConn = SocialFactory.buildConnector(social, this);
         if (shouldDisplayReviewFrag) {
             mConnectionCallback = new ConnectionCallback() {
@@ -381,6 +380,5 @@ public class MainWindow
                 Toast.makeText(MainWindow.this, "Unable to connect to Grocery Ratings", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.List;
 
+import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.Core.VariantLoader;
 import app.subversive.groceryratings.UI.ProductRatingBar;
 
@@ -14,8 +15,10 @@ import app.subversive.groceryratings.UI.ProductRatingBar;
  * Created by rob on 4/11/15.
  */
 public class VariantLoaderAdapter extends RecyclerView.Adapter<VariantLoaderAdapter.ViewHolder> {
+    public interface VariantSelector {
+        void onVariantSelected(Variant v);
+    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         ProductRatingBar mbar;
         public ViewHolder(View itemView) {
             super(itemView);
@@ -24,10 +27,10 @@ public class VariantLoaderAdapter extends RecyclerView.Adapter<VariantLoaderAdap
     }
 
     List<VariantLoader> mLoaders;
-    RatingAdapter.ItemClickListener mListener;
-    final HashMap<ViewHolder, Integer> indexer = new HashMap<>();
+    VariantSelector mListener;
+    final HashMap<ViewHolder, VariantLoader> loaderLookup = new HashMap<>();
 
-    public VariantLoaderAdapter (List<VariantLoader> loaders, RatingAdapter.ItemClickListener listener) {
+    public VariantLoaderAdapter (List<VariantLoader> loaders, VariantSelector listener) {
         mLoaders = loaders;
         mListener = listener;
         setHasStableIds(true);
@@ -41,7 +44,7 @@ public class VariantLoaderAdapter extends RecyclerView.Adapter<VariantLoaderAdap
             @Override
             public void onClick(View v) {
                 if (mListener != null) {
-                    mListener.onItemClick(indexer.get(vh));
+                    mListener.onVariantSelected(loaderLookup.get(vh).getVariant());
                 }
             }
         });
@@ -52,7 +55,7 @@ public class VariantLoaderAdapter extends RecyclerView.Adapter<VariantLoaderAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.mbar.setLoader(mLoaders.get(position));
-        indexer.put(holder, position);
+        loaderLookup.put(holder, mLoaders.get(position));
     }
 
     @Override

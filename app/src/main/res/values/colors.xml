@@ -6,4 +6,7 @@
     <color name="blackOverlayFlash">#a6808080</color>
     <color name="raterFilled">#ff24a424</color>
     <color name="raterEmpty">#ff888888</color>
+    <color name="transparent">#0000</color>
+    <color name="selectedBackground">#bbb</color>
+
 </resources>

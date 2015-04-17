@@ -53,7 +53,7 @@ public class ScanFragment
             ScanControlsOverlay.Callbacks,
             TutorialOverlay.Callbacks,
             VariantLoader.UnknownBarcodeCallback,
-            BackFragment        {
+            BackFragment {
 
 
     private final String TAG = ScanFragment.class.getSimpleName();
@@ -131,13 +131,15 @@ public class ScanFragment
 
             // show unknown
             case 3:
-                scanControls.showUnknownBarcode(true);
+                handleDecode(String.valueOf((int) (Math.random() * 100000)));
+//                handleDecode("123456");
+//                scanControls.showUnknownBarcode(true);
                 handled = true;
                 break;
 
             case 4:
                 for (MenuItem m : debugMenuItems) {
-                    m.setEnabled(item.isChecked());
+                    m.setEnabled(GRClient.getInstance().isDebug());
                 }
                 handled = true;
                 break;
@@ -443,7 +445,6 @@ public class ScanFragment
                     }
                 });
     }
-
     @Override
     public void onUnknownBarcode(String barcode) {
         if (barcode.equals(lastScanned)) {
@@ -482,7 +483,12 @@ public class ScanFragment
     }
 
     @Override
-    public void onLoadVariantDetails(int i) {
-        ((MainWindow) getActivity()).displayVariantData(i);
+    public void onLoadVariantDetails(Variant v) {
+        ((MainWindow) getActivity()).displayVariantData(v);
     }
+//
+//    @Override
+//    public void onVariantSelected(Variant v) {
+//        ((MainWindow) getActivity()).displayVariantData(v);
+//    }
 }

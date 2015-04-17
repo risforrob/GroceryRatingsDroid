@@ -12,6 +12,7 @@ import retrofit.RestAdapter;
  */
 public class GRClient {
     private static GRClient instance;
+    private boolean debugMode;
 
     public static void initialize(String uuid) {
         instance = new GRClient(uuid);
@@ -62,6 +63,7 @@ public class GRClient {
     }
 
     public void setDebug(boolean debugEnabled) {
+        debugMode = debugEnabled;
         if (debugEnabled) {
             service = debugGroceryService;
             imageService = debugImageService;
@@ -71,4 +73,7 @@ public class GRClient {
         }
     }
 
+    public boolean isDebug() {
+        return debugMode;
+    }
 }

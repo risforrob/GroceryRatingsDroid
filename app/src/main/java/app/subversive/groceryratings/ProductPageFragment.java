@@ -50,8 +50,26 @@ public class ProductPageFragment extends Fragment {
         });
         pager.setAdapter(adapter);
 
-        Bundle args = getArguments();
-        pager.setCurrentItem(args.getInt(ARG_INDEX));
+        int index;
+        if (savedInstanceState != null) {
+            index = savedInstanceState.getInt(ARG_INDEX);
+        } else {
+            Bundle args = getArguments();
+            index = args.getInt(ARG_INDEX);
+        }
+        pager.setCurrentItem(index);
         return pager;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getArguments().putInt(ARG_INDEX, pager.getCurrentItem());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(ARG_INDEX, pager.getCurrentItem());
     }
 }

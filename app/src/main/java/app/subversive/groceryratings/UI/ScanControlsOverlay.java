@@ -21,6 +21,7 @@ import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.ManagedTimer;
 import app.subversive.groceryratings.R;
 import app.subversive.groceryratings.RatingAdapter;
+import app.subversive.groceryratings.VariantLoaderAdapter;
 
 /**
  * Created by rob on 9/10/14.
@@ -32,7 +33,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         void onScanControlsFinishedHide();
         void onScanControlsFinishedShow();
         void onTouchUp(float x, float y);
-        void onLoadVariantDetails(int index);
+        void onLoadVariantDetails(Variant variant);
     }
 
     private long animDuration = 200;
@@ -120,14 +121,17 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         LayoutInflater.from(parent.getContext()).inflate(R.layout.scan_barcode_overlay, parent, true);
         historyScrollView = (ObservableScrollView) parent.findViewById(R.id.scrollView);
         ratingHistory = (RatingsLayout) parent.findViewById(R.id.RatingHolder);
-        ratingHistory.setAdapter(GRData.getInstance().getVariantLoaderAdapter(new RatingAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(int i) {
-                handler.onLoadVariantDetails(i);
-            }
-        }));
+        ratingHistory.setAdapter(GRData.getInstance().getVariantLoaderAdapter(
+                new VariantLoaderAdapter.VariantSelector() {
+                    @Override
+                    public void onVariantSelected(Variant v) {
+                        handler.onLoadVariantDetails(v);
+                    }
+                }));
 
-        historyScrollView.addCallbacks(this);
+
+
+                historyScrollView.addCallbacks(this);
         historyScrollView.setVisibility(View.INVISIBLE);
 
         statusBar = (TextView) LayoutInflater.from(parent.getContext()).inflate(R.layout.status_scan_prompt, parent, false);
