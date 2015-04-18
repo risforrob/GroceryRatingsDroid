@@ -1,17 +1,14 @@
-package app.subversive.groceryratings.test;
+package app.subversive.groceryratings.Core;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import app.subversive.groceryratings.ImageService;
 import retrofit.Callback;
 import retrofit.client.Header;
 import retrofit.client.Response;
-import retrofit.http.Headers;
 import retrofit.http.Part;
 import retrofit.mime.TypedByteArray;
 import retrofit.mime.TypedInput;

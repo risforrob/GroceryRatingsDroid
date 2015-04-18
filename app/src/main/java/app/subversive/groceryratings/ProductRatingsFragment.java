@@ -21,8 +21,6 @@ public class ProductRatingsFragment extends Fragment {
         RATING_INDEX = "RATING_INDEX";
     }
 
-    final static Gson gson = new Gson();
-
     public static ProductRatingsFragment newInstance(int variantIndex, int ratingIndex) {
         ProductRatingsFragment newFrag = new ProductRatingsFragment();
         Bundle args = new Bundle();

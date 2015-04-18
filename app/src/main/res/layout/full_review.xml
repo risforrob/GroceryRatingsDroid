@@ -1,64 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        >
-
-    <ImageView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:id="@+id/ratingImage"
-        android:background="#DDD"
-        android:layout_marginRight="8dp"/>
-    </LinearLayout>
-
-    <app.subversive.groceryratings.UI.SequentialLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:id="@+id/layoutTags"
-        custom:minimumHorizontalPadding="8dp"
-        custom:verticalPadding="8dp"/>
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
 
-        <FrameLayout
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="wrap_content">
 
-            <app.subversive.groceryratings.UI.Rater
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|top"
-                android:id="@+id/ratingStars"/>
+        <ImageView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:id="@+id/ratingImage"
+            android:background="#DDD"
+            android:layout_marginRight="8dp"/>
+        </LinearLayout>
+
+        <app.subversive.groceryratings.UI.SequentialLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/layoutTags"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            custom:minimumHorizontalPadding="8dp"
+            custom:verticalPadding="8dp"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+                <app.subversive.groceryratings.UI.Rater
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|top"
+                    android:id="@+id/ratingStars"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="12/12/2015"
+                    android:id="@+id/tvDate"
+                    android:layout_gravity="end|top"
+                    />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:text="12/12/2015"
-                android:id="@+id/tvDate"
-                android:layout_gravity="right|top"
-                />
-        </FrameLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="I love this product so much!"
-            android:id="@+id/tvReview"
-            android:maxLines="4"/>
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="I love this product so much!"
+                android:id="@+id/tvReview"/>
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

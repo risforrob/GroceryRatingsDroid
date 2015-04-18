@@ -3,9 +3,9 @@
     <item
         android:drawable="@color/blackOverlayFlash"
         android:state_pressed="true" />
-    <item
-        android:drawable="@color/blackOverlayFlash"
-        android:state_selected="true" />
+    <!--<item-->
+        <!--android:drawable="@color/blackOverlayFlash"-->
+        <!--android:state_selected="true" />-->
     <item
         android:drawable="@color/blackOverlay"
         />

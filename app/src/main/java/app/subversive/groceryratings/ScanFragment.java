@@ -35,12 +35,8 @@ import java.util.ArrayList;
 
 import app.subversive.groceryratings.UI.CameraControlsOverlay;
 import app.subversive.groceryratings.UI.Overlay;
-import app.subversive.groceryratings.UI.ProductRatingBar;
 import app.subversive.groceryratings.UI.ScanControlsOverlay;
-import app.subversive.groceryratings.test.DebugGroceryService;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import app.subversive.groceryratings.Core.DebugGroceryService;
 import retrofit.mime.TypedByteArray;
 
 
@@ -172,14 +168,14 @@ public class ScanFragment
         debugMenuItems.add(menu.add(1, 3, 30, "Show Unknown"));
 
         for (MenuItem m : debugMenuItems) {
-            m.setEnabled(false);
+            m.setEnabled(GRClient.getInstance().isDebug());
         }
 
         MenuItem m = menu.add(3,5,8, "Auto Photo");
         m.setCheckable(true);
         m.setChecked(MainWindow.Preferences.autoscan);
 
-        menu.add(4,6,40, "Flash");
+        menu.add(4, 6, 40, "Flash");
         menu.add(5, 7, 50, "Flush(Exit)");
     }
 

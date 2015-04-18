@@ -1,14 +1,10 @@
-package app.subversive.groceryratings.test;
+package app.subversive.groceryratings.Core;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
-import app.subversive.groceryratings.Core.Rating;
-import app.subversive.groceryratings.Core.TasteTag;
-import app.subversive.groceryratings.Core.User;
-import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.GroceryRatingsService;
 import retrofit.Callback;
 import retrofit.http.Body;

@@ -1,11 +1,14 @@
-package app.subversive.groceryratings.test;
+package app.subversive.groceryratings.Core;
 
 import android.os.AsyncTask;
 import android.os.SystemClock;
 
+import java.util.LinkedList;
 import java.util.Random;
 
 import retrofit.Callback;
+import retrofit.client.Header;
+import retrofit.client.Response;
 
 /**
  * Created by rob on 9/21/14.
@@ -30,7 +33,7 @@ public class DebugService {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                callback.success(returnValue, null);
+                callback.success(returnValue, new Response("", 200, "This Worked", new LinkedList<Header>(), null));
             }
         }.execute();
     }

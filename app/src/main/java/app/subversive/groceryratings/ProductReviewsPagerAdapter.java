@@ -42,7 +42,8 @@ public class ProductReviewsPagerAdapter extends RecyclingPagerAdapter {
 
     @Override
     View inflateView(LayoutInflater inflater) {
-        return inflater.inflate(R.layout.full_review, null);
+        View v = inflater.inflate(R.layout.full_review, null);
+        return v;
     }
 
     @Override

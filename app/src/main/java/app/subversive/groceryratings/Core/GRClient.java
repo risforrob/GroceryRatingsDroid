@@ -2,8 +2,6 @@ package app.subversive.groceryratings.Core;
 
 import app.subversive.groceryratings.GroceryRatingsService;
 import app.subversive.groceryratings.ImageService;
-import app.subversive.groceryratings.test.DebugGroceryService;
-import app.subversive.groceryratings.test.DebugImageService;
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
 
