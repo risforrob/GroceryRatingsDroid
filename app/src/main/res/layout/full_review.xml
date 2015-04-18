@@ -24,19 +24,13 @@
             android:layout_marginRight="8dp"/>
         </LinearLayout>
 
-        <app.subversive.groceryratings.UI.SequentialLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/layoutTags"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            custom:minimumHorizontalPadding="8dp"
-            custom:verticalPadding="8dp"/>
+
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
 
             <FrameLayout
                 android:layout_width="fill_parent"
@@ -57,6 +51,15 @@
                     android:layout_gravity="end|top"
                     />
             </FrameLayout>
+
+            <app.subversive.groceryratings.UI.SequentialLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layoutTags"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                custom:minimumHorizontalPadding="8dp"
+                custom:verticalPadding="8dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
