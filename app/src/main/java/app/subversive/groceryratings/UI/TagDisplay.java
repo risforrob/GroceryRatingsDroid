@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,7 +15,13 @@ import app.subversive.groceryratings.R;
  * Created by rob on 1/7/15.
  */
 public class TagDisplay extends LinearLayout {
+    public interface OnCancelListener {
+        void onCancel(TagDisplay td);
+    }
 
+    OnCancelListener mListener;
+    TextView tagName, tagPercent;
+    ImageButton tagCancel;
     public TagDisplay(Context context) {
         super(context);
         init();
@@ -30,8 +37,27 @@ public class TagDisplay extends LinearLayout {
         init();
     }
 
+    public void setOnCancelListener(OnCancelListener listener) {
+        mListener = listener;
+    }
+
+    public void removeOnCancelListener() {
+        mListener = null;
+    }
+
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.taste_tag, this);
+        tagName = (TextView) findViewById(R.id.tvTagName);
+        tagPercent = (TextView) findViewById(R.id.tvPercent);
+        tagCancel = (ImageButton) findViewById(R.id.tagCancel);
+        tagCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onCancel(TagDisplay.this);
+                }
+            }
+        });
     }
 
 
@@ -41,10 +67,25 @@ public class TagDisplay extends LinearLayout {
     }
 
     public void setText(String text) {
-        ((TextView) findViewById(R.id.tvTagName)).setText(text);
+        tagName.setText(text);
     }
 
     public void setValue(String text) {
-        ((TextView) findViewById(R.id.tvPercent)).setText(text);
+        tagPercent.setText(text);
+    }
+
+    public void setTagInvalid() {
+        tagName.setBackgroundResource(R.color.InvalidTagPrimary);
+        tagPercent.setBackgroundResource(R.color.InvalidTagSecondary);
+        tagCancel.setBackgroundResource(R.color.InvalidTagSecondary);
+    }
+
+    public void setCancelMode() {
+        tagPercent.setVisibility(GONE);
+        tagCancel.setVisibility(VISIBLE);
+    }
+
+    public String getTagName() {
+        return tagName.getText().toString();
     }
 }

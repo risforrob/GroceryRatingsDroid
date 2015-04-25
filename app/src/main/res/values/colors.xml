@@ -8,5 +8,10 @@
     <color name="raterEmpty">#ff888888</color>
     <color name="transparent">#0000</color>
     <color name="selectedBackground">#bbb</color>
+    <color name="TagPrimary">#41bc5b</color>
+    <color name="TagSecondary">#6cd97e</color>
+    <color name="InvalidTagPrimary">#ffb87c40</color>
+    <color name="InvalidTagSecondary">#ffd9a36c</color>
+
 
 </resources>

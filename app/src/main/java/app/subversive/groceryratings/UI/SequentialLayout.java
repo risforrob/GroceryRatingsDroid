@@ -15,6 +15,7 @@ import app.subversive.groceryratings.R;
  * Created by rob on 1/4/15.
  */
 public class SequentialLayout extends ViewGroup {
+    private static final String TAG = SequentialLayout.class.getSimpleName();
     private int maxRows;
     private boolean justified, centered;
     private int wPadding = 0;
@@ -51,6 +52,7 @@ public class SequentialLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.d(TAG, "onLayout");
         if (getChildCount() == 0) { return; }
 
         int rowLeft = getLeftStart(0);
@@ -78,6 +80,7 @@ public class SequentialLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        Log.d(TAG, "onMeasure");
         if (getChildCount() == 0) {
             setMeasuredDimension(0, 0);
             return;
@@ -103,7 +106,7 @@ public class SequentialLayout extends ViewGroup {
                 throw new RuntimeException("SequentialLayout cannot layout a child wider than itself");
             }
 
-            if (currRowWidth + childWidth > availableWidth) {
+            if ((currRowWidth + childWidth + ((rowChildCount == 0) ? 0 : wPadding)) > availableWidth) {
 
                 // wrap to the next line. Finish computations for current line
                 if (justified) {

@@ -177,4 +177,13 @@ public class GRData {
         }
         return -1;
     }
+
+    public Set<String> getTasteTags() {
+        String[] tagList = {"salty", "sweet", "crunchy", "sour", "tart", "bitter", "high-calorie"};
+        HashSet<String> tags = new HashSet<>();
+        for (String tag: tagList) {
+            tags.add(tag);
+        }
+        return tags;
+    }
 }
