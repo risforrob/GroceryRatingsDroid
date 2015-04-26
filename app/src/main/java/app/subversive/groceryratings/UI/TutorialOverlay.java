@@ -20,8 +20,8 @@ import app.subversive.groceryratings.R;
  */
 public class TutorialOverlay implements Overlay {
     public interface Callbacks {
-        public void onTutorialClicked();
-        public void onTutorialClosed();
+        void onTutorialClicked();
+        void onTutorialClosed();
     }
 
     FrameLayout parent;
@@ -81,12 +81,6 @@ public class TutorialOverlay implements Overlay {
             @Override
             public void onAnimationEnd(Animator animation) {
                 clickEnabled = true;
-//                root.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        mHandler.onTutorialClicked();
-//                    }
-//                });
             }
         });
 
@@ -97,12 +91,11 @@ public class TutorialOverlay implements Overlay {
     @Override
     public void showOverlay(boolean withAnimation) {
         Log.v("tutorial", String.format("showOverlay %d", root.getBottom()-root.getTop()));
-        root.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        root.post(new Runnable() {
             @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            public void run() {
                 onParentLayoutComplete();
                 beginTutorialAnimation();
-                root.removeOnLayoutChangeListener(this);
             }
         });
         root.setVisibility(View.VISIBLE);

@@ -73,18 +73,24 @@ public class VariantPagerAdapter extends RecyclingPagerAdapter {
     }
 
     @Override
-    void loadData(int position, View root) {
+    void loadData(int position, final View root) {
         currentIndex = position;
-        Variant variant = variants.get(position);
+        final Variant variant = variants.get(position);
         recycler = (RecyclerView) root.findViewById(R.id.ratingHolder);
 
         ((TextView) root.findViewById(R.id.productName)).setText(variant.getName());
         ((TextView) root.findViewById(R.id.productNumRatings)).setText(Variant.formatRatingString(variant.getRatingCount()));
         ((Rater) root.findViewById(R.id.productStars)).setRating(variant.getNumStars());
 
-        ImageView image = (ImageView) root.findViewById(R.id.prodImageButton);
+        final ImageView image = (ImageView) root.findViewById(R.id.prodImageButton);
 
-        Picasso.with(root.getContext()).load(variant.getImageURL(Utils.dp2px(72))).into(image);
+        image.post(new Runnable() {
+                       @Override
+                       public void run() {
+                           Picasso.with(root.getContext()).load(variant.getImageURL(Math.max(image.getHeight(), image.getWidth()))).into(image);
+                       }
+                   });
+
 
         SequentialLayout tagLayout = ((SequentialLayout) root.findViewById(R.id.layoutTags));
         final List<Map.Entry<String, Integer>> wordscore = variant.getSortedWordscore();

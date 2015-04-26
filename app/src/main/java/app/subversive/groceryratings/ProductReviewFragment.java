@@ -100,7 +100,7 @@ public class ProductReviewFragment extends Fragment {
         flAddTag = (FrameLayout) root.findViewById(R.id.flAddTag);
         btnTagHelp = root.findViewById(R.id.btnTagHelp);
         helpAnimator = ObjectAnimator.ofFloat(btnTagHelp, "alpha", 1f, 0f);
-        helpAnimator.setDuration(200);
+        helpAnimator.setDuration(2000);
         helpAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
 
         rater = (Rater) root.findViewById(R.id.ratingRater);
@@ -235,13 +235,14 @@ public class ProductReviewFragment extends Fragment {
     private void showTagHelp() {
         helpAnimator.cancel();
         helpAnimator.removeAllListeners();
-        helpAnimator.setFloatValues(0f, 1f);
+        helpAnimator.setFloatValues(1f);
         btnTagHelp.setVisibility(View.VISIBLE);
         helpAnimator.start();
     }
 
     private void hideTagHelp() {
-        helpAnimator.setFloatValues(1f, 0f);
+        helpAnimator.cancel();
+        helpAnimator.setFloatValues(0f);
         helpAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
