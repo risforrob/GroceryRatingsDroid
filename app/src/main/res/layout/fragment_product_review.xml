@@ -4,7 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="app.subversive.groceryratings.ProductReviewFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    >
+
 
     <app.subversive.groceryratings.UI.Rater
         android:layout_width="wrap_content"
@@ -28,7 +32,7 @@
         android:layout_height="1dp"
         style="@style/Spacer"/>
 
-    <ScrollView
+    <app.subversive.groceryratings.UI.ObservableScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -39,26 +43,25 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/flAddTag"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+
             <app.subversive.groceryratings.UI.SequentialLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/ReviewSequentialLayout"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
                 custom:justifiedSpacing="false"
                 custom:minimumHorizontalPadding="8dp"
                 custom:verticalPadding="8dp">
 
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/flAddTag">
-
                     <AutoCompleteTextView
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
-                        android:layout_gravity="start"
                         android:hint="Add TasteTags"
                         android:id="@+id/newTasteTags"
                         android:singleLine="true"
@@ -67,15 +70,20 @@
                         android:completionThreshold="1"
                         android:background="@color/transparent"/>
 
-                    <View
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:background="#0ff"
-                        android:layout_gravity="end"
-                        android:id="@+id/btnTagHelp"/>
-                </FrameLayout>
+                </app.subversive.groceryratings.UI.SequentialLayout>
 
-            </app.subversive.groceryratings.UI.SequentialLayout>
+                <Button
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/help_circle"
+                    android:layout_gravity="end|center"
+                    android:id="@+id/btnTagHelp"
+                    android:text="\?"
+                    android:textSize="20sp"
+                    android:textColor="#fff"
+                    android:gravity="center"
+                    />
+            </FrameLayout>
 
             <View
                 android:layout_width="match_parent"
@@ -91,11 +99,10 @@
                 android:hint="Add your review"
                 android:gravity="top"
                 android:minLines="4"
-                android:layout_margin="8dp"
                 android:background="@color/transparent"
             />
         </LinearLayout>
-    </ScrollView>
+    </app.subversive.groceryratings.UI.ObservableScrollView>
 
     <View
         android:layout_width="match_parent"

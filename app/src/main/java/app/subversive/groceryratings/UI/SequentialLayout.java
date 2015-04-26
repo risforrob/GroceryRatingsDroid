@@ -52,7 +52,6 @@ public class SequentialLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.d(TAG, "onLayout");
         if (getChildCount() == 0) { return; }
 
         int rowLeft = getLeftStart(0);
@@ -80,7 +79,6 @@ public class SequentialLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.d(TAG, "onMeasure");
         if (getChildCount() == 0) {
             setMeasuredDimension(0, 0);
             return;

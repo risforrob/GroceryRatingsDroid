@@ -3,6 +3,7 @@ package app.subversive.groceryratings;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -80,8 +81,18 @@ public class Utils {
         }.execute(imageData);
     }
 
-    public static void hideKeyboard(Context context, View v) {
-        ((InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE))
+    public static void hideKeyboard(View v) {
+        ((InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
             .hideSoftInputFromWindow(v.getWindowToken(), 0);
+    }
+
+    public static void showKeyboard(View v) {
+        ((InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
+                .showSoftInput(v, InputMethodManager.SHOW_IMPLICIT);
+    }
+
+    public static void touchAndShowKeyboard(View v) {
+        v.requestFocusFromTouch();
+        showKeyboard(v);
     }
 }
