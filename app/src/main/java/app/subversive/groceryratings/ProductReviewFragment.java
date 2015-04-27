@@ -230,6 +230,12 @@ public class ProductReviewFragment extends Fragment {
         } else {
             mAdapter.remove(tag);
         }
+        td.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         mSeqLayout.addView(td, mSeqLayout.getChildCount() - 1);
         tagsACTV.setText(null);
     }

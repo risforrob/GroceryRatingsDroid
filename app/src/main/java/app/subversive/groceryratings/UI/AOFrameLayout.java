@@ -45,7 +45,6 @@ public class AOFrameLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.i(TAG, "touch");
         if (!getKeepScreenOn()) { setKeepScreenOn(true); }
         mTimer.restart();
         return super.onInterceptTouchEvent(ev);

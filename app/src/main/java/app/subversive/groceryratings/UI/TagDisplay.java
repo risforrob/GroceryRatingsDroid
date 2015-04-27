@@ -2,7 +2,9 @@ package app.subversive.groceryratings.UI;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -15,6 +17,7 @@ import app.subversive.groceryratings.R;
  * Created by rob on 1/7/15.
  */
 public class TagDisplay extends LinearLayout {
+    private static String TAG = TagDisplay.class.getSimpleName();
     public interface OnCancelListener {
         void onCancel(TagDisplay td);
     }
@@ -45,6 +48,12 @@ public class TagDisplay extends LinearLayout {
         mListener = null;
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        removeOnCancelListener();
+    }
+
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.taste_tag, this);
         tagName = (TextView) findViewById(R.id.tvTagName);
@@ -56,6 +65,13 @@ public class TagDisplay extends LinearLayout {
                 if (mListener != null) {
                     mListener.onCancel(TagDisplay.this);
                 }
+            }
+        });
+        tagCancel.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                tagName.getBackground().setState(tagCancel.getDrawableState());
+                return false;
             }
         });
     }

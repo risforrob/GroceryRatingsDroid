@@ -75,7 +75,7 @@
                 <Button
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:background="@drawable/help_circle"
+                    android:background="@drawable/help_list"
                     android:layout_gravity="end|center"
                     android:id="@+id/btnTagHelp"
                     android:text="\?"
