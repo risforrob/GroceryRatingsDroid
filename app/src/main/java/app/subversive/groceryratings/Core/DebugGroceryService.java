@@ -1,11 +1,16 @@
 package app.subversive.groceryratings.Core;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.UUID;
 
 import app.subversive.groceryratings.GroceryRatingsService;
+import app.subversive.groceryratings.MainWindow;
 import retrofit.Callback;
 import retrofit.http.Body;
 import retrofit.http.Header;
@@ -20,7 +25,9 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
 
     public static String addNewProduct() {
         String barcode = String.valueOf(random.nextInt(100000));
-        Variant variant = new Variant(String.format("Debug product %d", productCounter++), random.nextInt(5));
+        Variant variant = new Variant();
+        variant.productName = String.format("Debug product %d", productCounter++);
+        variant.stars = random.nextInt(5);
         variant.productCode = barcode;
         variant.published = true;
         variant.ratings = new ArrayList<>();
@@ -71,7 +78,30 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
 
     @Override
     public void addNewRating(@Body Rating rating, Callback<Rating> callback) {
+        Log.d("Rating", (new Gson()).toJson(rating));
         successfulRequest(rating, callback);
+    }
+
+    @Override
+    public void getTasteTags(Callback<TasteTagContainer> callback) {
+        String[] names = {
+                "allergen",
+                "bitter",
+                "bland",
+                "bold",
+                "chewy",
+                "creamy",
+                "crunchy",
+                "dry",
+                "fresh",
+                "fatty",
+                "greasy"};
+        TasteTagContainer c = new TasteTagContainer();
+        c.items = new TasteTag[names.length];
+        for (int i = 0; i < names.length; i++) {
+            c.items[i] = new TasteTag(names[i]);
+        }
+        successfulRequest(c, callback);
     }
 
     private static TasteTag randomTasteTag() {
@@ -88,7 +118,7 @@ public class DebugGroceryService extends DebugService implements GroceryRatingsS
                 "fatty",
                 "greasy"};
 
-        return new TasteTag("tasteTag", names[random.nextInt(names.length)]);
+        return new TasteTag(names[random.nextInt(names.length)]);
     }
 
     private static Rating randomRating() {

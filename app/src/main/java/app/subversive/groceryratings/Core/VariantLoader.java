@@ -4,6 +4,7 @@ import android.database.DataSetObservable;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
@@ -55,7 +56,9 @@ public class VariantLoader extends DataSetObservable {
                 if (variant != null && variant.published) {
                     mVariant = variant;
                 } else {
-                    callback.onUnknownBarcode(mBarcode);
+                    if (callback != null) {
+                        callback.onUnknownBarcode(mBarcode);
+                    }
                 }
                 setState(State.LOADED);
             }
@@ -106,6 +109,7 @@ public class VariantLoader extends DataSetObservable {
     private void insertNewVariant(String imageKey) {
         Variant variant = new Variant();
         variant.productCode = mBarcode;
+        variant.initDefaults();
         if (imageKey != null && !imageKey.isEmpty()) {
             variant.images.add(imageKey);
         }

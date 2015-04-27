@@ -56,7 +56,7 @@ public class FocusableSurfaceView extends SurfaceView {
         focusPaint.setStyle(Paint.Style.STROKE);
         focusPaint.setStrokeJoin(Paint.Join.ROUND);
         focusPaint.setStrokeCap(Paint.Cap.ROUND);
-        focusPaint.setStrokeWidth(Utils.dp2px(4));
+        focusPaint.setStrokeWidth(Utils.dp2px(3));
         focusPath = new Path();
 
         pointPaint.setColor(Color.WHITE);

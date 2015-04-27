@@ -22,13 +22,6 @@ public class Rating {
 
     public Rating() {}
 
-    public Rating(int stars, long datetime, String comment, TasteTag[] tags) {
-        this.stars = stars;
-        this.datetime = datetime;
-        this.comment = comment;
-        this.tags = tags;
-    }
-
     public Calendar getDate() {
         if (date == null) {
             date = Calendar.getInstance();

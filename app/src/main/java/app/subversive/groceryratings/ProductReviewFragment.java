@@ -31,6 +31,7 @@ import android.widget.MultiAutoCompleteTextView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import app.subversive.groceryratings.Core.GRData;
@@ -100,7 +101,7 @@ public class ProductReviewFragment extends Fragment {
         flAddTag = (FrameLayout) root.findViewById(R.id.flAddTag);
         btnTagHelp = root.findViewById(R.id.btnTagHelp);
         helpAnimator = ObjectAnimator.ofFloat(btnTagHelp, "alpha", 1f, 0f);
-        helpAnimator.setDuration(2000);
+        helpAnimator.setDuration(200);
         helpAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
 
         rater = (Rater) root.findViewById(R.id.ratingRater);
@@ -108,7 +109,8 @@ public class ProductReviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Utils.hideKeyboard(etRating);
-                ((MainWindow) getActivity()).addRating(rater.getRating(), etRating.getText().toString(), true);
+                List<String> tags = getTags();
+                ((MainWindow) getActivity()).addRating(rater.getRating(), etRating.getText().toString(), tags, true);
             }
         });
 
@@ -251,5 +253,16 @@ public class ProductReviewFragment extends Fragment {
             }
         });
         helpAnimator.start();
+    }
+
+    private ArrayList<String> getTags() {
+        ArrayList<String> result = new ArrayList<>();
+        HashSet<String> remaining = new HashSet<>(availableTags);
+        for (String tag : allTags) {
+            if (remaining.contains(tag)) {
+                result.add(tag);
+            }
+        }
+        return result;
     }
 }

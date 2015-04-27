@@ -12,7 +12,7 @@
     >
     <View
         android:layout_width="fill_parent"
-        android:layout_weight=".6"
+        android:layout_weight="1"
         android:layout_height="0dp"/>
         <!--android:layout_height="50dp"-->
 
@@ -45,7 +45,7 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight=".6"/>
+        android:layout_weight="1"/>
 
 
     <View
@@ -62,14 +62,18 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight=".6"/>
+        android:layout_weight="1"/>
 
-
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5">
     <TextView
         android:drawableTop="@drawable/phone_barcode"
         android:drawablePadding="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="top|center"
         android:text="@string/tutorial1"
         android:gravity="center_horizontal"
         android:id="@+id/tvTutorial"
@@ -83,8 +87,7 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:text="(Touch Screen to Continue)"
         android:gravity="bottom"
         style="@style/TutorialFont"
@@ -93,6 +96,8 @@
         android:visibility="invisible"
         tools:visibility="visible"
         android:id="@+id/tutorialFooter"
+        android:layout_gravity="bottom|center"
         />
+    </FrameLayout>
 
 </LinearLayout>

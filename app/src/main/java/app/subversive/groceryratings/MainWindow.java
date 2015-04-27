@@ -12,10 +12,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+
 import java.util.List;
 
 import app.subversive.groceryratings.Core.GRData;
 import app.subversive.groceryratings.Core.Rating;
+import app.subversive.groceryratings.Core.TasteTag;
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.SocialConnector.EmptyConnector;
@@ -32,7 +34,6 @@ public class MainWindow
 
     private interface ConnectionCallback { void onConnected(); }
 
-//    interface UpNavigation { void onNavigateUp(); }
 
     private final static String TAG = MainWindow.class.getSimpleName();
 
@@ -42,7 +43,6 @@ public class MainWindow
     private ConnectionCallback mConnectionCallback;
 
     public SocialConnector mSocialConn;
-//    private UpNavigation mUpNav;
     private boolean isSocalConnected, shouldDisplayReviewFrag;
 
     private User mUser;
@@ -99,8 +99,8 @@ public class MainWindow
         }
 
         GRClient.initialize(Installation.id(this));
-        GRData.getInstance().loadHistory(this);
-//        GRData.getInstance().reloadAllVariants();
+        GRData.initialize(this);
+        GRData.getInstance().reloadAllVariants();
 
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
         Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
@@ -131,7 +131,7 @@ public class MainWindow
         super.onPause();
         Preferences.writePrefs(getPreferences(MODE_PRIVATE));
         mSocialConn.onPause();
-        GRData.getInstance().writeHistory(this);
+        GRData.getInstance().writeDataToCache(this);
     }
 
     @Override
@@ -190,13 +190,6 @@ public class MainWindow
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
-//            case android.R.id.home:
-//                if (mUpNav != null) {
-//                    mUpNav.onNavigateUp();
-//                    return true;
-//                } else {
-//                    return false;
-//                }
             case 9:
                 if (isSocalConnected) {
                     socialLogout();
@@ -208,6 +201,7 @@ public class MainWindow
                 Log.i("MainWindow", "debug mode!");
                 item.setChecked(!item.isChecked());
                 GRClient.getInstance().setDebug(item.isChecked());
+                invalidateOptionsMenu();
                 return false;
 
             case 8:
@@ -273,7 +267,6 @@ public class MainWindow
     public void onConnected() {
         isSocalConnected = true;
         Preferences.socialConn = mSocialConn.getSocialKey();
-        Toast.makeText(this, "Connected to " + mSocialConn.getSocialKey(), Toast.LENGTH_SHORT).show();
 
         mSocialConn.getUser(this, new Callback<User>() {
             @Override
@@ -355,7 +348,7 @@ public class MainWindow
         invalidateOptionsMenu();
     }
 
-    public void addRating(int numStars, String ratingText, boolean closeCurrentFragment) {
+    public void addRating(int numStars, String ratingText, List<String> tasteTags, boolean closeCurrentFragment) {
         Log.v(TAG, String.format("%d %s", numStars, ratingText));
         if (closeCurrentFragment) {
             getFragmentManager().popBackStack();
@@ -364,11 +357,17 @@ public class MainWindow
             throw new RuntimeException("Trying to add a rating with no user or variant");
         }
 
+        TasteTag[] tags = new TasteTag[tasteTags.size()];
+        for (int i = 0; i < tags.length; i++) {
+            tags[i] = new TasteTag(tasteTags.get(i));
+        }
+
         Rating rating = new Rating();
         rating.comment = ratingText;
         rating.stars = numStars;
         rating.parent = mVariant;
         rating.user = mUser;
+        rating.tags = tags;
         GRClient.getService().addNewRating(rating, new Callback<Rating>() {
             @Override
             public void success(Rating rating, Response response) {

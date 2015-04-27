@@ -11,12 +11,17 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import app.subversive.groceryratings.RatingAdapter;
 import app.subversive.groceryratings.VariantLoaderAdapter;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import retrofit.mime.TypedByteArray;
 
 /**
@@ -24,27 +29,40 @@ import retrofit.mime.TypedByteArray;
  */
 public class GRData {
     private final static String HISTORY_FILE = "HISTORY_FILE";
-    private final static String TAG = "HistoryManager";
+    private final static String TAG_CACHE = "TAG_CACHE";
+    private final static String TAG = GRData.class.getSimpleName();
     private static final Gson gson = new Gson();
 
     private static final int maxLoaders = 7;
 
     private static GRData instance;
 
+    public static void initialize(Activity activity) {
+        instance = new GRData();
+        instance.loadHistory(activity);
+        instance.loadTagsFromCache(activity);
+        instance.reloadTags();
+    }
+
     public static GRData getInstance() {
         if (instance == null) {
-            instance = new GRData();
+            throw new RuntimeException("Attempting to access GRData without initializing first");
         }
         return instance;
     }
 
     private ArrayList<VariantLoader> mVariantLoaders;
-
     private Set<VariantLoaderAdapter> mVLAdapters;
+    private String[] mTasteTags;
 
     private GRData() {
         mVariantLoaders = new ArrayList<>();
         mVLAdapters = new HashSet<>();
+    }
+
+    public void writeDataToCache(Activity activity) {
+        writeHistory(activity);
+        writeTagsToCache(activity);
     }
 
     public void loadVariant(String barcode, VariantLoader.UnknownBarcodeCallback callback) {
@@ -79,7 +97,7 @@ public class GRData {
         }
     }
 
-    public void loadHistory(Activity activity) {
+    private void loadHistory(Activity activity) {
         mVariantLoaders.clear();
         try {
             FileReader fr = new FileReader(new File(activity.getFilesDir(), HISTORY_FILE));
@@ -97,7 +115,7 @@ public class GRData {
         }
     }
 
-    public void writeHistory(Activity activity) {
+    private void writeHistory(Activity activity) {
         ArrayList<Variant> variants = new ArrayList<>();
         for (VariantLoader loader : mVariantLoaders) {
             Variant variant = loader.getVariant();
@@ -178,12 +196,55 @@ public class GRData {
         return -1;
     }
 
-    public Set<String> getTasteTags() {
-        String[] tagList = {"salty", "sweet", "crunchy", "sour", "tart", "bitter", "high-calorie"};
-        HashSet<String> tags = new HashSet<>();
-        for (String tag: tagList) {
-            tags.add(tag);
+    private void loadTagsFromCache(Activity activity) {
+        try {
+            FileReader fr = new FileReader(new File(activity.getFilesDir(), TAG_CACHE));
+            mTasteTags = gson.fromJson(fr, String[].class);
+            fr.close();
+        } catch (FileNotFoundException e) {
+            Log.i(TAG, "No tag history to load");
+        } catch (IOException e) {
+            Log.i(TAG, "error reading tag history file");
         }
-        return tags;
+        if (mTasteTags == null) {
+            mTasteTags = new String[0];
+        }
+    }
+
+    private void writeTagsToCache(Activity activity) {
+        if (mTasteTags == null) {
+            return;
+        }
+        String jsonstring = gson.toJson(mTasteTags);
+        try {
+            FileOutputStream out = activity.openFileOutput(TAG_CACHE, Activity.MODE_PRIVATE);
+            out.write(jsonstring.getBytes());
+            out.close();
+        } catch (FileNotFoundException e) {
+            Log.i(TAG, "No file to write tag history");
+        } catch (IOException e) {
+            Log.i(TAG, "error writing tag history");
+        }
+    }
+
+    public Set<String> getTasteTags() {
+        return new HashSet<>(Arrays.asList(mTasteTags));
+    }
+
+    private void reloadTags() {
+        GRClient.getService().getTasteTags(new Callback<TasteTagContainer>() {
+            @Override
+            public void success(TasteTagContainer tasteTagContainer, Response response) {
+                mTasteTags = new String[tasteTagContainer.items.length];
+                for (int i = 0; i < mTasteTags.length; i++) {
+                    mTasteTags[i] = tasteTagContainer.items[i].name;
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 }

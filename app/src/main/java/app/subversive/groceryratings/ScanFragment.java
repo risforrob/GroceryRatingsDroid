@@ -67,7 +67,6 @@ public class ScanFragment
 
     private byte[] imageData;
 
-    final ArrayList<MenuItem> debugMenuItems = new ArrayList<>();
     private ResultPointCallback pointsCallback = new ResultPointCallback() {
         @Override
         public void foundPossibleResultPoint(ResultPoint resultPoint) {
@@ -132,14 +131,6 @@ public class ScanFragment
 //                scanControls.showUnknownBarcode(true);
                 handled = true;
                 break;
-
-            case 4:
-                for (MenuItem m : debugMenuItems) {
-                    m.setEnabled(GRClient.getInstance().isDebug());
-                }
-                handled = true;
-                break;
-
             case 5:
                 item.setChecked(!item.isChecked());
                 MainWindow.Preferences.autoscan = item.isChecked();
@@ -163,20 +154,17 @@ public class ScanFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        debugMenuItems.add(menu.add(1, 1, 10, "Swap Overlay"));
-        debugMenuItems.add(menu.add(1, 2, 20, "Add Variant"));
-        debugMenuItems.add(menu.add(1, 3, 30, "Show Unknown"));
-
-        for (MenuItem m : debugMenuItems) {
-            m.setEnabled(GRClient.getInstance().isDebug());
+        if (GRClient.getInstance().isDebug()) {
+            menu.add(1, 1, 10, "Swap Overlay");
+            menu.add(1, 2, 20, "Add Variant");
+            menu.add(1, 3, 30, "Show Unknown");
+            menu.add(4, 6, 40, "Flash");
+            menu.add(5, 7, 50, "Flush(Exit)");
         }
 
         MenuItem m = menu.add(3,5,8, "Auto Photo");
         m.setCheckable(true);
         m.setChecked(MainWindow.Preferences.autoscan);
-
-        menu.add(4, 6, 40, "Flash");
-        menu.add(5, 7, 50, "Flush(Exit)");
     }
 
 

@@ -1,6 +1,7 @@
 package app.subversive.groceryratings;
 
 import app.subversive.groceryratings.Core.Rating;
+import app.subversive.groceryratings.Core.TasteTagContainer;
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.Core.Variant;
 import retrofit.Callback;
@@ -30,4 +31,7 @@ public interface GroceryRatingsService {
 
     @POST("/ratingdaoendpoint/v1/rating")
     void addNewRating(@Body Rating rating, Callback<Rating> callback);
+
+    @GET("/tastetagdaoendpoint/v1/tastetagdao")
+    void getTasteTags(Callback<TasteTagContainer> callback);
 }

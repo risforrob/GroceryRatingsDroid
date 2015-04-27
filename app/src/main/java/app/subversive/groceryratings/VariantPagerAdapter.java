@@ -1,27 +1,19 @@
 package app.subversive.groceryratings;
 
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import app.subversive.groceryratings.Core.TasteTag;
 import app.subversive.groceryratings.Core.Variant;
 import app.subversive.groceryratings.UI.Rater;
 import app.subversive.groceryratings.UI.SequentialLayout;

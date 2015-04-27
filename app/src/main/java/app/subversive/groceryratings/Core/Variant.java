@@ -34,18 +34,23 @@ public class Variant {
     private List<Map.Entry<String, Integer>> sortedWordscore;
 
     public Variant() {
-        productName = "";
-        description = "";
-        manName = "";
-        brandName = "";
-        keywords = new ArrayList<>();
-        images = new ArrayList<>();
-        ratings = new ArrayList<>();
     }
 
     public Variant(String name, int stars) {
         productName = name;
         this.stars = stars;
+    }
+
+    public void initDefaults() {
+        keywords = new ArrayList<>();
+        images = new ArrayList<>();
+        ratings = new ArrayList<>();
+
+        manName = "";
+        brandName = "";
+        productName = "";
+        description = "";
+
     }
 
     public String getName() {

@@ -11,8 +11,8 @@
     <string name="facebook_app_id">378083392305084</string>
     <!--<string name="facebook_app_id">930407833645876</string>-->
     <string name="title_facebook_login">A title</string>
-    <string name="TasteTagAlertTitle">What is a TasteTag?</string>
-    <string name="TasteTagAlertContents">TasteTags are metadata for describing the taste of a product. Add as many as you like!</string>
+    <string name="TasteTagAlertTitle">What are TasteTags?</string>
+    <string name="TasteTagAlertContents">TasteTags are metadata for describing the taste of a product. Add as many as you like!\n\nOrange TasteTags are new tags that will be reviewed before being accepted.</string>
 
 
 </resources>

@@ -11,8 +11,8 @@ public class TasteTag {
 
     public TasteTag() {}
 
-    public TasteTag(String name, String value) {
-        this.name = name;
+    public TasteTag(String value) {
+        this.name = "tasteTag";
         this.value = value;
     }
 }
