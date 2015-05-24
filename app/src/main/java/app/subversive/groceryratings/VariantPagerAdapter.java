@@ -60,7 +60,7 @@ public class VariantPagerAdapter extends RecyclingPagerAdapter {
         recycler.setLayoutManager(new LinearLayoutManager(inflater.getContext()));
         Button addReview = (Button) root.findViewById(R.id.btnAddReview);
         addReview.setOnClickListener(addReviewListener);
-        addReview.setText((loggedIn) ? "Add a review." : "Sign in to add a review.");
+        addReview.setText((loggedIn) ? "Add a review" : "Add a review (Requires Login)");
         return root;
     }
 

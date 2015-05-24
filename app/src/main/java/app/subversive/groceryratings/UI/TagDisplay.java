@@ -25,6 +25,8 @@ public class TagDisplay extends LinearLayout {
     OnCancelListener mListener;
     TextView tagName, tagPercent;
     ImageButton tagCancel;
+    private boolean invalid;
+
     public TagDisplay(Context context) {
         super(context);
         init();
@@ -59,21 +61,6 @@ public class TagDisplay extends LinearLayout {
         tagName = (TextView) findViewById(R.id.tvTagName);
         tagPercent = (TextView) findViewById(R.id.tvPercent);
         tagCancel = (ImageButton) findViewById(R.id.tagCancel);
-        tagCancel.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) {
-                    mListener.onCancel(TagDisplay.this);
-                }
-            }
-        });
-        tagCancel.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                tagName.getBackground().setState(tagCancel.getDrawableState());
-                return false;
-            }
-        });
     }
 
 
@@ -94,11 +81,48 @@ public class TagDisplay extends LinearLayout {
         tagName.setBackgroundResource(R.color.InvalidTagPrimary);
         tagPercent.setBackgroundResource(R.color.InvalidTagSecondary);
         tagCancel.setBackgroundResource(R.color.InvalidTagSecondary);
+        invalid = true;
     }
 
     public void setCancelMode() {
         tagPercent.setVisibility(GONE);
         tagCancel.setVisibility(VISIBLE);
+
+        tagCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onCancel(TagDisplay.this);
+                }
+            }
+        });
+
+        tagCancel.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (invalid) {
+                            tagName.setBackgroundResource(R.color.InvalidTagPrimarySelected);
+                            tagCancel.setBackgroundResource(R.color.InvalidTagSecondarySelected);
+                        } else {
+                            tagName.setBackgroundResource(R.color.TagPrimarySelected);
+                            tagCancel.setBackgroundResource(R.color.TagSecondarySelected);
+                        }
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (invalid) {
+                            tagName.setBackgroundResource(R.color.InvalidTagPrimary);
+                            tagCancel.setBackgroundResource(R.color.InvalidTagSecondary);
+                        } else {
+                            tagName.setBackgroundResource(R.color.TagPrimary);
+                            tagCancel.setBackgroundResource(R.color.TagSecondary);
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     public String getTagName() {

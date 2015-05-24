@@ -14,6 +14,6 @@
     <color name="TagSecondarySelected">#ff3cc751</color>
     <color name="InvalidTagPrimary">#ffb87c40</color>
     <color name="InvalidTagSecondary">#ffd9a36c</color>
-
-
+    <color name="InvalidTagPrimarySelected">#ffa6611c</color>
+    <color name="InvalidTagSecondarySelected">#ffb8793b</color>
 </resources>
