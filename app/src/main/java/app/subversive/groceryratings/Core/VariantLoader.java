@@ -29,6 +29,7 @@ public class VariantLoader extends DataSetObservable {
     }
 
     protected VariantLoader (Variant variant) {
+
         mVariant = variant;
         mBarcode = variant.productCode;
         setState(State.LOADED);
@@ -48,8 +49,12 @@ public class VariantLoader extends DataSetObservable {
 
     public State getState() { return mState; }
 
-    public void load(final UnknownBarcodeCallback callback) {
-        setState(State.FETCHING);
+    public void load(UnknownBarcodeCallback callback) {
+        load(callback, true);
+    }
+
+    public void load(final UnknownBarcodeCallback callback, final boolean refreshVariant) {
+        setState((refreshVariant) ? State.FETCHING : State.LOADED);
         GRClient.getService().getProduct(mBarcode, new Callback<Variant>() {
             @Override
             public void success(Variant variant, Response response) {
@@ -65,7 +70,7 @@ public class VariantLoader extends DataSetObservable {
 
             @Override
             public void failure(RetrofitError error) {
-                setState(State.ERROR);
+                setState((refreshVariant) ? State.ERROR : State.LOADED);
             }
         });
     }

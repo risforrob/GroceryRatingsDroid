@@ -138,10 +138,14 @@ public class GRData {
         }
     }
 
-    public void reloadAllVariants() {
+    public void reloadAllVariants(boolean displayLoading) {
         for (VariantLoader loader : mVariantLoaders) {
-            loader.load(null);
+            loader.load(null, displayLoading);
         }
+    }
+
+    public void reloadAllVariants() {
+        reloadAllVariants(true);
     }
 
     public VariantLoaderAdapter getVariantLoaderAdapter(VariantLoaderAdapter.VariantSelector listener) {

@@ -64,7 +64,6 @@ public class StatusManager {
             if (currentStatus != null) {
                 status.animator.setFloatValues(-status.view.getHeight(), 0);
                 anim.playSequentially(getStatusHideAnimator(), status.animator);
-                anim.addListener(new AnimUtils.HideOnEnd(currentStatus.view));
             } else {
                 status.animator.setFloatValues(-status.view.getHeight(), 0);
                 anim.play(status.animator);
@@ -89,7 +88,6 @@ public class StatusManager {
             if (animated) {
                 AnimatorSet anim = new AnimatorSet();
                 anim.play(getStatusHideAnimator());
-                anim.addListener(new AnimUtils.HideOnEnd(currentStatus.view));
                 anim.start();
             } else {
                 status.view.setVisibility(View.GONE);

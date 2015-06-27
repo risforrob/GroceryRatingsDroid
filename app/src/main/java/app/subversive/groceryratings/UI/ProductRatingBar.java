@@ -177,7 +177,9 @@ public class ProductRatingBar extends FrameLayout {
     }
 
     private void showView(View newView, boolean animated) {
-        if (animated) {
+        if (displayedView == rating) {
+            return;
+        } else if (animated) {
             if (displayedView != null) {
                 displayedView.animate().alpha(0f).setDuration(duration).setListener(new hideOnEnd(displayedView)).start();
             }

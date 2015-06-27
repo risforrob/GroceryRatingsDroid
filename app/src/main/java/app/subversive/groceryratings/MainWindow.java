@@ -100,7 +100,7 @@ public class MainWindow
 
         GRClient.initialize(Installation.id(this));
         GRData.initialize(this);
-        GRData.getInstance().reloadAllVariants();
+        GRData.getInstance().reloadAllVariants(false);
 
         Utils.setDPMultiplier(getResources().getDisplayMetrics().density);
         Preferences.loadPrefs(getPreferences(MODE_PRIVATE));
