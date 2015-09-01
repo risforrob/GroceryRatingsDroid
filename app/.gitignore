@@ -2,5 +2,5 @@
 app-debug.apk
 app-release.apk
 manifest*.txt
-crashlytics.properties
+#crashlytics.properties
 api_keys.xml
