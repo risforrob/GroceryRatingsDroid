@@ -16,6 +16,7 @@ import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import app.subversive.groceryratings.Core.User;
 import app.subversive.groceryratings.MainWindow;
 import app.subversive.groceryratings.Core.GRClient;
+import app.subversive.groceryratings.R;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -27,13 +28,12 @@ public class TwitterConnector implements SocialConnector {
     MainWindow activity;
     TwitterAuthClient authClient;
     long mID;
-    public final static TwitterAuthConfig authConfig =
-            new TwitterAuthConfig("Y9Lrj94I5eHZvGuRzfJdr4K8E",
-                    "***REMOVED***");
-
 
     public TwitterConnector(MainWindow activity) {
         this.activity = activity;
+        TwitterAuthConfig authConfig =
+                new TwitterAuthConfig("Y9Lrj94I5eHZvGuRzfJdr4K8E",
+                        activity.getResources().getString(R.string.twitter_api_key));
         Fabric.with(activity, new Twitter(authConfig));
         authClient = new TwitterAuthClient();
     }
