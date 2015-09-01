@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="rater">
+        <attr name="numStars" format="integer"/>
+        <attr name="foregroundColor" format="color"/>
+        <attr name="backgroundColor" format="color"/>
+        <attr name="radius" format="dimension" />
+        <attr name="paddingStars" format="dimension" />
+        <attr name="ringWidth" format="dimension" />
+        <attr name="editable" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="FontTextView">
+        <attr name="font" format="string"/>
+    </declare-styleable>
+    <declare-styleable name="SequentialLayout">
+        <attr name="numRows" format="integer"/>
+        <attr name="minimumHorizontalPadding" format="dimension"/>
+        <attr name="verticalPadding" format="dimension" />
+        <attr name="justifiedSpacing" format="boolean" />
+        <attr name="centered" format="boolean" />
+    </declare-styleable>
+</resources>

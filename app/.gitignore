@@ -2,3 +2,4 @@
 app-debug.apk
 app-release.apk
 manifest*.txt
+crashlytics.properties
