@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,11 +16,14 @@ import android.widget.FrameLayout;
  * Created by rob on 11/8/14.
  */
 public class StatusManager {
+    private final String TAG = StatusManager.class.getSimpleName();
     class Status {
         private View view;
+        public String id;
         private ObjectAnimator animator; //showAnim, hideAnim, animator;
-        private Status(final View view) {
+        private Status(final View view, String id) {
             this.view = view;
+            this.id = id;
             root.addView(view, statusLayoutParams);
 
             view.setVisibility(View.INVISIBLE);
@@ -53,8 +57,8 @@ public class StatusManager {
         this.root = root;
     }
 
-    public Status createStatus(View statusView) {
-        return new Status(statusView);
+    public Status createStatus(View statusView, String id) {
+        return new Status(statusView, id);
     }
 
     private void showStatus(final Status status, boolean animated) {
@@ -63,7 +67,7 @@ public class StatusManager {
             AnimatorSet anim = new AnimatorSet();
             if (currentStatus != null) {
                 status.animator.setFloatValues(-status.view.getHeight(), 0);
-                anim.playSequentially(getStatusHideAnimator(), status.animator);
+                anim.playSequentially(getStatusHideAnimator(currentStatus), status.animator);
             } else {
                 status.animator.setFloatValues(-status.view.getHeight(), 0);
                 anim.play(status.animator);
@@ -87,12 +91,12 @@ public class StatusManager {
         if (status == currentStatus) {
             if (animated) {
                 AnimatorSet anim = new AnimatorSet();
-                anim.play(getStatusHideAnimator());
+                anim.play(getStatusHideAnimator(status));
                 anim.start();
             } else {
                 status.view.setVisibility(View.GONE);
+                currentStatus = null;
             }
-            currentStatus = null;
         }
     }
 
@@ -100,7 +104,7 @@ public class StatusManager {
         hideStatus(currentStatus, animated);
     }
 
-    public ObjectAnimator getStatusHideAnimator() {
+    public ObjectAnimator getStatusHideAnimator(final Status status) {
         if (currentStatus == null) {
             return null;
         } else {
@@ -114,7 +118,9 @@ public class StatusManager {
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
                     animation.removeListener(this);
-                    currentStatus = null;
+                    if (currentStatus == status) {
+                        currentStatus = null;
+                    }
                 }
             });
             return currentStatus.animator;

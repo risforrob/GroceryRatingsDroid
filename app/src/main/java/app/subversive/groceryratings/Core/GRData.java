@@ -1,10 +1,13 @@
 package app.subversive.groceryratings.Core;
 
 import android.app.Activity;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -99,19 +102,26 @@ public class GRData {
 
     private void loadHistory(Activity activity) {
         mVariantLoaders.clear();
+        Variant[] variants = null;
         try {
             FileReader fr = new FileReader(new File(activity.getFilesDir(), HISTORY_FILE));
-            for (Variant variant : gson.fromJson(fr, Variant[].class)) {
-                variant.resetSortedWordscore();
-                mVariantLoaders.add(new VariantLoader(variant));
-            }
+            variants = gson.fromJson(fr, Variant[].class);
             fr.close();
+        } catch (JsonSyntaxException e) {
+            Log.d(TAG, "loadHistory: json syntax error");
         } catch (FileNotFoundException e) {
             Log.i(TAG, "No history to load");
             // do nothing
         } catch (IOException e) {
             Log.i(TAG, "error reading history file");
             // do nothing
+        }
+
+        if (variants != null) {
+            for (Variant variant : variants) {
+                variant.resetSortedWordscore();
+                mVariantLoaders.add(new VariantLoader(variant));
+            }
         }
     }
 
@@ -126,6 +136,7 @@ public class GRData {
 
         String jsonstring = gson.toJson(variants);
         try {
+            Log.d(TAG, String.format("writeHistory: %s", jsonstring));
             FileOutputStream out = activity.openFileOutput(HISTORY_FILE, Activity.MODE_PRIVATE);
             out.write(jsonstring.getBytes());
             out.close();

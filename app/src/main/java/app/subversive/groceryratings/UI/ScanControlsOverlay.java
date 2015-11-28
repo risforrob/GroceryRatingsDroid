@@ -85,8 +85,8 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         }
 
         mStatusManager = new StatusManager(parent);
-        statusPrompt = mStatusManager.createStatus(statusBar);
-        statusUnknown = mStatusManager.createStatus(unknownBarcode);
+        statusPrompt = mStatusManager.createStatus(statusBar, "StatusBar");
+        statusUnknown = mStatusManager.createStatus(unknownBarcode, "UnknownBar");
     }
 
     @Override
@@ -262,7 +262,7 @@ public class ScanControlsOverlay implements Overlay, ObservableScrollView.Callba
         });
 
         ArrayList<Animator> animators = new ArrayList<>();
-        Animator mStatusAnim = mStatusManager.getStatusHideAnimator();
+        Animator mStatusAnim = mStatusManager.getStatusHideAnimator(mStatusManager.currentStatus);
         if (mStatusAnim != null) {
             animators.add(mStatusAnim);
         }

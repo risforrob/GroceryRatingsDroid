@@ -127,8 +127,6 @@ public class ScanFragment
             // show unknown
             case 3:
                 handleDecode(String.valueOf((int) (Math.random() * 100000)));
-//                handleDecode("123456");
-//                scanControls.showUnknownBarcode(true);
                 handled = true;
                 break;
             case 5:
