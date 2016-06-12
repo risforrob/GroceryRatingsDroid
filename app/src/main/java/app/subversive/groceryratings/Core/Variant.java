@@ -31,7 +31,7 @@ public class Variant {
     public ArrayList<Rating> ratings;
 
     public HashMap<String, Integer> wordscore;
-    private List<Map.Entry<String, Integer>> sortedWordscore;
+    private transient List<Map.Entry<String, Integer>> sortedWordscore;
 
     public Variant() {
     }
@@ -65,9 +65,9 @@ public class Variant {
         return (ratings == null) ? 0 : ratings.size();
     }
 
-    public HashMap<String, Integer> getWordscore() {
-        return wordscore;
-    }
+//    public HashMap<String, Integer> getWordscore() {
+//        return wordscore;
+//    }
 
     public void resetSortedWordscore() { sortedWordscore = null; }
 

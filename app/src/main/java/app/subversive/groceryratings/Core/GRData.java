@@ -105,7 +105,10 @@ public class GRData {
         Variant[] variants = null;
         try {
             FileReader fr = new FileReader(new File(activity.getFilesDir(), HISTORY_FILE));
-            variants = gson.fromJson(fr, Variant[].class);
+            BufferedReader br = new BufferedReader(fr);
+            String s = br.readLine();
+            Log.d(TAG, String.format("loadHistory: %s", s));
+            variants = gson.fromJson(s, Variant[].class);
             fr.close();
         } catch (JsonSyntaxException e) {
             Log.d(TAG, "loadHistory: json syntax error");
